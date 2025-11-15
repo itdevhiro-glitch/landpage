@@ -544,7 +544,7 @@
             }
             .hero-container {
                 flex-direction: column; /* Susun ke bawah */
-                gap: 40px;
+                gap: 30px; /* [DIUBAH] Mengurangi gap */
             }
             .hero-text {
                 max-width: 100%; /* Lebar penuh */
@@ -565,7 +565,9 @@
             }
 
             /* --- Portal Aplikasi (Grid 4 kartu) --- */
-            /* Tidak perlu diubah, 'auto-fit' sudah menanganinya */
+            .portal-grid {
+                grid-template-columns: 1fr; /* [BARU] Paksa 1-kolom di mobile agar rapi */
+            }
 
             /* --- Konten Utama (Alat & Widget) --- */
             .main-content {
@@ -575,6 +577,40 @@
                 grid-template-columns: 1fr; /* Susun ke bawah */
                 gap: 40px;
             }
+
+            /* [BARU] Rampingkan list "Alat Bantu" */
+            .portal-list a {
+                padding: 15px; /* Kurangi padding */
+            }
+            .link-icon {
+                width: 40px; /* Kecilkan ikon */
+                height: 40px;
+                font-size: 1.2rem;
+                margin-right: 15px;
+            }
+
+            /* [BARU] Rampingkan Widget Jam & Kalender */
+            .widget-body {
+                padding: 20px; /* Kurangi padding body widget */
+            }
+            .digital-clock {
+                font-size: 2.2rem; /* Kecilkan font jam */
+            }
+            #calendar-widget {
+                font-size: 0.8rem; /* Kecilkan font kalender */
+            }
+            .calendar-grid {
+                gap: 5px; /* Kurangi gap antar tanggal */
+            }
+            .calendar-grid div {
+                padding: 5px; /* Kurangi padding tanggal */
+            }
+            .cal-nav button {
+                width: 25px; /* Kecilkan tombol nav */
+                height: 25px;
+            }
+            /* --- End Rampingkan Widget --- */
+
 
             /* --- Ukuran Teks Lainnya --- */
             .portal-column h2 {
