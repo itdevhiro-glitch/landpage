@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeppelin - Dashboard</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: none; 
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* --- 1. Navigasi Atas --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: #D9232D;
+            margin-right: 30px; /* Jarak logo ke pintasan */
+        }
+        .nav-logo i {
+            color: #F37321;
+            margin-right: 8px;
+        }
+        
+        /* [BARU] Ikon Pintasan */
+        .nav-shortcuts {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .nav-shortcuts a {
+            font-size: 1.2rem;
+            color: #555; /* Warna halus */
+            text-decoration: none;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .nav-shortcuts a:hover {
+            color: #D9232D; /* Warna merah saat hover */
+            transform: scale(1.1);
+        }
+        
+        .nav-user {
+            display: flex;
+            align-items: center;
+        }
+        /* [DIUBAH] Sapaan nama, bukan email */
+        .nav-user span {
+            margin-right: 15px;
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+        }
+        #logout-btn {
+            background-color: #D9232D;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #logout-btn:hover {
+            background-color: #B01B22;
+        }
+
+        /* --- 2. Hero Section --- */
+        .hero {
+            background-color: #fafafa;
+            padding: 80px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #f0f0f0;
+            overflow: hidden;
+        }
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        .hero-text {
+            flex-basis: 50%;
+            padding-right: 40px;
+        }
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #D9232D;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .hero-text p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        
+        .hero-cta {
+            background-color: #F37321;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+            animation: pulse 2.5s infinite ease-in-out;
+        }
+        .hero-cta:hover {
+            animation: none;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(243, 115, 33, 0.5);
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(243, 115, 33, 0.4); }
+            50% { transform: scale(1.03); box-shadow: 0 6px 25px rgba(243, 115, 33, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 4px 15px rgba(243, 115, 33, 0.4); }
+        }
+        
+        .hero-visual {
+            flex-basis: 40%;
+            text-align: center;
+            color: #D9232D;
+            opacity: 0.1; /* Warna smooth */
+            font-size: 20rem;
+        }
+        .hero-visual i {
+            animation: spin 30s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- [BARU] 3. Stats Section --- */
+        .stats-section {
+            background-color: #ffffff;
+            padding: 50px 0;
+            border-bottom: 1px solid #f0f0f0;
+            overflow: hidden;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+        .stat-card {
+            background-color: #fafafa;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .stat-card-icon {
+            font-size: 2.5rem;
+        }
+        .stat-card-icon.icon-red { color: #D9232D; }
+        .stat-card-icon.icon-blue { color: #2980b9; }
+        .stat-card-icon.icon-orange { color: #F37321; }
+        .stat-card-icon.icon-purple { color: #8e44ad; }
+        
+        .stat-card-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.2;
+        }
+        .stat-card-info p {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        /* Loading spinner */
+        #stats-open-tickets .fa-spinner {
+            font-size: 2rem;
+            color: #D9232D;
+        }
+
+        /* --- 4. Section Portal Utama --- */
+        .main-portal-section {
+            padding: 60px 0;
+            overflow: hidden;
+        }
+        .main-portal-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        .section-title-left {
+            margin-bottom: 30px;
+        }
+        .section-title-left h2 {
+            font-size: 2.2rem; /* Sedikit lebih kecil */
+            font-weight: 600;
+            color: #D9232D;
+            margin-bottom: 10px;
+        }
+        .section-title-left p {
+            font-size: 1rem; /* Sedikit lebih kecil */
+            color: #777;
+        }
+        .section-title-left.tools-title {
+            margin-top: 50px;
+        }
+        .main-links-list a {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            border: 1px solid #f0f0f0;
+            border-radius: 10px;
+            padding: 20px;
+            text-decoration: none;
+            margin-bottom: 15px;
+            transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+        }
+        .main-links-list a:hover {
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(217, 35, 45, 0.1);
+            border-color: #D9232D;
+        }
+        .link-icon {
+            font-size: 2rem;
+            margin-right: 20px;
+            width: 50px;
+            text-align: center;
+        }
+        .link-icon.icon-red { color: #D9232D; }
+        .link-icon.icon-green { color: #27ae60; }
+        .link-icon.icon-orange { color: #F37321; }
+        .link-icon.icon-blue { color: #2980b9; }
+        .link-icon.icon-purple { color: #8e44ad; }
+        .link-text h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .link-text p {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        .link-arrow {
+            margin-left: auto;
+            font-size: 1.2rem;
+            color: #ccc;
+            transition: transform 0.3s, color 0.3s;
+        }
+        .main-links-list a:hover .link-arrow {
+            transform: translateX(5px);
+            color: #D9232D;
+        }
+
+        /* [BARU] Chart Container */
+        .chart-container {
+            background-color: #fafafa;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        /* Kolom Kanan (Widget Info) */
+        .info-widget-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            border: 1px solid #f0f0f0;
+            padding: 30px;
+            position: sticky;
+            top: 30px; 
+        }
+        .clock-widget {
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 25px;
+            margin-bottom: 25px;
+        }
+        #digital-time {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #D9232D;
+            line-height: 1.1;
+        }
+        #digital-date {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: 500;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        #month-year {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .calendar-nav button {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            color: #D9232D;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .calendar-cell {
+            text-align: center;
+            padding: 8px 5px;
+            font-size: 0.9rem;
+            border-radius: 50%;
+        }
+        .calendar-day-header {
+            font-weight: 600;
+            color: #777;
+            font-size: 0.8rem;
+        }
+        .calendar-day {
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .calendar-day:hover {
+            background-color: #fdeaea;
+        }
+        .calendar-day.other-month {
+            color: #ccc;
+        }
+        .calendar-day.today {
+            background-color: #F37321;
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* --- 5. Footer --- */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #333;
+            color: #aaa;
+            font-size: 0.9rem;
+            border-top: 1px solid #222;
+        }
+        .footer p {
+            margin-bottom: 5px;
+        }
+        .footer a {
+            color: #F37321;
+            text-decoration: none;
+        }
+        
+        /* --- 6. Animasi Scroll --- */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Staggering (animasi berurutan) untuk list */
+        .stats-grid .stat-card.fade-in-up:nth-child(1) { transition-delay: 0.1s; }
+        .stats-grid .stat-card.fade-in-up:nth-child(2) { transition-delay: 0.2s; }
+        .stats-grid .stat-card.fade-in-up:nth-child(3) { transition-delay: 0.3s; }
+        .stats-grid .stat-card.fade-in-up:nth-child(4) { transition-delay: 0.4s; }
+        
+        .main-links-list.app-list a.fade-in-up:nth-child(1) { transition-delay: 0.1s; }
+        .main-links-list.app-list a.fade-in-up:nth-child(2) { transition-delay: 0.2s; }
+        .main-links-list.app-list a.fade-in-up:nth-child(3) { transition-delay: 0.3s; }
+        .main-links-list.app-list a.fade-in-up:nth-child(4) { transition-delay: 0.4s; }
+        .main-links-list.app-list a.fade-in-up:nth-child(5) { transition-delay: 0.5s; }
+        
+        .main-links-list.tools-list a.fade-in-up:nth-child(1) { transition-delay: 0.1s; }
+        .main-links-list.tools-list a.fade-in-up:nth-child(2) { transition-delay: 0.2s; }
+        .main-links-list.tools-list a.fade-in-up:nth-child(3) { transition-delay: 0.3s; }
+
+        .hero-text.fade-in-up { transition-delay: 0.1s; }
+        .hero-visual.fade-in-up { transition-delay: 0.2s; }
+        .info-widget-card.fade-in-up { transition-delay: 0.3s; }
+        .chart-container.fade-in-up { transition-delay: 0.5s; }
+        
+        /* --- 7. Responsif --- */
+        @media (max-width: 992px) {
+            .hero-content { flex-direction: column; }
+            .hero-text { flex-basis: 100%; padding-right: 0; text-align: center; }
+            .hero-visual { display: none; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .main-portal-grid { grid-template-columns: 1fr; }
+            .info-widget-card { position: static; margin-top: 30px; }
+        }
+        @media (max-width: 768px) {
+            .hero-text h1 { font-size: 2.5rem; }
+            .nav-user span { display: none; }
+            .nav-shortcuts { display: none; } /* Sembunyikan pintasan di HP */
+            .section-title-left { text-align: center; }
+        }
+         @media (max-width: 576px) {
+            .stats-grid { grid-template-columns: 1fr; }
+         }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Navigasi Atas -->
+    <nav class="navbar container">
+        <div class="nav-left">
+            <a href="#" class="nav-logo">
+                <i class="fa-solid fa-gear"></i>
+                ZEPPELIN
+            </a>
+            <!-- [BARU] Ikon Pintasan -->
+            <div class="nav-shortcuts">
+                <a href="https://itdevhiro-glitch.github.io/workspace-itsupport/user.html" target="_blank" title="Layanan IT">
+                    <i class="fa-solid fa-headset"></i>
+                </a>
+                <a href="#" target="_blank" title="Keuangan">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </a>
+                <a href="#" target="_blank" title="Pemasaran">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </a>
+                <a href="#" target="_blank" title="Manajemen Stok">
+                    <i class="fa-solid fa-boxes-stacked"></i>
+                </a>
+            </div>
+        </div>
+        <div class="nav-user">
+            <!-- [DIUBAH] Sapaan Nama Pengguna -->
+            <span id="user-name-display">Memuat...</span>
+            <button id="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Keluar</button>
+        </div>
+    </nav>
+
+    <!-- 2. Hero Section -->
+    <header class="hero">
+        <div class="hero-content container">
+            <div class="hero-text fade-in-up">
+                <h1>Selamat Datang di Portal Internal Zeppelin</h1>
+                <p>Semua aplikasi, alat bantu, dan informasi operasional Anda kini berada di satu tempat yang terpusat.</p>
+                <a href="#main-portal" class="hero-cta">Lihat Aplikasi <i class="fa-solid fa-arrow-down"></i></a>
+            </div>
+            <div class="hero-visual fade-in-up">
+                <i class="fa-solid fa-kitchen-set"></i>
+            </div>
+        </div>
+    </header>
+    
+    <!-- [BARU] 3. Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <!-- Kartu 1: Data Aktual dari Firebase -->
+                <div class="stat-card fade-in-up">
+                    <div class="stat-card-icon icon-red">
+                        <i class="fa-solid fa-ticket"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <!-- [BARU] ID untuk data live -->
+                        <h3 id="stats-open-tickets">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                        </h3>
+                        <p>Laporan Anda (Aktif)</p>
+                    </div>
+                </div>
+                <!-- Kartu 2: Data Statis -->
+                <div class="stat-card fade-in-up">
+                    <div class="stat-card-icon icon-blue">
+                        <i class="fa-solid fa-server"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>1.204</h3>
+                        <p>Aset Terdaftar</p>
+                    </div>
+                </div>
+                <!-- Kartu 3: Data Statis -->
+                <div class="stat-card fade-in-up">
+                    <div class="stat-card-icon icon-orange">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>89%</h3>
+                        <p>Stok Tersedia</p>
+                    </div>
+                </div>
+                <!-- Kartu 4: Data Statis -->
+                <div class="stat-card fade-in-up">
+                    <div class="stat-card-icon icon-purple">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div class="stat-card-info">
+                        <h3>22</h3>
+                        <p>Proyek Marketing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Section Portal Utama -->
+    <section id="main-portal" class="main-portal-section container">
+        
+        <div class="main-portal-grid">
+            
+            <!-- Kolom Kiri: Daftar Aplikasi & Alat -->
+            <div class="main-links-column">
+                
+                <div class="section-title-left fade-in-up">
+                    <h2>Portal Aplikasi Utama</h2>
+                    <p>Akses cepat ke modul operasional harian Anda.</p>
+                </div>
+                
+                <div class="main-links-list app-list">
+                    <a href="https://itdevhiro-glitch.github.io/itteam/" target="_blank" class="fade-in-up">
+                        <i class="link-icon icon-red fa-solid fa-user-shield"></i>
+                        <div class="link-text">
+                            <h4>IT Admin</h4>
+                            <p>Dasbor admin kelola tiket & aset.</p>
+                        </div>
+                        <i class="link-arrow fa-solid fa-arrow-right"></i>
+                    </a>
+                    <!-- [DIPERBAIKI] Memperbaiki https:// -->
+                    <a href="https://itdevhiro-glitch.github.io/widget/serah terima.html" target="_blank" class="fade-in-up">
+                        <i class="link-icon icon-orange fa-solid fa-file-signature"></i>
+                        <div class="link-text">
+                            <h4>BAST Perangkat IT</h4>
+                            <p>Formulir digital Berita Acara Serah Terima.</p>
+                        </div>
+                        <i class="link-arrow fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="https://itdevhiro-glitch.github.io/widget/excel inspector.html" target="_blank" class="fade-in-up">
+                        <i class="link-icon icon-green fa-solid fa-file-excel"></i>
+                        <div class="link-text">
+                            <h4>Excel Inspector</h4>
+                            <p>Alat bantu validasi data file Excel.</p>
+                        </div>
+                        <i class="link-arrow fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- [BARU] Chart Container -->
+                <div class="chart-container fade-in-up">
+                    <div class="section-title-left" style="margin-bottom: 20px;">
+                        <h2>Status Laporan IT</h2>
+                        <p>Visualisasi data laporan (dummy).</p>
+                    </div>
+                    <canvas id="ticket-chart"></canvas>
+                </div>
+                
+            </div>
+            
+            <!-- Kolom Kanan: Info Widget -->
+            <div class="sidebar-widget-column">
+                <div class="info-widget-card fade-in-up">
+                    <div class="clock-widget">
+                        <div id="digital-time">00:00</div>
+                        <div id="digital-date">Memuat tanggal...</div>
+                    </div>
+                    
+                    <div class="calendar-widget">
+                        <div class="calendar-header">
+                            <button id="prev-month"><i class="fa-solid fa-chevron-left"></i></button>
+                            <h3 id="month-year">Memuat...</h3>
+                            <button id="next-month"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="calendar-grid" id="calendar-days-header"></div>
+                        <div class="calendar-grid" id="calendar-body"></div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+
+    <!-- 5. Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 Zeppelin Manufacturing. Seluruh hak cipta dilindungi.</p>
+        <p>Portal Internal dikelola oleh <a href="#">Tim IT</a>.</p>
+    </footer>
+
+    <!-- [BARU] CDN untuk Chart.js (Versi UMD Standalone) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@^4/dist/chart.umd.js"></script>
+
+    <!-- Script Firebase (Modular v10+) -->
+    <script type="module">
+        // Import functions
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        // [BARU] Import Realtime Database
+        import { getDatabase, ref, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        // [DIHAPUS] Import Chart.js versi ESM
+        
+        // [DIHAPUS] Registrasi komponen chart (Versi UMD sudah auto-register)
+        
+        // Konfigurasi Firebase Anda
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
+            authDomain: "it-support-53eeb.firebaseapp.com",
+            databaseURL: "https://it-support-53eeb-default-rtdb.firebaseio.com",
+            projectId: "it-support-53eeb",
+            storageBucket: "it-support-53eeb.firebasestorage.app",
+            messagingSenderId: "573924501146",
+            appId: "1:573924501146:web:12f34306ed675472322123",
+            measurementId: "G-33K6DDE1VR"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app); // [BARU] Init Realtime Database
+
+        // Get elements
+        const logoutButton = document.getElementById('logout-btn');
+        const userNameSpan = document.getElementById('user-name-display');
+        const openTicketsEl = document.getElementById('stats-open-tickets');
+
+        // --- AUTH STATE LISTENER (THE GUARD) ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.body.style.display = 'block'; 
+                const uid = user.uid;
+                
+                // Jalankan semua fungsi inisialisasi
+                startClockAndDate();
+                initializeCalendar();
+                initializeScrollAnimations();
+                
+                // [BARU] Jalankan fungsi fetch data
+                fetchUserData(user); // Kirim user object
+                fetchTicketStats(uid);
+                initializeTicketChart();
+                
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // --- LOGOUT BUTTON ---
+        logoutButton.addEventListener('click', () => {
+            signOut(auth).catch((error) => {
+                console.error("Sign out error", error);
+            });
+        });
+
+        // --- [BARU] FUNGSI FETCH DATA ---
+
+        // 1. Ambil Nama Pengguna
+        function fetchUserData(user) {
+            const userRef = ref(db, 'users/' + user.uid);
+            onValue(userRef, (snapshot) => {
+                if (snapshot.exists() && snapshot.val().nama) {
+                    userNameSpan.innerText = 'Halo, ' + snapshot.val().nama;
+                } else {
+                    // Fallback jika tidak ada nama di DB
+                    userNameSpan.innerText = user.email;
+                }
+            }, (error) => {
+                console.error("Gagal mengambil nama user: ", error);
+                userNameSpan.innerText = user.email; // Fallback jika error
+            });
+        }
+
+        // 2. Ambil Statistik Tiket (Data Aktual)
+        function fetchTicketStats(uid) {
+            const reportsRef = ref(db, 'reports');
+            // Query laporan berdasarkan UID pengguna yang login
+            const userReportsQuery = query(reportsRef, orderByChild('uid'), equalTo(uid));
+            
+            onValue(userReportsQuery, (snapshot) => {
+                let openReportCount = 0;
+                if (snapshot.exists()) {
+                    const reports = snapshot.val();
+                    const reportList = Object.values(reports);
+                    // Filter untuk status "Open" atau "In Progress"
+                    const openReports = reportList.filter(r => r.status === 'Open' || r.status === 'In Progress');
+                    openReportCount = openReports.length;
+                }
+                // Tampilkan hasilnya
+                openTicketsEl.innerText = openReportCount;
+            }, (error) => {
+                console.error("Gagal mengambil statistik tiket: ", error);
+                openTicketsEl.innerText = 'N/A'; // Tampilkan N/A jika error
+            });
+        }
+        
+        // --- [BARU] 3. Inisialisasi Chart ---
+        function initializeTicketChart() {
+            const ctx = document.getElementById('ticket-chart').getContext('2d');
+            
+            // Data dummy untuk chart
+            const data = {
+                labels: ['Hardware', 'Software', 'Jaringan', 'Lainnya'],
+                datasets: [{
+                    label: 'Jumlah Laporan',
+                    data: [12, 19, 3, 5],
+                    backgroundColor: [
+                        '#D9232D', // Merah
+                        '#F37321', // Oranye
+                        '#2980b9', // Biru
+                        '#555'      // Abu-abu
+                    ],
+                    borderColor: '#fff',
+                    borderWidth: 3
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    family: "'Poppins', sans-serif"
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- WIDGET LOGIC ---
+
+        function startClockAndDate() {
+            // ... (Fungsi ini sama, tidak perlu disalin ulang)
+            const digitalTime = document.getElementById('digital-time');
+            const digitalDate = document.getElementById('digital-date');
+            function updateClock() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                digitalTime.innerText = `${hours}:${minutes}`;
+                if (digitalDate.innerText === 'Memuat tanggal...') {
+                    const optionsDate = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    digitalDate.innerText = now.toLocaleDateString('id-ID', optionsDate);
+                }
+            }
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        function initializeCalendar() {
+            // ... (Fungsi ini sama, tidak perlu disalin ulang)
+            const monthYearEl = document.getElementById('month-year');
+            const calendarBody = document.getElementById('calendar-body');
+            const calendarDaysHeader = document.getElementById('calendar-days-header');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            let currentDate = new Date();
+            const today = new Date();
+            const daysInIndonesian = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            const monthsInIndonesian = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            daysInIndonesian.forEach(day => {
+                const dayHeaderCell = document.createElement('div');
+                dayHeaderCell.className = 'calendar-cell calendar-day-header';
+                dayHeaderCell.innerText = day;
+                calendarDaysHeader.appendChild(dayHeaderCell);
+            });
+            function renderCalendar() {
+                calendarBody.innerHTML = ''; 
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                monthYearEl.innerText = `${monthsInIndonesian[month]} ${year}`;
+                const firstDayOfMonth = new Date(year, month, 1).getDay(); 
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                for (let i = 0; i < firstDayOfMonth; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'calendar-cell';
+                    calendarBody.appendChild(emptyCell);
+                }
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'calendar-cell calendar-day';
+                    dayCell.innerText = day;
+                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        dayCell.classList.add('today');
+                    }
+                    calendarBody.appendChild(dayCell);
+                }
+            }
+            prevMonthBtn.addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+            nextMonthBtn.addEventListener('click', () => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+            renderCalendar();
+        }
+        
+        function initializeScrollAnimations() {
+            // ... (Fungsi ini sama, tidak perlu disalin ulang)
+            const animatedElements = document.querySelectorAll('.fade-in-up');
+            if ("IntersectionObserver" in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                animatedElements.forEach(el => {
+                    observer.observe(el);
+                });
+            } else {
+                animatedElements.forEach(el => {
+                    el.classList.add('is-visible');
+                });
+            }
+        }
+
+    </script>
+
+</body>
+</html>

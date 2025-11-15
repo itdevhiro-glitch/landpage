@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Zeppelin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            background: linear-gradient(135deg, #D9232D 0%, #F37321 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #D9232D;
+            margin-bottom: 10px;
+        }
+        .login-logo i { color: #F37321; }
+        .login-title {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        .input-field {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #D9232D;
+            box-shadow: 0 0 0 3px rgba(217, 35, 45, 0.1);
+        }
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #D9232D;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .login-button:hover {
+            background-color: #B01B22;
+            transform: translateY(-2px);
+        }
+        .error-message {
+            color: #D93025;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-logo">
+            <i class="fa-solid fa-gear"></i> ZEPPELIN
+        </div>
+        <p class="login-title">Portal Operasional Internal</p>
+        
+        <form id="login-form">
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" id="email" class="input-field" placeholder="Email" required>
+            </div>
+            
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="password" class="input-field" placeholder="Kata Sandi" required>
+            </div>
+            
+            <button type="submit" class="login-button">Masuk</button>
+            
+            <p id="error-msg" class="error-message">Email atau kata sandi salah!</p>
+        </form>
+    </div>
+
+    <!-- Script Firebase (Modular v10+) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
+            authDomain: "it-support-53eeb.firebaseapp.com",
+            databaseURL: "https://it-support-53eeb-default-rtdb.firebaseio.com",
+            projectId: "it-support-53eeb",
+            storageBucket: "it-support-53eeb.firebasestorage.app",
+            messagingSenderId: "573924501146",
+            appId: "1:573924501146:web:12f34306ed675472322123",
+            measurementId: "G-33K6DDE1VR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMsg = document.getElementById('error-msg');
+        const loginButton = loginForm.querySelector('.login-button');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = emailInput.value;
+            const password = passwordInput.value;
+            
+            loginButton.disabled = true;
+            loginButton.innerText = "Memproses...";
+            errorMsg.style.display = 'none';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    window.location.href = 'dashboard.html';
+                })
+                .catch((error) => {
+                    console.error("Login error:", error.code, error.message);
+                    errorMsg.innerText = "Email atau kata sandi salah. Silakan coba lagi.";
+                    errorMsg.style.display = 'block';
+                    loginButton.disabled = false;
+                    loginButton.innerText = "Masuk";
+                });
+        });
+    </script>
+
+</body>
+</html>
