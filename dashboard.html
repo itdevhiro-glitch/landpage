@@ -23,7 +23,6 @@
             background-color: #f9fafb; /* Latar belakang putih gading */
             color: #1f2937;
             line-height: 1.6;
-            /* [DIHAPUS] display: none; TELAH DIHAPUS DARI SINI */
         }
         .container {
             width: 100%;
@@ -518,6 +517,84 @@
             transform: translateY(0);
         }
 
+        /* ========================================
+        [BARU] Media Queries untuk Mobile
+        ========================================
+        */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            /* --- Navbar --- */
+            .nav-shortcuts {
+                display: none; /* Sembunyikan pintasan di mobile */
+            }
+            #user-greeting {
+                display: none; /* Sembunyikan sapaan, sisakan tombol logout */
+            }
+            .nav-right {
+                gap: 10px;
+            }
+
+            /* --- Hero Section --- */
+            .hero {
+                padding: 40px 0; /* Kurangi padding */
+                text-align: center; /* Pusatkan teks */
+            }
+            .hero-container {
+                flex-direction: column; /* Susun ke bawah */
+                gap: 40px;
+            }
+            .hero-text {
+                max-width: 100%; /* Lebar penuh */
+            }
+            .hero-text h1 {
+                font-size: 2.5rem; /* Kecilkan font H1 */
+            }
+            .hero-text p {
+                font-size: 1rem;
+                max-width: 100%;
+            }
+            .icon-spinner {
+                width: 250px; /* Kecilkan ikon berputar */
+                height: 250px;
+            }
+            .icon-spinner .center-icon {
+                font-size: 6rem;
+            }
+
+            /* --- Portal Aplikasi (Grid 4 kartu) --- */
+            /* Tidak perlu diubah, 'auto-fit' sudah menanganinya */
+
+            /* --- Konten Utama (Alat & Widget) --- */
+            .main-content {
+                padding: 40px 0;
+            }
+            .main-grid {
+                grid-template-columns: 1fr; /* Susun ke bawah */
+                gap: 40px;
+            }
+
+            /* --- Ukuran Teks Lainnya --- */
+            .portal-column h2 {
+                font-size: 1.3rem;
+            }
+            .link-text h3 {
+                font-size: 1rem;
+            }
+            .portal-card h3 {
+                font-size: 1.2rem;
+            }
+
+            /* --- Footer --- */
+            .footer {
+                margin-top: 40px;
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+        
     </style>
 </head>
 <body>
