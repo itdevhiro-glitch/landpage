@@ -467,6 +467,7 @@
                         const userData = snapshot.val();
                         if (userData.status === 'approved') {
                             currentUserData = userData; // Simpan data user
+                            currentUserData.uid = user.uid; // <-- TAMBAHKAN BARIS INI
                             
                             userGreeting.innerHTML = `Halo, <span>${userData.nama || user.email}</span>`;
                             mainContent.style.display = 'block';
@@ -605,4 +606,5 @@
     </script>
 
 </body>
+
 </html>
