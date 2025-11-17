@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* ... [CSS RESET & DASAR TETAP SAMA] ... */
+        /* [CSS TIDAK BERUBAH] */
         * {
             margin: 0;
             padding: 0;
@@ -29,8 +29,6 @@
             margin: 0 auto;
             padding: 0 24px;
         }
-
-        /* ... [LOADING SCREEN & NAVBAR TETAP SAMA] ... */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -162,8 +160,6 @@
             color: #ffffff;
             border-color: #D9232D;
         }
-
-        /* ... [HERO & PORTAL SECTION TETAP SAMA] ... */
         .hero {
             background-color: #ffffff;
             padding: 80px 0;
@@ -299,10 +295,6 @@
         .portal-card:hover .portal-link i {
             margin-left: 10px;
         }
-
-        /* ========================================
-        [PERUBAHAN] TATA LETAK MAIN CONTENT
-        ======================================== */
         .main-content {
             padding: 60px 0;
         }
@@ -311,8 +303,6 @@
             grid-template-columns: 2fr 1fr; /* Kolom kiri lebih lebar */
             gap: 32px;
         }
-
-        /* [BARU] Judul Seksi yang Konsisten */
         .section-title {
             font-size: 1.5rem;
             font-weight: 700;
@@ -321,27 +311,20 @@
             border-left: 4px solid #D9232D;
             padding-left: 12px;
         }
-
-        /* Kolom Kiri: Workspace (Pengumuman & Tugas) */
         .main-column-left {
             display: flex;
             flex-direction: column;
             gap: 32px; /* Jarak antar card di kolom kiri */
         }
-        
-        /* Kolom Kanan: Sidebar (Kalender & Alat) */
         .main-column-right {
             display: flex;
             flex-direction: column;
             gap: 32px; /* Jarak antar card di kolom kanan */
         }
-
-        /* Style untuk list Alat Bantu (dipakai di kolom kanan) */
         .portal-list {
             display: flex;
             flex-direction: column;
             gap: 16px;
-            /* margin-bottom: 40px; Dihapus, diganti 'gap' dari kolom */
         }
         .portal-list a {
             display: flex;
@@ -388,8 +371,6 @@
             color: #9ca3af;
             transition: all 0.3s ease;
         }
-        
-        /* --- Widget Styling --- */
         .widget-card {
             background-color: #ffffff;
             border: 1px solid #e5e7eb;
@@ -407,11 +388,8 @@
         .widget-body {
             padding: 24px;
         }
-        
-        /* [MODIFIKASI] Widget Jam (Sekarang di dalam Kalender) */
         #clock-widget {
             text-align: center;
-            /* [BARU] Style untuk menggabungkan */
             margin-bottom: 24px;
             padding-bottom: 24px;
             border-bottom: 1px solid #e5e7eb;
@@ -425,11 +403,8 @@
             font-size: 1rem;
             color: #6b7280;
         }
-
-        /* Widget Kalender */
         #calendar-widget {
             font-size: 0.9rem;
-            /* Hapus padding atas jika jam digabung */
             padding: 0; 
         }
         .calendar-header {
@@ -509,8 +484,6 @@
             top: 2px;
             right: 4px;
         }
-        
-        /* Widget Pengumuman */
         #announcement-list {
             list-style: none;
             max-height: 300px;
@@ -540,8 +513,6 @@
             color: #6b7280;
             text-align: center;
         }
-
-        /* Widget Tugas (To-Do) */
         .todo-input-group {
             display: flex;
             gap: 10px;
@@ -603,8 +574,6 @@
             color: #6b7280;
             text-align: center;
         }
-
-        /* --- Footer --- */
         .footer {
             text-align: center;
             padding: 40px 24px;
@@ -614,20 +583,6 @@
             color: #6b7280;
             font-size: 0.9rem;
         }
-        /* ... [Footer styling sama] ... */
-
-        /* Animasi Fade-in-up */
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
-        .fade-in-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ... [CSS MODAL KALENDER TETAP SAMA] ... */
         .modal-backdrop {
             position: fixed;
             top: 0;
@@ -762,13 +717,7 @@
         #save-note-btn:hover {
             background-color: #B01B22;
         }
-
-
-        /* ========================================
-        [PERUBAHAN] Media Queries
-        ======================================== */
         @media (max-width: 768px) {
-            /* ... [Navbar, Hero, Portal mobile styling SAMA] ... */
             .nav-shortcuts, #user-greeting { display: none; }
             .hero-container { flex-direction: column; gap: 30px; }
             .hero { padding: 40px 0; text-align: center; }
@@ -776,9 +725,6 @@
             .hero-text h1 { font-size: 2.5rem; }
             .icon-spinner { width: 250px; height: 250px; }
             .portal-grid { grid-template-columns: 1fr; }
-
-
-            /* [MODIFIKASI] Tata letak grid utama di mobile */
             .main-content {
                 padding: 40px 0;
             }
@@ -786,14 +732,10 @@
                 grid-template-columns: 1fr; /* Susun ke bawah */
                 gap: 40px; /* Jarak antar kolom (sekarang jadi baris) */
             }
-
-            /* [BARU] Atur ulang gap internal kolom */
             .main-column-left,
             .main-column-right {
                 gap: 40px; /* Jarak antar widget di dalam kolom */
             }
-
-            /* Rampingkan list "Alat Bantu" */
             .portal-list a {
                 padding: 15px;
             }
@@ -803,8 +745,6 @@
                 font-size: 1.2rem;
                 margin-right: 15px;
             }
-
-            /* Rampingkan Widget Kalender Gabungan */
             .widget-body {
                 padding: 20px;
             }
@@ -828,8 +768,6 @@
                 width: 25px;
                 height: 25px;
             }
-
-            /* --- Ukuran Teks Lainnya --- */
             .section-title {
                 font-size: 1.3rem;
                 margin-bottom: 20px;
@@ -840,10 +778,7 @@
             .portal-card h3 {
                 font-size: 1.2rem;
             }
-
-            /* ... [Footer mobile styling SAMA] ... */
         }
-        
     </style>
 </head>
 <body>
@@ -853,14 +788,13 @@
         <p>Memuat Portal...</p>
     </div>
 
+    <!-- [KONTEN HTML TIDAK BERUBAH] -->
     <div id="main-content" style="display: none;">
-
         <nav class="navbar">
             <div class="nav-container">
                 <a href="#" class="nav-logo">
                     <i class="fa-solid fa-gear"></i> ZEPPELIN
                 </a>
-                
                 <div class="nav-right">
                     <div class="nav-shortcuts">
                         <a href="https://itdevhiro-glitch.github.io/workspace-itsupport/user.html" target="_blank" class="shortcut-icon">
@@ -880,7 +814,6 @@
                             <span class="tooltip">Stok</span>
                         </a>
                     </div>
-
                     <div class="nav-profile">
                         <div id="user-greeting">Halo, <span>Tamu</span></div>
                         <button id="logout-btn" class="logout-button">
@@ -890,7 +823,6 @@
                 </div>
             </div>
         </nav>
-
         <section class="hero">
             <div class="container hero-container">
                 <div class="hero-text fade-in-up">
@@ -943,12 +875,9 @@
                 </div>
             </div>
         </section>
-
         <main class="main-content container">
             <div class="main-grid">
-                
                 <div class="main-column-left">
-                    
                     <div class="fade-in-up" style="transition-delay: 100ms;">
                         <h2 class="section-title">Pengumuman Perusahaan</h2>
                         <div class="widget-card">
@@ -959,7 +888,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="fade-in-up" style="transition-delay: 200ms;">
                         <h2 class="section-title">Tugas Saya (Pribadi)</h2>
                         <div class="widget-card">
@@ -974,21 +902,16 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
-
                 <div class="main-column-right">
-                    
                     <div class="fade-in-up" style="transition-delay: 100ms;">
                         <h2 class="section-title">Kalender & Waktu</h2>
                         <div class="widget-card">
                             <div class="widget-body" id="calendar-widget">
-                                
                                 <div id="clock-widget">
                                     <div class="digital-clock">00:00:00</div>
                                     <div class="digital-date">Memuat tanggal...</div>
                                 </div>
-                                
                                 <div class="calendar-header">
                                     <div class="cal-nav">
                                         <button id="prev-month"><i class="fa-solid fa-chevron-left"></i></button>
@@ -1003,7 +926,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="fade-in-up" style="transition-delay: 200ms;">
                         <h2 class="section-title">Alat Bantu Cepat</h2>
                         <div class="portal-list">
@@ -1033,17 +955,13 @@
                             </a>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </main>
-
         <footer class="footer">
             <p>&copy; 2025 Zeppelin Manufacturing. Seluruh hak cipta dilindungi.</p>
             <p>Portal Internal dikelola oleh <a href="https://itdevhiro-glitch.github.io/itteam/" target="_blank">Tim IT</a>.</p>
         </footer>
-
     </div> <div id="calendar-modal-backdrop" class="modal-backdrop"></div>
     <div id="calendar-modal-content" class="modal-content">
         <div class="modal-header">
@@ -1051,17 +969,14 @@
             <button id="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body">
-            
             <div id="modal-holiday-info">
                 <i class="fa-solid fa-star"></i>
                 <span id="modal-holiday-name">Ini adalah hari libur.</span>
             </div>
-
             <h4>Catatan untuk hari ini:</h4>
             <div id="modal-notes-list">
                 <div class="notes-empty">Tidak ada catatan.</div>
             </div>
-            
             <div class="modal-form">
                 <h4>Tambah Catatan Baru:</h4>
                 <textarea id="note-textarea" placeholder="Tulis catatan Anda di sini..."></textarea>
@@ -1085,7 +1000,8 @@
             push,
             query,
             orderByChild,
-            limitToLast
+            limitToLast,
+            get // [PERUBAHAN] Impor 'get'
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         // Konfigurasi Firebase Anda
@@ -1111,38 +1027,105 @@
         const userGreeting = document.getElementById('user-greeting');
         const logoutBtn = document.getElementById('logout-btn');
 
-        // Variabel global untuk data kalender
+        // Variabel global
         let nationalHolidays = {};
         let calendarNotes = {};
         let currentSelectedDate = null;
         let loggedInUserName = "Tamu";
 
-        // --- AUTH GUARD & DATA LOADER ---
+        // --- [PERUBAHAN] AUTH GUARD & DATA LOADER ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("Pengguna terautentikasi:", user.uid);
-                userGreeting.innerHTML = `Halo, <span>${user.email}</span>`;
-                loggedInUserName = user.email; // Fallback
+                console.log("Pengguna terautentikasi, memvalidasi status:", user.uid);
                 
-                fetchUserName(user.uid);
+                // [PERUBAHAN] Gunakan 'get' untuk cek sekali, bukan 'onValue'
+                // Ini mencegah listener yang tidak perlu jika user ditolak
+                const userRef = ref(db, 'users/' + user.uid);
                 
-                mainContent.style.display = 'block';
-                loadingScreen.style.display = 'none';
+                get(userRef).then((snapshot) => {
+                    
+                    // [PERBAIKAN] Cek apakah user adalah ADMIN (root) SEBELUM cek snapshot
+                    // Ini mengizinkan admin melihat dashboard user
+                    if (user.email === 'root@zeppelin.center') {
+                        console.log("Akses disetujui: ADMIN.");
+                        userGreeting.innerHTML = `Halo, <span>ADMIN (Root)</span>`;
+                        loggedInUserName = "Admin"; 
+                        
+                        mainContent.style.display = 'block';
+                        loadingScreen.style.display = 'none';
 
-                // Inisialisasi semua widget
-                runClock();
-                initCalendar(); 
-                initTodoWidget(); 
-                initAnnouncementWidget(); 
-                
-                // Muat data eksternal untuk kalender
-                fetchHolidays();
-                fetchCalendarNotes();
+                        // Inisialisasi widget untuk admin
+                        runClock();
+                        initCalendar(); 
+                        initTodoWidget(); 
+                        initAnnouncementWidget(); 
+                        
+                        fetchHolidays();
+                        fetchCalendarNotes();
+                        initIntersectionObserver();
+                        return; // Hentikan eksekusi
+                    }
 
-                // Aktifkan Intersection Observer untuk animasi
-                initIntersectionObserver();
+                    // Jika BUKAN ADMIN, lanjutkan pengecekan status
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        
+                        if (userData.status === 'approved') {
+                            // --- DISETUJUI: Lanjutkan memuat dashboard ---
+                            console.log("Akses disetujui.");
+                            const nama = userData.nama || user.email;
+                            userGreeting.innerHTML = `Halo, <span>${nama}</span>`;
+                            loggedInUserName = nama; 
+                            
+                            mainContent.style.display = 'block';
+                            loadingScreen.style.display = 'none';
+
+                            // Inisialisasi semua widget
+                            runClock();
+                            initCalendar(); 
+                            initTodoWidget(); 
+                            initAnnouncementWidget(); 
+                            
+                            fetchHolidays();
+                            fetchCalendarNotes();
+                            initIntersectionObserver();
+
+                        } else if (userData.status === 'pending') {
+                            // --- PENDING: Tolak akses ---
+                            console.log("Akses ditolak: Akun 'pending'.");
+                            signOut(auth).then(() => {
+                                window.location.href = 'login.html?reason=pending'; 
+                            });
+                        } else if (userData.status === 'rejected') {
+                            // --- DITOLAK: Tolak akses ---
+                            console.log("Akses ditolak: Akun 'rejected'.");
+                            signOut(auth).then(() => {
+                                window.location.href = 'login.html?reason=rejected';
+                            });
+                        } else {
+                            // --- STATUS TIDAK VALID ---
+                            console.log("Akses ditolak: Status akun tidak diketahui.");
+                            signOut(auth).then(() => {
+                                window.location.href = 'login.html?reason=invalid';
+                            });
+                        }
+                    } else {
+                        // --- Data user tidak ada di DB DAN BUKAN ADMIN ---
+                        console.log("Akses ditolak: Data user tidak ada di DB.");
+                        signOut(auth).then(() => {
+                            window.location.href = 'login.html?reason=no_data';
+                        });
+                    }
+                }).catch((error) => {
+                    // Gagal baca DB
+                    console.error("Gagal memvalidasi user:", error);
+                    signOut(auth).then(() => {
+                        window.location.href = 'login.html?reason=db_error';
+                    });
+                });
 
             } else {
+                // Tidak ada user yang login, alihkan ke login
                 console.log("Pengguna tidak terautentikasi, mengalihkan...");
                 window.location.href = 'login.html';
             }
@@ -1156,20 +1139,6 @@
                 console.error("Error logout:", error);
             });
         });
-
-        // --- Fungsi Ambil Nama Pengguna ---
-        function fetchUserName(uid) {
-            const userRef = ref(db, 'users/' + uid + '/nama');
-            onValue(userRef, (snapshot) => {
-                const nama = snapshot.val();
-                if (nama) {
-                    userGreeting.innerHTML = `Halo, <span>${nama}</span>`;
-                    loggedInUserName = nama; // Simpan nama untuk dipakai di catatan
-                }
-            }, (error) => {
-                console.error("Gagal mengambil nama pengguna:", error);
-            });
-        }
 
         // --- Widget Jam ---
         function runClock() {
