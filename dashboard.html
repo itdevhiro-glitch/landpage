@@ -160,6 +160,29 @@
             color: #ffffff;
             border-color: #D9232D;
         }
+        
+        /* [BARU] CSS untuk Navigasi Utama (diambil dari permintaanuser.html) */
+        .nav-link {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #4b5563;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex; /* (BARU) Agar ikon rapi */
+            align-items: center; /* (BARU) */
+            gap: 8px; /* (BARU) */
+        }
+        .nav-link:hover {
+            background-color: #f3f4f6;
+        }
+        .nav-link.active {
+            background-color: #fee2e2;
+            color: #D9232D;
+            font-weight: 700;
+        }
+        
         .hero {
             background-color: #ffffff;
             padding: 80px 0;
@@ -718,6 +741,9 @@
             background-color: #B01B22;
         }
         @media (max-width: 768px) {
+            /* (DIUBAH) Sembunyikan nav-link di mobile agar tidak tumpang tindih */
+            .nav-link { display: none; } 
+            
             .nav-shortcuts, #user-greeting { display: none; }
             .hero-container { flex-direction: column; gap: 30px; }
             .hero { padding: 40px 0; text-align: center; }
@@ -788,41 +814,30 @@
         <p>Memuat Portal...</p>
     </div>
 
-    <!-- [KONTEN HTML TIDAK BERUBAH] -->
     <div id="main-content" style="display: none;">
+        
         <nav class="navbar">
             <div class="nav-container">
-                <a href="#" class="nav-logo">
+                <a href="dashboard.html" class="nav-logo">
                     <i class="fa-solid fa-gear"></i> ZEPPELIN
                 </a>
-                <div class="nav-right">
-                    <div class="nav-shortcuts">
-                        <a href="https://itdevhiro-glitch.github.io/workspace-itsupport/user.html" target="_blank" class="shortcut-icon">
-                            <i class="fa-solid fa-headset"></i>
-                            <span class="tooltip">Layanan IT</span>
-                        </a>
-                        <a href="#" class="shortcut-icon">
-                            <i class="fa-solid fa-file-invoice-dollar"></i>
-                            <span class="tooltip">Keuangan</span>
-                        </a>
-                        <a href="#" class="shortcut-icon">
-                            <i class="fa-solid fa-bullhorn"></i>
-                            <span class="tooltip">Pemasaran</span>
-                        </a>
-                        <a href="#" class="shortcut-icon">
-                            <i class="fa-solid fa-boxes-stacked"></i>
-                            <span class="tooltip">Stok</span>
-                        </a>
-                    </div>
-                    <div class="nav-profile">
-                        <div id="user-greeting">Halo, <span>Tamu</span></div>
-                        <button id="logout-btn" class="logout-button">
-                            <i class="fa-solid fa-right-from-bracket"></i> Keluar
-                        </button>
-                    </div>
+                
+                <a href="dashboard.html" class="nav-link active">
+                    <i class="fa-solid fa-home"></i> Dashboard
+                </a>
+                <a href="permintaanuser.html" class="nav-link">
+                    <i class="fa-solid fa-laptop-file"></i> Permintaan Perangkat
+                </a>
+                
+                <div class="nav-profile">
+                    <div id="user-greeting">Halo, <span>Tamu</span></div>
+                    <button id="logout-btn" class="logout-button">
+                        <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                    </button>
                 </div>
             </div>
         </nav>
+        
         <section class="hero">
             <div class="container hero-container">
                 <div class="hero-text fade-in-up">
@@ -864,12 +879,13 @@
                         <p>Kelola aset digital, materi pemasaran, dan konten website.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
-                    <a href="#" class="portal-card fade-in-up" style="transition-delay: 400ms;">
-                        <div class="portal-icon icon-gray">
-                            <i class="fa-solid fa-boxes-stacked"></i>
+                    
+                    <a href="permintaanuser.html" class="portal-card fade-in-up" style="transition-delay: 400ms;">
+                        <div class="portal-icon icon-orange">
+                            <i class="fa-solid fa-laptop-file"></i>
                         </div>
-                        <h3>Manajemen Stok</h3>
-                        <p>Pantau ketersediaan barang, produksi, dan logistik inventaris.</p>
+                        <h3>Permintaan Perangkat</h3>
+                        <p>Ajukan permintaan perangkat IT baru, upgrade, atau aksesori.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
                 </div>
@@ -929,14 +945,16 @@
                     <div class="fade-in-up" style="transition-delay: 200ms;">
                         <h2 class="section-title">Alat Bantu Cepat</h2>
                         <div class="portal-list">
-                            <a href="https://itdevhiro-glitch.github.io/widget/asset.html" target="_blank">
-                                <i class="link-icon icon-orange fa-solid fa-server"></i>
+                            
+                            <a href="permintaanuser.html">
+                                <i class="link-icon icon-orange fa-solid fa-laptop-file"></i>
                                 <div class="link-text">
-                                    <h3>Asset IT</h3>
-                                    <p>Widget untuk melihat dan mengelola data aset.</p>
+                                    <h3>Permintaan Perangkat</h3>
+                                    <p>Formulir untuk permintaan hardware/software baru.</p>
                                 </div>
                                 <i class="link-arrow fa-solid fa-arrow-right"></i>
                             </a>
+                            
                             <a href="https://itdevhiro-glitch.github.io/widget/serah terima.html" target="_blank">
                                 <i class="link-icon icon-orange fa-solid fa-file-signature"></i>
                                 <div class="link-text">
