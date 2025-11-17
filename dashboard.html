@@ -88,7 +88,6 @@
             margin-right: 8px;
             font-size: 1.5rem;
         }
-        /* [DIKEMBALIKAN] Navbar kembali seperti semula */
         .nav-right {
             display: flex;
             align-items: center;
@@ -161,9 +160,6 @@
             color: #ffffff;
             border-color: #D9232D;
         }
-        
-        /* [CSS nav-link DIHAPUS] */
-        
         .hero {
             background-color: #ffffff;
             padding: 80px 0;
@@ -488,30 +484,60 @@
             top: 2px;
             right: 4px;
         }
+
+        /* --- (PERUBAHAN) CSS UNTUK PENGUMUMAN INTERAKTIF --- */
         #announcement-list {
             list-style: none;
-            max-height: 300px;
+            max-height: 400px; /* Diberi ruang lebih */
             overflow-y: auto;
+            padding-right: 10px; /* Ruang untuk scrollbar */
         }
-        #announcement-list li {
+        .announcement-item { /* Menggantikan 'li' */
             padding: 12px 0;
             border-bottom: 1px solid #f3f4f6;
         }
-        #announcement-list li:last-child {
+        .announcement-item:last-child {
             border-bottom: none;
         }
-        #announcement-list p {
-            font-size: 0.95rem;
-            font-weight: 500;
-            margin-bottom: 4px;
+        .announcement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer; /* Bisa diklik */
         }
-        #announcement-list small {
+        .announcement-header p {
+            font-size: 0.95rem;
+            font-weight: 700; /* Judul ditebalkan */
+            margin-bottom: 4px;
+            color: #1f2937;
+        }
+        .announcement-header small {
             font-size: 0.8rem;
             color: #6b7280;
         }
-        #announcement-list small i {
+        .announcement-header small i {
             margin-right: 5px;
         }
+        .expand-icon { /* Icon chevron */
+            color: #9ca3af;
+            transition: transform 0.3s ease;
+            font-size: 0.9rem;
+        }
+        /* Konten yang tersembunyi */
+        .announcement-content {
+            padding-top: 12px;
+            font-size: 0.9rem;
+            color: #374151;
+            line-height: 1.6;
+            border-top: 1px solid #f9fafb;
+            margin-top: 12px;
+            display: none; /* Sembunyi by default */
+        }
+        .announcement-content p {
+            white-space: pre-wrap; /* Menghargai baris baru dari textarea */
+        }
+        /* --- (AKHIR PERUBAHAN) --- */
+
         .announcement-empty {
             font-size: 0.9rem;
             color: #6b7280;
@@ -722,9 +748,7 @@
             background-color: #B01B22;
         }
         @media (max-width: 768px) {
-            /* [DIKEMBALIKAN] Perilaku navbar mobile kembali normal */
             .nav-shortcuts, #user-greeting { display: none; } 
-            
             .hero-container { flex-direction: column; gap: 30px; }
             .hero { padding: 40px 0; text-align: center; }
             .hero-text { max-width: 100%; }
@@ -735,12 +759,12 @@
                 padding: 40px 0;
             }
             .main-grid {
-                grid-template-columns: 1fr; /* Susun ke bawah */
-                gap: 40px; /* Jarak antar kolom (sekarang jadi baris) */
+                grid-template-columns: 1fr;
+                gap: 40px; 
             }
             .main-column-left,
             .main-column-right {
-                gap: 40px; /* Jarak antar widget di dalam kolom */
+                gap: 40px; 
             }
             .portal-list a {
                 padding: 15px;
@@ -755,7 +779,7 @@
                 padding: 20px;
             }
             .digital-clock {
-                font-size: 2.2rem; /* Kecilkan font jam */
+                font-size: 2.2rem; 
             }
             #clock-widget {
                 padding-bottom: 20px;
@@ -844,6 +868,7 @@
                 </div>
             </div>
         </section>
+        
         <section class="portal-section" id="portal-section">
             <div class="container">
                 <div class="portal-grid">
@@ -855,6 +880,7 @@
                         <p>Buat laporan kendala atau ajukan permintaan dukungan teknis baru.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
+                    
                     <a href="#" class="portal-card fade-in-up" style="transition-delay: 200ms;">
                         <div class="portal-icon icon-gray">
                             <i class="fa-solid fa-file-invoice-dollar"></i>
@@ -863,14 +889,17 @@
                         <p>Akses data akuntansi, anggaran, dan laporan finansial perusahaan.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
-                    <a href="#" class="portal-card fade-in-up" style="transition-delay: 300ms;">
+
+                    <!-- --- (PERUBAHAN) KARTU INI SEKARANG HANYA UNTUK HRD --- -->
+                    <a id="manage-content-card" href="content-management.html" class="portal-card fade-in-up" style="transition-delay: 300ms; display: none;"> <!-- (DISIMPAN, TAPI DISEMBUNYIKAN BY DEFAULT) -->
                         <div class="portal-icon icon-gray">
-                            <i class="fa-solid fa-bullhorn"></i>
+                            <i class="fa-solid fa-pen-to-square"></i> <!-- (Icon diubah) -->
                         </div>
-                        <h3>Manajemen Konten</h3>
-                        <p>Kelola aset digital, materi pemasaran, dan konten website.</p>
-                        <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
+                        <h3>Manajemen Pengumuman</h3> <!-- (Judul diubah) -->
+                        <p>Hanya untuk HRD. Update pengumuman perusahaan terbaru.</p> <!-- (Deskripsi diubah) -->
+                        <span class="portal-link">Buka Halaman <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
+                    <!-- --- (AKHIR PERUBAHAN) --- -->
                     
                     <a href="permintaanuser.html" class="portal-card fade-in-up" style="transition-delay: 400ms;">
                         <div class="portal-icon icon-orange">
@@ -883,6 +912,7 @@
                 </div>
             </div>
         </section>
+
         <main class="main-content container">
             <div class="main-grid">
                 <div class="main-column-left">
@@ -890,6 +920,7 @@
                         <h2 class="section-title">Pengumuman Perusahaan</h2>
                         <div class="widget-card">
                             <div class="widget-body">
+                                <!-- (PERUBAHAN) ID list tetap sama, tapi isinya akan di-render berbeda oleh JS -->
                                 <ul id="announcement-list">
                                     <li class="announcement-empty">Memuat pengumuman...</li>
                                 </ul>
@@ -912,6 +943,7 @@
                     </div>
                 </div>
                 <div class="main-column-right">
+                    <!-- Widget Kalender & Alat Bantu Cepat (Tidak Berubah) -->
                     <div class="fade-in-up" style="transition-delay: 100ms;">
                         <h2 class="section-title">Kalender & Waktu</h2>
                         <div class="widget-card">
@@ -938,6 +970,16 @@
                         <h2 class="section-title">Alat Bantu Cepat</h2>
                         <div class="portal-list">
                             
+                            <!-- (BARU) Tombol Cepat Khusus HRD (sembunyi by default) -->
+                            <a id="hr-quick-link" href="content-management.html" style="display: none;">
+                                <i class="link-icon icon-gray fa-solid fa-pen-to-square"></i>
+                                <div class="link-text">
+                                    <h3>Buat Pengumuman</h3>
+                                    <p>Buka halaman manajemen konten (Khusus HRD).</p>
+                                </div>
+                                <i class="link-arrow fa-solid fa-arrow-right"></i>
+                            </a>
+                            
                             <a href="permintaanuser.html">
                                 <i class="link-icon icon-orange fa-solid fa-laptop-file"></i>
                                 <div class="link-text">
@@ -946,7 +988,6 @@
                                 </div>
                                 <i class="link-arrow fa-solid fa-arrow-right"></i>
                             </a>
-                            
                             <a href="https://itdevhiro-glitch.github.io/widget/serah terima.html" target="_blank">
                                 <i class="link-icon icon-orange fa-solid fa-file-signature"></i>
                                 <div class="link-text">
@@ -1048,17 +1089,23 @@
             if (user) {
                 console.log("Pengguna terautentikasi, memvalidasi status:", user.uid);
                 
-                // [PERBAIKAN TYPO]
                 const userRef = ref(db, 'users/' + user.uid);
                 
                 get(userRef).then((snapshot) => {
                     
+                    // (PERUBAHAN) Ambil elemen kartu manajemen DAN tombol cepat
+                    const manageCard = document.getElementById('manage-content-card');
+                    const hrQuickLink = document.getElementById('hr-quick-link');
+
                     // Cek Admin
                     if (user.email === 'root@zeppelin.center') {
                         console.log("Akses disetujui: ADMIN.");
                         userGreeting.innerHTML = `Halo, <span>ADMIN (Root)</span>`;
                         loggedInUserName = "Admin"; 
                         
+                        if(manageCard) manageCard.style.display = 'flex'; // (PERUBAHAN) Tampilkan kartu untuk Admin
+                        if(hrQuickLink) hrQuickLink.style.display = 'flex'; // (PERUBAHAN) Tampilkan tombol cepat untuk Admin
+
                         mainContent.style.display = 'block';
                         loadingScreen.style.display = 'none';
 
@@ -1066,7 +1113,7 @@
                         runClock();
                         initCalendar(); 
                         initTodoWidget(); 
-                        initAnnouncementWidget(); 
+                        initAnnouncementWidget(); // (PERUBAHAN) Jalankan fungsi baru
                         
                         fetchHolidays();
                         fetchCalendarNotes();
@@ -1085,6 +1132,13 @@
                             userGreeting.innerHTML = `Halo, <span>${nama}</span>`;
                             loggedInUserName = nama; 
                             
+                            // --- (PERUBAHAN) Logika untuk menampilkan kartu HRD ---
+                            if (userData.departemen === 'HRD' || userData.departemen === 'Human Resources') {
+                                if(manageCard) manageCard.style.display = 'flex'; // Tampilkan!
+                                if(hrQuickLink) hrQuickLink.style.display = 'flex'; // (PERUBAHAN) Tampilkan tombol cepat untuk HRD
+                            }
+                            // --- (AKHIR PERUBAHAN) ---
+                            
                             mainContent.style.display = 'block';
                             loadingScreen.style.display = 'none';
 
@@ -1092,40 +1146,35 @@
                             runClock();
                             initCalendar(); 
                             initTodoWidget(); 
-                            initAnnouncementWidget(); 
+                            initAnnouncementWidget(); // (PERUBAHAN) Jalankan fungsi baru
                             
                             fetchHolidays();
                             fetchCalendarNotes();
                             initIntersectionObserver();
 
                         } else if (userData.status === 'pending') {
-                            // --- PENDING: Tolak akses ---
                             console.log("Akses ditolak: Akun 'pending'.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=pending'; 
                             });
                         } else if (userData.status === 'rejected') {
-                            // --- DITOLAK: Tolak akses ---
                             console.log("Akses ditolak: Akun 'rejected'.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=rejected';
                             });
                         } else {
-                            // --- STATUS TIDAK VALID ---
                             console.log("Akses ditolak: Status akun tidak diketahui.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=invalid';
                             });
                         }
                     } else {
-                        // --- Data user tidak ada di DB DAN BUKAN ADMIN ---
                         console.log("Akses ditolak: Data user tidak ada di DB.");
                         signOut(auth).then(() => {
                             window.location.href = 'login.html?reason=no_data';
                         });
                     }
                 }).catch((error) => {
-                    // Gagal baca DB
                     console.error("Gagal memvalidasi user:", error);
                     signOut(auth).then(() => {
                         window.location.href = 'login.html?reason=db_error';
@@ -1133,7 +1182,6 @@
                 });
 
             } else {
-                // Tidak ada user yang login, alihkan ke login
                 console.log("Pengguna tidak terautentikasi, mengalihkan...");
                 window.location.href = 'login.html';
             }
@@ -1150,6 +1198,7 @@
 
         // --- Widget Jam ---
         function runClock() {
+            // (Fungsi ini tidak berubah)
             const clockEl = document.querySelector('.digital-clock');
             const dateEl = document.querySelector('.digital-date');
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1166,9 +1215,10 @@
             setInterval(updateTime, 1000);
         }
 
-        // --- FUNGSI PENGUMUMAN (DARI FIREBASE) ---
+        // --- (PERUBAHAN) FUNGSI PENGUMUMAN (DARI FIREBASE) ---
         function initAnnouncementWidget() {
             const listEl = document.getElementById('announcement-list');
+            // Ambil 5 pengumuman terbaru berdasarkan timestamp
             const announcementsRef = query(ref(db, 'announcements'), orderByChild('timestamp'), limitToLast(5));
 
             onValue(announcementsRef, (snapshot) => {
@@ -1179,15 +1229,28 @@
                         announcements.push(childSnapshot.val());
                     });
                     
+                    // Balik urutannya agar yang terbaru di atas
                     announcements.reverse().forEach(ann => {
                         const date = new Date(ann.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
                         const li = document.createElement('li');
+                        li.className = 'announcement-item'; // (BARU) Kasih class
+                        
+                        // (BARU) Render HTML yang lebih kompleks
                         li.innerHTML = `
-                            <p>${ann.title}</p>
-                            <small>
-                                <i class="fa-solid fa-calendar-day"></i> ${date}
-                                ${ann.author ? `| <i class="fa-solid fa-user"></i> ${ann.author}` : ''}
-                            </small>
+                            <div class="announcement-header">
+                                <div>
+                                    <p>${ann.title}</p>
+                                    <small>
+                                        <i class="fa-solid fa-calendar-day"></i> ${date}
+                                        ${ann.author ? `| <i class="fa-solid fa-user"></i> ${ann.author}` : ''}
+                                    </small>
+                                </div>
+                                <i class="fa-solid fa-chevron-down expand-icon"></i>
+                            </div>
+                            <div class="announcement-content">
+                                <!-- Ganti newline (\n) dengan tag <br> agar format terjaga -->
+                                <p>${ann.content ? ann.content.replace(/\n/g, '<br>') : '<em>Tidak ada isi.</em>'}</p>
+                            </div>
                         `;
                         listEl.appendChild(li);
                     });
@@ -1198,26 +1261,42 @@
                 console.error("Gagal memuat pengumuman:", error);
                 listEl.innerHTML = '<li class="announcement-empty">Gagal memuat data.</li>';
             });
+
+            // (BARU) Tambahkan event listener untuk expand/collapse
+            listEl.addEventListener('click', (e) => {
+                const header = e.target.closest('.announcement-header');
+                if (header) {
+                    const content = header.nextElementSibling; // Ambil .announcement-content
+                    const icon = header.querySelector('.expand-icon'); // Ambil icon chevron
+                    
+                    if (content) {
+                        const isVisible = content.style.display === 'block';
+                        content.style.display = isVisible ? 'none' : 'block';
+                        // Putar icon
+                        icon.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
+                    }
+                }
+            });
         }
+        // --- (AKHIR PERUBAHAN) ---
+
 
         // --- FUNGSI TUGAS SAYA (LOCALSTORAGE) ---
         function initTodoWidget() {
+            // (Fungsi ini tidak berubah)
             const inputEl = document.getElementById('todo-input');
             const addBtn = document.getElementById('add-todo-btn');
             const listEl = document.getElementById('todo-list');
             let todos = JSON.parse(localStorage.getItem('zeppelinTodos') || '[]');
-
             function saveTodos() {
                 localStorage.setItem('zeppelinTodos', JSON.stringify(todos));
             }
-
             function renderTodos() {
                 listEl.innerHTML = '';
                 if (todos.length === 0) {
                     listEl.innerHTML = '<li class="todo-empty">Tidak ada tugas.</li>';
                     return;
                 }
-                
                 todos.forEach((todo, index) => {
                     const li = document.createElement('li');
                     li.className = todo.completed ? 'completed' : '';
@@ -1229,7 +1308,6 @@
                     listEl.appendChild(li);
                 });
             }
-
             addBtn.addEventListener('click', () => {
                 const text = inputEl.value.trim();
                 if (text) {
@@ -1239,13 +1317,11 @@
                     renderTodos();
                 }
             });
-
             inputEl.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     addBtn.click();
                 }
             });
-
             listEl.addEventListener('click', (e) => {
                 const target = e.target;
                 if (target.type === 'checkbox') {
@@ -1253,7 +1329,6 @@
                     todos[index].completed = target.checked;
                     saveTodos();
                     renderTodos();
-
                 }
                 if (target.closest('.delete-todo')) {
                     const index = target.closest('.delete-todo').dataset.index;
@@ -1262,17 +1337,16 @@
                     renderTodos();
                 }
             });
-
             renderTodos();
         }
 
         // --- FUNGSI DATA EKSTERNAL KALENDER ---
         async function fetchHolidays() {
+            // (Fungsi ini tidak berubah)
             const year = new Date().getFullYear();
             try {
                 const response = await fetch(`https://api-harilibur.vercel.app/api?year=${year}`);
                 const data = await response.json();
-                
                 data.forEach(holiday => {
                     if(holiday.is_national_holiday) {
                         const dateStr = holiday.holiday_date.split('T')[0];
@@ -1285,8 +1359,8 @@
                 console.error("Gagal mengambil data hari libur:", error);
             }
         }
-
         function fetchCalendarNotes() {
+            // (Fungsi ini tidak berubah)
             const notesRef = ref(db, 'calendar_notes');
             onValue(notesRef, (snapshot) => {
                 calendarNotes = snapshot.val() || {};
@@ -1297,12 +1371,11 @@
 
         // --- FUNGSI KALENDER UTAMA ---
         let currentDate = new Date();
-
         function initCalendar() {
+            // (Fungsi ini tidak berubah)
             const daysEl = document.getElementById('calendar-days');
             const prevBtn = document.getElementById('prev-month');
             const nextBtn = document.getElementById('next-month');
-
             prevBtn.addEventListener('click', () => {
                 currentDate.setMonth(currentDate.getMonth() - 1);
                 renderCalendar();
@@ -1311,7 +1384,6 @@
                 currentDate.setMonth(currentDate.getMonth() + 1);
                 renderCalendar();
             });
-
             daysEl.addEventListener('click', (e) => {
                 const dayCell = e.target.closest('.day-cell');
                 if (dayCell && !dayCell.classList.contains('empty')) {
@@ -1319,38 +1391,30 @@
                     openCalendarModal(dateStr);
                 }
             });
-
             initCalendarModal();
             renderCalendar();
         }
-
         function renderCalendar() {
+            // (Fungsi ini tidak berubah)
             const monthYearEl = document.getElementById('month-year');
             const daysEl = document.getElementById('calendar-days');
             const today = new Date();
             const month = currentDate.getMonth();
             const year = currentDate.getFullYear();
-            
             monthYearEl.textContent = new Date(year, month).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
-            
             daysEl.innerHTML = ''; 
-            
             const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
             dayNames.forEach(day => {
                 daysEl.innerHTML += `<div class="day-name">${day}</div>`;
             });
-            
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
             for (let i = 0; i < firstDay; i++) {
                 daysEl.innerHTML += `<div class="day-cell empty"></div>`;
             }
-            
             for (let i = 1; i <= daysInMonth; i++) {
                 let cellClass = "day-cell";
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-
                 if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
                     cellClass += " today";
                 }
@@ -1360,26 +1424,23 @@
                 if (calendarNotes[dateStr]) {
                     cellClass += " has-note";
                 }
-                
                 daysEl.innerHTML += `<div class="${cellClass}" data-date="${dateStr}">${i}</div>`;
             }
         }
 
         // --- FUNGSI MODAL KALENDER ---
         function initCalendarModal() {
+            // (Fungsi ini tidak berubah)
             const backdrop = document.getElementById('calendar-modal-backdrop');
             const content = document.getElementById('calendar-modal-content');
             const closeBtn = document.getElementById('modal-close-btn');
             const saveBtn = document.getElementById('save-note-btn');
-            
             function closeModal() {
                 backdrop.classList.remove('visible');
                 content.classList.remove('visible');
             }
-
             closeBtn.addEventListener('click', closeModal);
             backdrop.addEventListener('click', closeModal);
-
             saveBtn.addEventListener('click', () => {
                 const noteText = document.getElementById('note-textarea').value.trim();
                 if (noteText && currentSelectedDate) {
@@ -1387,8 +1448,8 @@
                 }
             });
         }
-
         function openCalendarModal(dateStr) {
+            // (Fungsi ini tidak berubah)
             currentSelectedDate = dateStr;
             const backdrop = document.getElementById('calendar-modal-backdrop');
             const content = document.getElementById('calendar-modal-content');
@@ -1397,28 +1458,22 @@
             const holidayNameEl = document.getElementById('modal-holiday-name');
             const notesListEl = document.getElementById('modal-notes-list');
             const noteTextarea = document.getElementById('note-textarea');
-
             const dateObj = new Date(dateStr + 'T00:00:00');
             titleEl.textContent = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-
             noteTextarea.value = '';
-
             if (nationalHolidays[dateStr]) {
                 holidayNameEl.textContent = nationalHolidays[dateStr];
                 holidayEl.style.display = 'block';
             } else {
                 holidayEl.style.display = 'none';
             }
-
             notesListEl.innerHTML = '';
             const notes = calendarNotes[dateStr];
             if (notes) {
-                Object.values(notes).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).forEach(note => { // [Sortir]
+                Object.values(notes).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)).forEach(note => {
                     const noteItem = document.createElement('div');
                     noteItem.className = 'note-item';
-                    
                     const time = new Date(note.timestamp).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
-                    
                     noteItem.innerHTML = `
                         <p>${note.note.replace(/\n/g, '<br>')}</p>
                         <div class="note-item-meta">
@@ -1430,26 +1485,22 @@
             } else {
                 notesListEl.innerHTML = '<div class="notes-empty">Tidak ada catatan untuk hari ini.</div>';
             }
-
             backdrop.classList.add('visible');
             content.classList.add('visible');
         }
-
         function saveNoteToFirebase(dateStr, noteText) {
+            // (Fungsi ini tidak berubah)
             const saveBtn = document.getElementById('save-note-btn');
             const noteTextarea = document.getElementById('note-textarea');
             saveBtn.disabled = true;
             saveBtn.textContent = "Menyimpan...";
-
             const note = {
                 user: loggedInUserName,
                 timestamp: new Date().toISOString(),
                 note: noteText
             };
-
             const notesListRef = ref(db, 'calendar_notes/' + dateStr);
             const newNoteRef = push(notesListRef);
-
             set(newNoteRef, note)
                 .then(() => {
                     console.log("Catatan berhasil disimpan");
@@ -1457,7 +1508,8 @@
                 })
                 .catch((error) => {
                     console.error("Gagal menyimpan catatan:", error);
-                    alert("Gagal menyimpan catatan. Silakan coba lagi.");
+                    // (PERBAIKAN) Mengganti alert() dengan console.error atau pesan di modal
+                    console.error("Gagal menyimpan catatan. Silakan coba lagi.");
                 })
                 .finally(() => {
                     saveBtn.disabled = false;
@@ -1465,11 +1517,10 @@
                 });
         }
 
-
         // --- Animasi Scroll (Intersection Observer) ---
         function initIntersectionObserver() {
+            // (Fungsi ini tidak berubah)
             const animatedElements = document.querySelectorAll('.fade-in-up');
-            
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1480,7 +1531,6 @@
             }, {
                 threshold: 0.1 
             });
-            
             animatedElements.forEach(el => {
                 observer.observe(el);
             });
