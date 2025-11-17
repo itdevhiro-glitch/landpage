@@ -273,6 +273,10 @@
         .icon-red { background-color: #fee2e2; color: #D9232D; }
         .icon-orange { background-color: #fff7ed; color: #F37321; }
         .icon-gray { background-color: #f3f4f6; color: #4b5563; }
+        
+        /* (BARU) Menambahkan warna ikon biru untuk menu admin/HRD */
+        .icon-blue { background-color: #e0e7ff; color: #4338ca; }
+
         .portal-card h3 {
             font-size: 1.3rem;
             font-weight: 700;
@@ -613,6 +617,32 @@
             color: #6b7280;
             font-size: 0.9rem;
         }
+
+        /* (BARU) CSS untuk Notifikasi "Toast" */
+        .toast-notification {
+            position: fixed;
+            bottom: -100px; /* Mulai dari tersembunyi */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #D93025; /* Warna merah error */
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 500;
+            transition: bottom 0.5s ease-in-out;
+        }
+        .toast-notification.show {
+            bottom: 30px; /* Posisi saat muncul */
+        }
+        .toast-notification i {
+            font-size: 1.5rem;
+        }
+
         .modal-backdrop {
             position: fixed;
             top: 0;
@@ -891,9 +921,9 @@
                     </a>
 
                     <!-- --- (PERUBAHAN) KARTU INI SEKARANG HANYA UNTUK HRD --- -->
-                    <a id="manage-content-card" href="content-management.html" class="portal-card fade-in-up" style="transition-delay: 300ms; display: none;"> <!-- (DISIMPAN, TAPI DISEMBUNYIKAN BY DEFAULT) -->
-                        <div class="portal-icon icon-gray">
-                            <i class="fa-solid fa-pen-to-square"></i> <!-- (Icon diubah) -->
+                    <a id="manage-content-card" href="content-management.html" class="portal-card fade-in-up" style="transition-delay: 300ms;"> <!-- (STYLE DISPLAY:NONE DIHAPUS) -->
+                        <div class="portal-icon icon-blue"> <!-- (WARNA DIUBAH) -->
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </div>
                         <h3>Manajemen Pengumuman</h3> <!-- (Judul diubah) -->
                         <p>Hanya untuk HRD. Update pengumuman perusahaan terbaru.</p> <!-- (Deskripsi diubah) -->
@@ -971,8 +1001,8 @@
                         <div class="portal-list">
                             
                             <!-- (BARU) Tombol Cepat Khusus HRD (sembunyi by default) -->
-                            <a id="hr-quick-link" href="content-management.html" style="display: none;">
-                                <i class="link-icon icon-gray fa-solid fa-pen-to-square"></i>
+                            <a id="hr-quick-link" href="content-management.html"> <!-- (STYLE DISPLAY:NONE DIHAPUS) -->
+                                <i class="link-icon icon-blue fa-solid fa-pen-to-square"></i> <!-- (WARNA DIUBAH) -->
                                 <div class="link-text">
                                     <h3>Buat Pengumuman</h3>
                                     <p>Buka halaman manajemen konten (Khusus HRD).</p>
@@ -1036,6 +1066,12 @@
         </div>
     </div>
 
+    <!-- (BARU) HTML UNTUK NOTIFIKASI TOAST -->
+    <div id="toast-notification" class="toast-notification">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <p>Akses Ditolak. Menu ini khusus untuk Departemen HRD.</p>
+    </div>
+
 
     <script type="module">
         // Import functions
@@ -1084,6 +1120,19 @@
         let currentSelectedDate = null;
         let loggedInUserName = "Tamu";
 
+        // (BARU) Fungsi untuk menampilkan Notifikasi Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            if (toast) {
+                toast.querySelector('p').textContent = message;
+                toast.classList.add('show');
+                // Sembunyikan setelah 3 detik
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
         // --- AUTH GUARD & DATA LOADER ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -1093,7 +1142,7 @@
                 
                 get(userRef).then((snapshot) => {
                     
-                    // (PERUBAHAN) Ambil elemen kartu manajemen DAN tombol cepat
+                    let isHRD = false; // (BARU) Flag untuk status HRD
                     const manageCard = document.getElementById('manage-content-card');
                     const hrQuickLink = document.getElementById('hr-quick-link');
 
@@ -1102,9 +1151,11 @@
                         console.log("Akses disetujui: ADMIN.");
                         userGreeting.innerHTML = `Halo, <span>ADMIN (Root)</span>`;
                         loggedInUserName = "Admin"; 
+                        isHRD = true; // (BARU) Admin dianggap HRD
                         
-                        if(manageCard) manageCard.style.display = 'flex'; // (PERUBAHAN) Tampilkan kartu untuk Admin
-                        if(hrQuickLink) hrQuickLink.style.display = 'flex'; // (PERUBAHAN) Tampilkan tombol cepat untuk Admin
+                        // (DIHAPUS) Tidak perlu menampilkan/menyembunyikan kartu di sini lagi
+                        // if(manageCard) manageCard.style.display = 'flex'; 
+                        // if(hrQuickLink) hrQuickLink.style.display = 'flex'; 
 
                         mainContent.style.display = 'block';
                         loadingScreen.style.display = 'none';
@@ -1134,8 +1185,7 @@
                             
                             // --- (PERUBAHAN) Logika untuk menampilkan kartu HRD ---
                             if (userData.departemen === 'HRD' || userData.departemen === 'Human Resources') {
-                                if(manageCard) manageCard.style.display = 'flex'; // Tampilkan!
-                                if(hrQuickLink) hrQuickLink.style.display = 'flex'; // (PERUBAHAN) Tampilkan tombol cepat untuk HRD
+                                isHRD = true; // (BARU) User ini adalah HRD
                             }
                             // --- (AKHIR PERUBAHAN) ---
                             
@@ -1155,26 +1205,52 @@
                         } else if (userData.status === 'pending') {
                             console.log("Akses ditolak: Akun 'pending'.");
                             signOut(auth).then(() => {
-                                window.location.href = 'login.html?reason=pending'; 
-                            });
-                        } else if (userData.status === 'rejected') {
+                            // (PERBAIKAN) Alasan redirect salah, seharusnya 'pending'
+                            window.location.href = 'login.html?reason=pending'; 
+                        });
+                        
+                        } else if (userData.status === 'rejected') { 
+                            // (BARU) Blok ini hilang dan menyebabkan bug 'stuck loading'
                             console.log("Akses ditolak: Akun 'rejected'.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=rejected';
                             });
-                        } else {
+                        
+                        } else { 
+                            // (BARU) Blok ini juga hilang
                             console.log("Akses ditolak: Status akun tidak diketahui.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=invalid';
                             });
                         }
+                        
                     } else {
+                        // --- (PERBAIKAN) BLOK INI KOSONG, MENYEBABKAN BUG ---
+                        // --- Data user tidak ada di DB DAN BUKAN ADMIN ---
                         console.log("Akses ditolak: Data user tidak ada di DB.");
                         signOut(auth).then(() => {
                             window.location.href = 'login.html?reason=no_data';
                         });
                     }
+
+                    // (BARU) Terapkan event listener jika BUKAN HRD
+                    // Logika ini hilang di file Anda dan perlu ditambahkan kembali
+                    if (!isHRD) {
+                        const accessDeniedHandler = (e) => {
+                            e.preventDefault(); // Hentikan navigasi
+                            showToast("Akses Ditolak. Menu ini khusus untuk Departemen HRD.");
+                        };
+                        
+                        if (manageCard) {
+                            manageCard.addEventListener('click', accessDeniedHandler);
+                        }
+                        if (hrQuickLink) {
+                            hrQuickLink.addEventListener('click', accessDeniedHandler);
+                        }
+                    }
+
                 }).catch((error) => {
+                    // (BARU) Menambahkan .catch() yang hilang untuk menangani error DB
                     console.error("Gagal memvalidasi user:", error);
                     signOut(auth).then(() => {
                         window.location.href = 'login.html?reason=db_error';
@@ -1182,18 +1258,11 @@
                 });
 
             } else {
+                // (PERBAIKAN) BLOK INI KOSONG, INILAH PENYEBAB UTAMA ANDA STUCK
+                // Tidak ada user yang login, alihkan ke login
                 console.log("Pengguna tidak terautentikasi, mengalihkan...");
                 window.location.href = 'login.html';
             }
-        });
-
-        // --- Fungsi Logout ---
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'login.html';
-            }).catch((error) => {
-                console.error("Error logout:", error);
-            });
         });
 
         // --- Widget Jam ---
@@ -1508,8 +1577,8 @@
                 })
                 .catch((error) => {
                     console.error("Gagal menyimpan catatan:", error);
-                    // (PERBAIKAN) Mengganti alert() dengan console.error atau pesan di modal
-                    console.error("Gagal menyimpan catatan. Silakan coba lagi.");
+                    // (PERBAIKAN) Mengganti alert() dengan fungsi toast baru
+                    showToast("Gagal menyimpan catatan. Silakan coba lagi.");
                 })
                 .finally(() => {
                     saveBtn.disabled = false;
