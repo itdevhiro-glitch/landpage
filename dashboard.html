@@ -88,6 +88,7 @@
             margin-right: 8px;
             font-size: 1.5rem;
         }
+        /* [DIKEMBALIKAN] Navbar kembali seperti semula */
         .nav-right {
             display: flex;
             align-items: center;
@@ -161,27 +162,7 @@
             border-color: #D9232D;
         }
         
-        /* [BARU] CSS untuk Navigasi Utama (diambil dari permintaanuser.html) */
-        .nav-link {
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: #4b5563;
-            text-decoration: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            display: flex; /* (BARU) Agar ikon rapi */
-            align-items: center; /* (BARU) */
-            gap: 8px; /* (BARU) */
-        }
-        .nav-link:hover {
-            background-color: #f3f4f6;
-        }
-        .nav-link.active {
-            background-color: #fee2e2;
-            color: #D9232D;
-            font-weight: 700;
-        }
+        /* [CSS nav-link DIHAPUS] */
         
         .hero {
             background-color: #ffffff;
@@ -741,10 +722,9 @@
             background-color: #B01B22;
         }
         @media (max-width: 768px) {
-            /* (DIUBAH) Sembunyikan nav-link di mobile agar tidak tumpang tindih */
-            .nav-link { display: none; } 
+            /* [DIKEMBALIKAN] Perilaku navbar mobile kembali normal */
+            .nav-shortcuts, #user-greeting { display: none; } 
             
-            .nav-shortcuts, #user-greeting { display: none; }
             .hero-container { flex-direction: column; gap: 30px; }
             .hero { padding: 40px 0; text-align: center; }
             .hero-text { max-width: 100%; }
@@ -821,19 +801,31 @@
                 <a href="dashboard.html" class="nav-logo">
                     <i class="fa-solid fa-gear"></i> ZEPPELIN
                 </a>
-                
-                <a href="dashboard.html" class="nav-link active">
-                    <i class="fa-solid fa-home"></i> Dashboard
-                </a>
-                <a href="permintaanuser.html" class="nav-link">
-                    <i class="fa-solid fa-laptop-file"></i> Permintaan Perangkat
-                </a>
-                
-                <div class="nav-profile">
-                    <div id="user-greeting">Halo, <span>Tamu</span></div>
-                    <button id="logout-btn" class="logout-button">
-                        <i class="fa-solid fa-right-from-bracket"></i> Keluar
-                    </button>
+                <div class="nav-right">
+                    <div class="nav-shortcuts">
+                        <a href="https://itdevhiro-glitch.github.io/workspace-itsupport/user.html" target="_blank" class="shortcut-icon">
+                            <i class="fa-solid fa-headset"></i>
+                            <span class="tooltip">Layanan IT</span>
+                        </a>
+                        <a href="#" class="shortcut-icon">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <span class="tooltip">Keuangan</span>
+                        </a>
+                        <a href="#" class="shortcut-icon">
+                            <i class="fa-solid fa-bullhorn"></i>
+                            <span class="tooltip">Pemasaran</span>
+                        </a>
+                        <a href="#" class="shortcut-icon">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                            <span class="tooltip">Stok</span>
+                        </a>
+                    </div>
+                    <div class="nav-profile">
+                        <div id="user-greeting">Halo, <span>Tamu</span></div>
+                        <button id="logout-btn" class="logout-button">
+                            <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                        </button>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -1019,7 +1011,7 @@
             query,
             orderByChild,
             limitToLast,
-            get // [PERUBAHAN] Impor 'get'
+            get 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         // Konfigurasi Firebase Anda
@@ -1051,19 +1043,17 @@
         let currentSelectedDate = null;
         let loggedInUserName = "Tamu";
 
-        // --- [PERUBAHAN] AUTH GUARD & DATA LOADER ---
+        // --- AUTH GUARD & DATA LOADER ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Pengguna terautentikasi, memvalidasi status:", user.uid);
                 
-                // [PERUBAHAN] Gunakan 'get' untuk cek sekali, bukan 'onValue'
-                // Ini mencegah listener yang tidak perlu jika user ditolak
+                // [PERBAIKAN TYPO]
                 const userRef = ref(db, 'users/' + user.uid);
                 
                 get(userRef).then((snapshot) => {
                     
-                    // [PERBAIKAN] Cek apakah user adalah ADMIN (root) SEBELUM cek snapshot
-                    // Ini mengizinkan admin melihat dashboard user
+                    // Cek Admin
                     if (user.email === 'root@zeppelin.center') {
                         console.log("Akses disetujui: ADMIN.");
                         userGreeting.innerHTML = `Halo, <span>ADMIN (Root)</span>`;
@@ -1263,6 +1253,7 @@
                     todos[index].completed = target.checked;
                     saveTodos();
                     renderTodos();
+
                 }
                 if (target.closest('.delete-todo')) {
                     const index = target.closest('.delete-todo').dataset.index;
