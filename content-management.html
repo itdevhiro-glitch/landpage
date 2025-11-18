@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Pengumuman - Zeppelin Portal</title>
+    <title>Manajemen Konten - Zeppelin Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
     <style>
-        /* Menggunakan style dasar yang mirip dengan dashboard */
+        /* CSS Reset dan Konfigurasi Dasar */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        :root {
+            --zeppelin-red: #D9232D;
+            --zeppelin-orange: #F37321;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --bg-light: #f9fafb;
+            --border-color: #e5e7eb;
+        }
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #f9fafb;
-            color: #1f2937;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
             line-height: 1.6;
         }
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px; /* Dibuat lebih lebar untuk daftar */
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* Loading & Konten Utama (Untuk Guard) */
+        /* Loading Screen (Tidak Berubah) */
         .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            background: linear-gradient(135deg, #D9232D 0%, #F37321 100%);
+            background: linear-gradient(135deg, var(--zeppelin-red) 0%, var(--zeppelin-orange) 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -54,16 +64,15 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
         #main-content {
-            display: none; /* Sembunyi sampai user terverifikasi */
+            display: none;
         }
 
-        /* Navbar (Sama seperti dashboard) */
+        /* Navbar (Tidak Berubah) */
         .navbar {
             background-color: #ffffff;
             padding: 16px 24px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1px solid var(--border-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             position: sticky;
             top: 0;
@@ -79,10 +88,10 @@
         .nav-logo {
             font-size: 1.8rem;
             font-weight: 900;
-            color: #D9232D;
+            color: var(--zeppelin-red);
             text-decoration: none;
         }
-        .nav-logo i { color: #F37321; }
+        .nav-logo i { color: var(--zeppelin-orange); }
         .nav-right {
             display: flex;
             align-items: center;
@@ -90,8 +99,8 @@
         }
         .logout-button {
             background: none;
-            border: 1px solid #e5e7eb;
-            color: #D9232D;
+            border: 1px solid var(--border-color);
+            color: var(--zeppelin-red);
             padding: 8px 12px;
             border-radius: 8px;
             cursor: pointer;
@@ -100,30 +109,47 @@
             transition: all 0.3s ease;
         }
         .logout-button:hover {
-            background-color: #D9232D;
+            background-color: var(--zeppelin-red);
             color: #ffffff;
         }
 
-        /* Konten Halaman */
+        /* (BARU) Tata Letak Halaman Utama */
         .main-page {
-            padding: 60px 0;
+            padding: 40px 0;
         }
         .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 24px;
         }
-        .section-title {
+        .page-title {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #1f2937;
-            border-left: 4px solid #D9232D;
-            padding-left: 12px;
-            margin-bottom: 8px;
+            color: var(--text-dark);
         }
-        
+        .create-new-btn {
+            background-color: var(--zeppelin-red);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .create-new-btn:hover {
+            background-color: #B01B22;
+            transform: translateY(-2px);
+        }
+        .create-new-btn i {
+            margin-right: 8px;
+        }
         .back-to-dashboard {
             display: inline-block;
             font-size: 0.95rem;
-            color: #D9232D;
+            color: var(--zeppelin-red);
             text-decoration: none;
             font-weight: 500;
             margin-bottom: 24px;
@@ -136,131 +162,83 @@
             margin-right: 5px;
         }
 
-        .widget-card {
+        /* (BARU) Widget Konten Utama (Daftar) */
+        .content-widget {
             background-color: #ffffff;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             overflow: hidden;
-            margin-bottom: 32px;
         }
-        .widget-body {
-            padding: 24px 32px;
-        }
-        .widget-header {
-            padding: 20px 32px;
-            background-color: #f9fafb;
-            border-bottom: 1px solid #e5e7eb;
+        .content-widget-header {
+            padding: 16px 24px;
+            background-color: var(--bg-light);
+            border-bottom: 1px solid var(--border-color);
             font-size: 1.1rem;
             font-weight: 700;
         }
-
-        /* Form Styling */
-        .form-group {
-            margin-bottom: 20px;
+        .content-widget-body {
+            padding: 8px; /* Padding minimal untuk list */
         }
-        .form-group label {
-            display: block;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: #374151;
-        }
-        .form-input,
-        .form-textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: 'Roboto', sans-serif;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .form-input:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: #D9232D;
-            box-shadow: 0 0 0 3px rgba(217, 35, 45, 0.1);
-        }
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-        .form-button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            background-color: #D9232D;
-            color: white;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .form-button:hover {
-            background-color: #B01B22;
-            transform: translateY(-2px);
-        }
-        .form-button:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Kotak Pesan */
-        .message-box {
-            font-size: 0.95rem;
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
-            display: none; /* Sembunyi by default */
-        }
-        .error {
-            background-color: #fee2e2;
-            color: #D93025;
-            border: 1px solid #D93025;
-        }
-        .success {
-            background-color: #dcfce7;
-            color: #16a34a;
-            border: 1px solid #16a34a;
-        }
-
-        /* Daftar Pengumuman */
         #announcement-list {
-            margin-top: 20px;
-        }
-        .announcement-item {
-            background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            padding: 20px;
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            flex-direction: column;
         }
-        .announcement-item-content {
+        .no-announcements {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-gray);
+            font-style: italic;
+        }
+
+        /* (BARU) Tampilan Item Daftar (List Item) */
+        .announcement-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s;
+        }
+        .announcement-item:last-child {
+            border-bottom: none;
+        }
+        .announcement-item:hover {
+            background-color: #fcfcfd;
+        }
+        .ann-item-main {
             flex-grow: 1;
             margin-right: 16px;
         }
-        .announcement-item-content h3 {
-            font-size: 1.2rem;
+        .ann-item-title {
+            font-size: 1.1rem;
             font-weight: 700;
-            color: #1f2937;
+            color: var(--text-dark);
             margin-bottom: 4px;
         }
-        .announcement-item-content .meta {
+        .ann-item-meta {
             font-size: 0.85rem;
-            color: #6b7280;
-            margin-bottom: 12px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
         }
-        .announcement-item-content p {
-            font-size: 0.95rem;
-            color: #374151;
-            white-space: pre-wrap; /* Agar format baris baru terlihat */
+        .ann-item-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        .announcement-item-actions {
+        .tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 99px;
+            text-transform: uppercase;
+        }
+        .tag-pin { background-color: #fef08a; color: #a16207; }
+        .tag-expiry { background-color: #fee2e2; color: #b91c1c; }
+        .tag-cat { background-color: #e0e7ff; color: #4338ca; }
+        .tag-cat-penting { background-color: #fecaca; color: #dc2626; }
+        .tag-cat-event { background-color: #dbeafe; color: #1d4ed8; }
+        .tag-cat-peraturan { background-color: #fed7aa; color: #c2410c; }
+        
+        .ann-item-actions {
             display: flex;
             gap: 10px;
             flex-shrink: 0;
@@ -274,40 +252,12 @@
             transition: all 0.3s;
             font-size: 0.85rem;
         }
-        .edit-btn {
-            color: #3b82f6;
-        }
-        .edit-btn:hover {
-            background-color: #eff6ff;
-            border-color: #3b82f6;
-        }
-        .delete-btn {
-            color: #D9232D;
-        }
-        .delete-btn:hover {
-            background-color: #fee2e2;
-            border-color: #D9232D;
-        }
-        .no-announcements {
-            text-align: center;
-            padding: 40px;
-            color: #6b7280;
-            font-style: italic;
-        }
-        
-        /* (BARU) Info masa berlaku di daftar */
-        .announcement-item-content .meta.expiry {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #D9232D;
-            background-color: #fee2e2;
-            padding: 3px 8px;
-            border-radius: 6px;
-            display: inline-block;
-            margin-top: 8px;
-        }
+        .edit-btn { color: #3b82f6; }
+        .edit-btn:hover { background-color: #eff6ff; border-color: #3b82f6; }
+        .delete-btn { color: var(--zeppelin-red); }
+        .delete-btn:hover { background-color: #fee2e2; border-color: var(--zeppelin-red); }
 
-        /* Modal Styling */
+        /* (BARU) Modal Styling (Umum) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -320,30 +270,46 @@
             align-items: center;
             z-index: 2000;
             padding: 20px;
+            overflow-y: auto; /* Izinkan scroll jika modal panjang */
         }
         .modal-content {
             background-color: #ffffff;
             border-radius: 12px;
             width: 100%;
-            max-width: 600px;
-            padding: 32px;
+            max-width: 800px; /* Lebih lebar untuk editor */
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             animation: modalFadeIn 0.3s ease-out;
+            margin: auto 0; /* Center vertikal */
         }
         @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .modal-header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .modal-title {
             font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 20px;
+        }
+        .modal-body {
+            padding: 24px 32px;
+        }
+        .modal-footer {
+            padding: 20px 32px;
+            background-color: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
         }
         .modal-buttons {
             display: flex;
             justify-content: flex-end;
             gap: 12px;
-            margin-top: 24px;
         }
         .modal-button {
             padding: 10px 16px;
@@ -355,27 +321,115 @@
             transition: all 0.3s;
         }
         .modal-button-primary {
-            background-color: #D9232D;
+            background-color: var(--zeppelin-red);
             color: white;
         }
         .modal-button-primary:hover {
             background-color: #B01B22;
         }
+        .modal-button-primary:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
         .modal-button-secondary {
-            background-color: #e5e7eb;
-            color: #374151;
+            background-color: var(--border-color);
+            color: var(--text-dark);
         }
         .modal-button-secondary:hover {
             background-color: #d1d5db;
         }
+
+        /* (BARU) Styling Form di dalam Modal */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: #fff; /* Pastikan background putih */
+        }
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--zeppelin-red);
+            box-shadow: 0 0 0 3px rgba(217, 35, 45, 0.1);
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+        .form-check {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background-color: #fef08a;
+            border: 1px solid #fde047;
+            border-radius: 8px;
+            color: #a16207;
+        }
+        .form-check input {
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+        .form-check label {
+            margin-bottom: 0;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* (BARU) Styling Quill.js Editor */
+        #quill-editor-container,
+        #quill-editor-container-edit {
+            height: 250px; /* Tentukan tinggi editor */
+            background-color: #fff;
+        }
+        .ql-toolbar {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+        .ql-container {
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        /* Kotak Pesan */
+        .message-box {
+            font-size: 0.95rem;
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+            background-color: #dcfce7;
+            color: #16a34a;
+            border: 1px solid #16a34a;
+        }
          
+        /* Footer */
         .footer {
             text-align: center;
             padding: 40px 24px;
             background-color: #ffffff;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid var(--border-color);
             margin-top: 60px;
-            color: #6b7280;
+            color: var(--text-gray);
             font-size: 0.9rem;
         }
     </style>
@@ -403,51 +457,24 @@
         
         <main class="main-page container">
             
+            <a href="dashboard.html" class="back-to-dashboard">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
+            </a>
+
             <div class="page-header">
-                <h2 class="section-title">Manajemen Pengumuman</h2>
-                <a href="dashboard.html" class="back-to-dashboard">
-                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
-                </a>
+                <h2 class="page-title">Manajemen Pengumuman</h2>
+                <button class="create-new-btn" id="open-create-modal-btn">
+                    <i class="fa-solid fa-plus"></i> Buat Pengumuman Baru
+                </button>
             </div>
+            
+            <div id="global-msg" class="message-box"></div>
 
-            <div class="widget-card">
-                <div class="widget-header">
-                    Buat Pengumuman Baru
+            <div class="content-widget">
+                <div class="content-widget-header">
+                    Daftar Pengumuman
                 </div>
-                <div class="widget-body">
-                    <form id="announcement-form">
-                        <div class="form-group">
-                            <label for="ann-title">Judul Pengumuman</label>
-                            <input type="text" id="ann-title" class="form-input" placeholder="Contoh: Libur Nasional Hari Kemerdekaan" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="ann-content">Isi Pengumuman</label>
-                            <textarea id="ann-content" class="form-textarea" placeholder="Tulis isi lengkap pengumuman di sini..." required></textarea>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="ann-expiry">Tanggal Berakhir (Opsional)</label>
-                            <input type="date" id="ann-expiry" class="form-input">
-                            <small style="font-size: 0.8rem; color: #6b7280;">
-                                Biarkan kosong jika pengumuman berlaku selamanya.
-                            </small>
-                        </div>
-                        
-                        <button type="submit" class="form-button" id="submit-button">
-                            Publikasikan Pengumuman
-                        </button>
-
-                        <div id="form-msg" class="message-box"></div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="widget-card">
-                <div class="widget-header">
-                    Daftar Pengumuman Aktif
-                </div>
-                <div class="widget-body">
+                <div class="content-widget-body">
                     <div id="announcement-list">
                         <div class="no-announcements">Memuat pengumuman...</div>
                     </div>
@@ -461,56 +488,133 @@
     </div>
 
 
+    <div id="create-modal" class="modal-overlay">
+        <div class="modal-content">
+            <form id="create-form">
+                <div class="modal-header">
+                    <h3 class="modal-title">Buat Pengumuman Baru</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="ann-title">Judul Pengumuman</label>
+                        <input type="text" id="ann-title" class="form-input" placeholder="Contoh: Libur Nasional Hari Kemerdekaan" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Isi Pengumuman</label>
+                        <div id="quill-editor-container"></div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ann-category">Kategori</label>
+                            <select id="ann-category" class="form-select">
+                                <option value="Umum">Umum</option>
+                                <option value="Penting">Penting</option>
+                                <option value="Event">Event</option>
+                                <option value="Peraturan">Peraturan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ann-expiry">Tanggal Berakhir (Opsional)</label>
+                            <input type="date" id="ann-expiry" class="form-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="form-check">
+                        <input type="checkbox" id="ann-pin">
+                        <label for="ann-pin">Sematkan Pengumuman Ini</label>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="modal-button modal-button-secondary" id="cancel-create-btn">
+                            Batal
+                        </button>
+                        <button type="submit" class="modal-button modal-button-primary" id="submit-create-btn">
+                            Publikasikan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-content">
-            <h3 class="modal-header">Edit Pengumuman</h3>
             <form id="edit-form">
                 <input type="hidden" id="edit-id">
-                <div class="form-group">
-                    <label for="edit-title">Judul Pengumuman</label>
-                    <input type="text" id="edit-title" class="form-input" required>
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit Pengumuman</h3>
                 </div>
-                <div class="form-group">
-                    <label for="edit-content">Isi Pengumuman</label>
-                    <textarea id="edit-content" class="form-textarea" required></textarea>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="edit-title">Judul Pengumuman</label>
+                        <input type="text" id="edit-title" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Isi Pengumuman</label>
+                        <div id="quill-editor-container-edit"></div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-category">Kategori</label>
+                            <select id="edit-category" class="form-select">
+                                <option value="Umum">Umum</option>
+                                <option value="Penting">Penting</option>
+                                <option value="Event">Event</option>
+                                <option value="Peraturan">Peraturan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-expiry">Tanggal Berakhir (Opsional)</label>
+                            <input type="date" id="edit-expiry" class="form-input">
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="edit-expiry">Tanggal Berakhir (Opsional)</label>
-                    <input type="date" id="edit-expiry" class="form-input">
-                    <small style="font-size: 0.8rem; color: #6b7280;">
-                        Biarkan kosong jika pengumuman berlaku selamanya.
-                    </small>
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="modal-button modal-button-secondary" id="cancel-edit-btn">
-                        Batal
-                    </button>
-                    <button type="submit" class="modal-button modal-button-primary" id="save-edit-btn">
-                        Simpan Perubahan
-                    </button>
+                <div class="modal-footer">
+                    <div class="form-check">
+                        <input type="checkbox" id="edit-pin">
+                        <label for="edit-pin">Sematkan Pengumuman Ini</label>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="modal-button modal-button-secondary" id="cancel-edit-btn">
+                            Batal
+                        </button>
+                        <button type="submit" class="modal-button modal-button-primary" id="save-edit-btn">
+                            Simpan Perubahan
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
     
     <div id="delete-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 class="modal-header">Konfirmasi Hapus</h3>
-            <p>Apakah Anda yakin ingin menghapus pengumuman ini secara permanen? Tindakan ini tidak dapat diurungkan.</p>
-            <div class="modal-buttons">
-                <button class="modal-button modal-button-secondary" id="cancel-delete-btn">
-                    Batal
-                </button>
-                <button class="modal-button modal-button-primary" id="confirm-delete-btn">
-                    Ya, Hapus
-                </button>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Konfirmasi Hapus</h3>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus pengumuman ini secara permanen? Tindakan ini tidak dapat diurungkan.</p>
+            </div>
+            <div class="modal-footer" style="justify-content: flex-end;">
+                <div class="modal-buttons">
+                    <button class="modal-button modal-button-secondary" id="cancel-delete-btn">
+                        Batal
+                    </button>
+                    <button class="modal-button modal-button-primary" id="confirm-delete-btn">
+                        Ya, Hapus
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
 
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    
     <script type="module">
         // Import functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -548,49 +652,65 @@
         const mainContent = document.getElementById('main-content');
         const loadingScreen = document.getElementById('loading-screen');
         const logoutBtn = document.getElementById('logout-btn');
+        const globalMsg = document.getElementById('global-msg');
         
         let loggedInUserName = "Tamu";
         let loggedInUserDept = null;
 
-        // --- AUTH GUARD (PENTING!) ---
+        // (BARU) Opsi Toolbar Quill.js
+        const quillToolbarOptions = [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'link'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['clean']
+        ];
+
+        // (BARU) Inisialisasi Quill Editor (Create)
+        const quillCreate = new Quill('#quill-editor-container', {
+            theme: 'snow',
+            modules: {
+                toolbar: quillToolbarOptions
+            }
+        });
+        
+        // (BARU) Inisialisasi Quill Editor (Edit)
+        const quillEdit = new Quill('#quill-editor-container-edit', {
+            theme: 'snow',
+            modules: {
+                toolbar: quillToolbarOptions
+            }
+        });
+
+        // --- AUTH GUARD (Tidak Berubah) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(db, 'users/' + user.uid);
-                
                 get(userRef).then((snapshot) => {
-                    // Cek jika user Admin (root)
                     if (user.email === 'root@zeppelin.center') {
                         loggedInUserName = "Admin (Root)";
                         loggedInUserDept = "IT";
                         showPage();
                         return; 
                     }
-
                     if (snapshot.exists()) {
                         const userData = snapshot.val();
-                        
                         if (userData.status === 'approved' && (userData.departemen === 'HRD' || userData.departemen === 'Human Resources')) {
                             loggedInUserName = userData.nama || "HRD User";
                             loggedInUserDept = userData.departemen;
-                            showPage(); // Tampilkan halaman
+                            showPage();
                         } else {
                             redirectToDashboard("Akses ditolak: Bukan HRD.");
                         }
                     } else {
                         console.log("Akses ditolak: Data user tidak ditemukan.");
                         loadingScreen.innerHTML = "<p>Data akun tidak ditemukan. Mengalihkan...</p>";
-                        signOut(auth).then(() => {
-                            window.location.href = 'login.html?reason=no_data';
-                        });
+                        signOut(auth).then(() => { window.location.href = 'login.html?reason=no_data'; });
                     }
                 }).catch((error) => {
                     console.error("Gagal memvalidasi user:", error);
                     loadingScreen.innerHTML = "<p>Gagal terhubung ke server. Mengalihkan...</p>";
-                    signOut(auth).then(() => {
-                        window.location.href = 'login.html?reason=db_error';
-                    });
+                    signOut(auth).then(() => { window.location.href = 'login.html?reason=db_error'; });
                 });
-
             } else {
                 console.log("Pengguna tidak terautentikasi.");
                 window.location.href = 'login.html';
@@ -602,66 +722,83 @@
             loadingScreen.style.display = 'none';
             loadAnnouncements();
         }
-
         function redirectToDashboard(message) {
             console.log(message);
             loadingScreen.innerHTML = `<p>${message} Mengalihkan...</p>`;
-            setTimeout(() => {
-                window.location.href = 'dashboard.html';
-            }, 2000);
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
         }
-
-        // --- Fungsi Logout ---
         logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.href = 'login.html';
-            }).catch((error) => {
-                console.error("Error logout:", error);
-            });
+            signOut(auth).then(() => { window.location.href = 'login.html'; });
         });
 
-        // --- Fungsi Tampilkan Pesan Form ---
-        function showFormMessage(message, isError = true) {
-            const msgBox = document.getElementById('form-msg');
-            msgBox.textContent = message;
-            msgBox.className = isError ? 'message-box error' : 'message-box success';
-            msgBox.style.display = 'block';
-        }
-        function hideFormMessage() {
-            document.getElementById('form-msg').style.display = 'none';
+        // --- (BARU) Fungsi Tampilkan Pesan Global ---
+        function showGlobalMessage(message, isError = false) {
+            globalMsg.textContent = message;
+            globalMsg.className = isError ? 'message-box error' : 'message-box success';
+            globalMsg.style.display = 'block';
+            setTimeout(() => {
+                globalMsg.style.display = 'none';
+            }, 3000);
         }
 
-        // --- LOGIKA FORM SUBMIT (CREATE) ---
-        const annForm = document.getElementById('announcement-form');
+        // --- (BARU) LOGIKA MODAL (Umum) ---
+        const createModal = document.getElementById('create-modal');
+        const editModal = document.getElementById('edit-modal');
+        const deleteModal = document.getElementById('delete-modal');
+
+        // Buka Modal Create
+        document.getElementById('open-create-modal-btn').addEventListener('click', () => {
+            createModal.style.display = 'flex';
+        });
+        // Tutup Modal Create
+        document.getElementById('cancel-create-btn').addEventListener('click', () => {
+            createModal.style.display = 'none';
+        });
+
+        // Tutup Modal Edit
+        document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+            editModal.style.display = 'none';
+        });
+        // Tutup Modal Delete
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+        });
+
+
+        // --- (REWORK) LOGIKA FORM SUBMIT (CREATE) ---
+        const createForm = document.getElementById('create-form');
         const annTitle = document.getElementById('ann-title');
-        const annContent = document.getElementById('ann-content');
-        const annExpiry = document.getElementById('ann-expiry'); // (BARU)
-        const submitButton = document.getElementById('submit-button');
+        const annCategory = document.getElementById('ann-category');
+        const annExpiry = document.getElementById('ann-expiry');
+        const annPin = document.getElementById('ann-pin');
+        const submitCreateBtn = document.getElementById('submit-create-btn');
 
-        annForm.addEventListener('submit', (e) => {
+        createForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            hideFormMessage();
 
             const titleVal = annTitle.value.trim();
-            const contentVal = annContent.value.trim();
-            const expiryVal = annExpiry.value; // (BARU)
+            const contentVal = quillCreate.root.innerHTML; // Ambil HTML dari Quill
+            const categoryVal = annCategory.value;
+            const expiryVal = annExpiry.value;
+            const isPinnedVal = annPin.checked;
 
-            if (!titleVal || !contentVal) {
-                showFormMessage("Judul dan Isi Pengumuman tidak boleh kosong.");
+            if (!titleVal || quillCreate.getLength() <= 1) { // quill.getLength() <= 1 berarti kosong
+                alert("Judul dan Isi Pengumuman tidak boleh kosong.");
                 return;
             }
 
-            submitButton.disabled = true;
-            submitButton.textContent = "Memproses...";
+            submitCreateBtn.disabled = true;
+            submitCreateBtn.textContent = "Memproses...";
 
             const newAnnouncement = {
                 title: titleVal,
-                content: contentVal,
+                content: contentVal, // Simpan HTML
                 author: loggedInUserName,
+                category: categoryVal,
+                isPinned: isPinnedVal,
                 timestamp: serverTimestamp()
             };
 
-            // (BARU) Hanya tambahkan 'expiresAt' jika diisi
             if (expiryVal) {
                 newAnnouncement.expiresAt = expiryVal;
             }
@@ -671,64 +808,70 @@
 
             set(newPostRef, newAnnouncement)
                 .then(() => {
-                    showFormMessage("Pengumuman berhasil dipublikasikan!", false);
-                    annForm.reset();
-                    submitButton.disabled = false;
-                    submitButton.textContent = "Publikasikan Pengumuman";
-                    setTimeout(hideFormMessage, 3000);
+                    showGlobalMessage("Pengumuman berhasil dipublikasikan!", false);
+                    createForm.reset();
+                    quillCreate.root.innerHTML = ''; // Kosongkan editor
+                    createModal.style.display = 'none';
                 })
                 .catch((error) => {
                     console.error("Gagal menyimpan pengumuman:", error);
-                    showFormMessage("Gagal menyimpan pengumuman. Coba lagi.");
-                    submitButton.disabled = false;
-                    submitButton.textContent = "Publikasikan Pengumuman";
+                    alert("Gagal menyimpan pengumuman. Coba lagi.");
+                })
+                .finally(() => {
+                    submitCreateBtn.disabled = false;
+                    submitCreateBtn.textContent = "Publikasikan";
                 });
         });
 
 
-        // --- LOGIKA MENAMPILKAN DAFTAR (READ) ---
+        // --- (REWORK) LOGIKA MENAMPILKAN DAFTAR (READ) ---
         const announcementsList = document.getElementById('announcement-list');
         const announcementsRef = ref(db, 'announcements');
 
         function loadAnnouncements() {
             onValue(announcementsRef, (snapshot) => {
-                announcementsList.innerHTML = ''; // Kosongkan daftar
+                announcementsList.innerHTML = ''; 
                 
-                // (BARU) Dapatkan tanggal hari ini dalam format YYYY-MM-DD (Waktu Lokal)
                 const now = new Date();
                 const year = now.getFullYear();
                 const month = String(now.getMonth() + 1).padStart(2, '0');
                 const day = String(now.getDate()).padStart(2, '0');
                 const todayStr = `${year}-${month}-${day}`;
                 
-                let hasVisibleAnnouncements = false; // (BARU) Flag
-
+                let postsArray = [];
+                
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    // Urutkan (yang terbaru di atas)
-                    const keys = Object.keys(data).sort((a, b) => data[b].timestamp - data[a].timestamp);
-
-                    keys.forEach(key => {
+                    for (let key in data) {
                         const post = data[key];
-
-                        // (BARU) LOGIKA FILTER MASA BERLAKU
-                        // Jika 'expiresAt' ada DAN 'expiresAt' sudah lewat (kurang dari hari ini)
+                        
+                        // Filter kadaluwarsa
                         if (post.expiresAt && post.expiresAt < todayStr) {
-                            return; // Lewati post ini, jangan tampilkan
+                            continue; // Lewati
                         }
-
-                        // Jika lolos filter, tampilkan
-                        hasVisibleAnnouncements = true;
-                        const postElement = createAnnouncementElement(key, post);
-                        announcementsList.appendChild(postElement);
-                    });
+                        
+                        postsArray.push({ key, ...post });
+                    }
                 } 
                 
-                // (BARU) Perbarui pesan jika tidak ada post yang terlihat
-                if (!hasVisibleAnnouncements) {
+                if (postsArray.length > 0) {
+                    // (BARU) LOGIKA SORTING KOMPLEKS
+                    // 1. Utamakan Pin (isPinned: true)
+                    // 2. Jika sama2 pin atau sama2 tidak, urutkan berdasarkan timestamp terbaru
+                    postsArray.sort((a, b) => {
+                        if (a.isPinned && !b.isPinned) return -1;
+                        if (!a.isPinned && b.isPinned) return 1;
+                        return b.timestamp - a.timestamp; // Jika status pin sama
+                    });
+
+                    postsArray.forEach(post => {
+                        const postElement = createAnnouncementElement(post.key, post);
+                        announcementsList.appendChild(postElement);
+                    });
+
+                } else {
                     announcementsList.innerHTML = '<div class="no-announcements">Belum ada pengumuman yang dibuat (atau semua sudah kedaluwarsa).</div>';
                 }
-
             }, (error) => {
                 console.error("Gagal memuat data:", error);
                 announcementsList.innerHTML = '<div class="no-announcements error">Gagal memuat pengumuman.</div>';
@@ -739,27 +882,34 @@
             const item = document.createElement('div');
             item.className = 'announcement-item';
 
-            // Konversi timestamp ke tanggal
             const date = new Date(post.timestamp).toLocaleString('id-ID', {
                 dateStyle: 'medium',
                 timeStyle: 'short'
             });
 
-            // (BARU) Tambahkan info masa berlaku jika ada
-            let expiryHtml = '';
-            if (post.expiresAt) {
-                expiryHtml = `<div class="meta expiry">
-                    <i class="fa-solid fa-calendar-times"></i> Berakhir: ${post.expiresAt}
-                </div>`;
+            // (BARU) Kategori
+            const categoryClass = `tag-cat-${post.category?.toLowerCase() || 'umum'}`;
+            let tagsHtml = `<span class="tag tag-cat ${categoryClass}">${escapeHTML(post.category || 'Umum')}</span>`;
+
+            // (BARU) Pin
+            if (post.isPinned) {
+                tagsHtml += `<span class="tag tag-pin"><i class="fa-solid fa-thumbtack"></i> Disematkan</span>`;
             }
 
+            // (BARU) Expiry
+            if (post.expiresAt) {
+                tagsHtml += `<span class="tag tag-expiry"><i class="fa-solid fa-calendar-times"></i> Berakhir: ${post.expiresAt}</span>`;
+            }
+
+            // (PENTING) Jangan escape post.content karena berisi HTML dari Quill
+            // Cukup escape judulnya saja
             item.innerHTML = `
-                <div class="announcement-item-content">
-                    <h3>${escapeHTML(post.title)}</h3>
-                    <div class="meta">Oleh ${escapeHTML(post.author)} - ${date}</div>
-                    <p>${escapeHTML(post.content).replace(/\n/g, '<br>')}</p>
-                    ${expiryHtml} </div>
-                <div class="announcement-item-actions">
+                <div class="ann-item-main">
+                    <h3 class="ann-item-title">${escapeHTML(post.title)}</h3>
+                    <div class="ann-item-meta">Oleh ${escapeHTML(post.author)} - ${date}</div>
+                    <div class="ann-item-tags">${tagsHtml}</div>
+                </div>
+                <div class="ann-item-actions">
                     <button class="action-button edit-btn" data-id="${key}">
                         <i class="fa-solid fa-pencil"></i> Edit
                     </button>
@@ -776,7 +926,7 @@
             return item;
         }
 
-        // Helper untuk mencegah XSS
+        // Helper untuk mencegah XSS (hanya untuk data non-HTML)
         function escapeHTML(str) {
             if (!str) return '';
             return str.replace(/[&<>"']/g, function(match) {
@@ -791,73 +941,78 @@
         }
 
 
-        // --- LOGIKA EDIT & DELETE ---
+        // --- (REWORK) LOGIKA EDIT & DELETE ---
         
-        // Modal Elements
-        const editModal = document.getElementById('edit-modal');
-        const deleteModal = document.getElementById('delete-modal');
+        // Modal Edit Elements
         const editForm = document.getElementById('edit-form');
         const editIdInput = document.getElementById('edit-id');
         const editTitleInput = document.getElementById('edit-title');
-        const editContentInput = document.getElementById('edit-content');
-        const editExpiryInput = document.getElementById('edit-expiry'); // (BARU)
+        const editCategoryInput = document.getElementById('edit-category');
+        const editExpiryInput = document.getElementById('edit-expiry');
+        const editPinInput = document.getElementById('edit-pin');
+        const saveEditBtn = document.getElementById('save-edit-btn');
 
-        // --- Logika Edit (Update) ---
+        // --- Logika Buka Modal Edit (Update) ---
         function handleEdit(key, post) {
             editIdInput.value = key;
             editTitleInput.value = post.title;
-            editContentInput.value = post.content;
-            editExpiryInput.value = post.expiresAt || ''; // (BARU) Isi tanggal, atau kosongkan
+            quillEdit.root.innerHTML = post.content || ''; // Load HTML ke Quill
+            editCategoryInput.value = post.category || 'Umum';
+            editExpiryInput.value = post.expiresAt || '';
+            editPinInput.checked = post.isPinned || false;
+            
             editModal.style.display = 'flex';
         }
 
-        document.getElementById('cancel-edit-btn').addEventListener('click', () => {
-            editModal.style.display = 'none';
-        });
-
+        // --- Logika Simpan Perubahan (Update) ---
         editForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const id = editIdInput.value;
             const newTitle = editTitleInput.value.trim();
-            const newContent = editContentInput.value.trim();
-            const newExpiry = editExpiryInput.value; // (BARU)
+            const newContent = quillEdit.root.innerHTML; // Ambil HTML dari Quill
+            const newCategory = editCategoryInput.value;
+            const newExpiry = editExpiryInput.value;
+            const newIsPinned = editPinInput.checked;
 
-            if (!newTitle || !newContent) {
+            if (!newTitle || quillEdit.getLength() <= 1) {
                 alert("Judul dan Konten tidak boleh kosong.");
                 return;
             }
+            
+            saveEditBtn.disabled = true;
+            saveEditBtn.textContent = "Menyimpan...";
 
             const updates = {
                 title: newTitle,
                 content: newContent,
-                expiresAt: newExpiry || null // (BARU) Set ke nilai baru, atau null jika dikosongkan
+                category: newCategory,
+                isPinned: newIsPinned,
+                expiresAt: newExpiry || null // Set ke null jika dikosongkan
             };
             
             const postRef = ref(db, 'announcements/' + id);
             update(postRef, updates)
                 .then(() => {
                     editModal.style.display = 'none';
-                    showFormMessage("Pengumuman berhasil diperbarui!", false);
-                    setTimeout(hideFormMessage, 3000);
+                    showGlobalMessage("Pengumuman berhasil diperbarui!", false);
                 })
                 .catch((error) => {
                     console.error("Gagal update:", error);
                     alert("Gagal memperbarui pengumuman.");
+                })
+                .finally(() => {
+                    saveEditBtn.disabled = false;
+                    saveEditBtn.textContent = "Simpan Perubahan";
                 });
         });
 
         // --- Logika Delete (Delete) ---
-        let deleteKey = null; // Variabel untuk menyimpan key yang akan dihapus
+        let deleteKey = null; 
 
         function handleDelete(key) {
             deleteKey = key;
             deleteModal.style.display = 'flex';
         }
-
-        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
-            deleteKey = null;
-            deleteModal.style.display = 'none';
-        });
 
         document.getElementById('confirm-delete-btn').addEventListener('click', () => {
             if (deleteKey) {
@@ -865,8 +1020,7 @@
                 remove(postRef)
                     .then(() => {
                         deleteModal.style.display = 'none';
-                        showFormMessage("Pengumuman berhasil dihapus.", false);
-                        setTimeout(hideFormMessage, 3000);
+                        showGlobalMessage("Pengumuman berhasil dihapus.", false);
                         deleteKey = null;
                     })
                     .catch((error) => {
