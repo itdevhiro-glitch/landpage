@@ -273,8 +273,6 @@
         .icon-red { background-color: #fee2e2; color: #D9232D; }
         .icon-orange { background-color: #fff7ed; color: #F37321; }
         .icon-gray { background-color: #f3f4f6; color: #4b5563; }
-        
-        /* (BARU) Menambahkan warna ikon biru untuk menu admin/HRD */
         .icon-blue { background-color: #e0e7ff; color: #4338ca; }
 
         .portal-card h3 {
@@ -489,58 +487,112 @@
             right: 4px;
         }
 
-        /* --- (PERUBAHAN) CSS UNTUK PENGUMUMAN INTERAKTIF --- */
+        /* --- (PERUBAHAN TOTAL) CSS UNTUK PENGUMUMAN KOMPLEKS --- */
         #announcement-list {
             list-style: none;
-            max-height: 400px; /* Diberi ruang lebih */
+            max-height: 500px; /* Sedikit lebih tinggi */
             overflow-y: auto;
-            padding-right: 10px; /* Ruang untuk scrollbar */
+            padding-right: 10px;
         }
-        .announcement-item { /* Menggantikan 'li' */
-            padding: 12px 0;
+        .announcement-item {
             border-bottom: 1px solid #f3f4f6;
         }
         .announcement-item:last-child {
             border-bottom: none;
         }
+        /* Header yang bisa diklik */
         .announcement-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            cursor: pointer; /* Bisa diklik */
+            align-items: flex-start; /* Ubah ke flex-start */
+            cursor: pointer;
+            padding: 16px 4px; /* Beri padding */
         }
-        .announcement-header p {
-            font-size: 0.95rem;
-            font-weight: 700; /* Judul ditebalkan */
-            margin-bottom: 4px;
+        .ann-item-main { /* (BARU) Wrapper untuk teks */
+            flex-grow: 1;
+            margin-right: 16px;
+        }
+        .ann-item-title { /* (BARU) Judul */
+            font-size: 1.1rem;
+            font-weight: 700;
             color: #1f2937;
+            margin-bottom: 4px;
         }
-        .announcement-header small {
+        .ann-item-meta { /* (BARU) Info tanggal & author */
             font-size: 0.8rem;
             color: #6b7280;
+            margin-bottom: 12px;
         }
-        .announcement-header small i {
-            margin-right: 5px;
+        .ann-item-meta i {
+            margin-right: 4px;
         }
-        .expand-icon { /* Icon chevron */
+        .ann-item-tags { /* (BARU) Wrapper untuk tags */
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        /* (BARU) Style untuk Tags (dicopy dari content-management) */
+        .tag {
+            font-size: 0.7rem; /* Dikecilkan sedikit untuk dashboard */
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 99px;
+            text-transform: uppercase;
+        }
+        .tag-pin { background-color: #fef08a; color: #a16207; }
+        .tag-expiry { background-color: #fee2e2; color: #b91c1c; }
+        .tag-cat { background-color: #e0e7ff; color: #4338ca; }
+        .tag-cat-penting { background-color: #fecaca; color: #dc2626; }
+        .tag-cat-event { background-color: #dbeafe; color: #1d4ed8; }
+        .tag-cat-peraturan { background-color: #fed7aa; color: #c2410c; }
+
+        .expand-icon {
             color: #9ca3af;
             transition: transform 0.3s ease;
             font-size: 0.9rem;
+            padding-top: 4px; /* Sejajarkan dengan judul */
         }
         /* Konten yang tersembunyi */
         .announcement-content {
-            padding-top: 12px;
+            padding: 16px;
             font-size: 0.9rem;
             color: #374151;
             line-height: 1.6;
-            border-top: 1px solid #f9fafb;
-            margin-top: 12px;
+            background-color: #fdfdfd;
+            border-top: 1px solid #f3f4f6;
             display: none; /* Sembunyi by default */
         }
-        .announcement-content p {
-            white-space: pre-wrap; /* Menghargai baris baru dari textarea */
+        /* (BARU) Style untuk Rich Text Content */
+        .announcement-content h1,
+        .announcement-content h2,
+        .announcement-content h3 {
+            font-weight: 700;
+            margin-bottom: 10px;
+            margin-top: 15px;
+            color: #1f2937;
         }
-        /* --- (AKHIR PERUBAHAN) --- */
+        .announcement-content h1 { font-size: 1.4rem; }
+        .announcement-content h2 { font-size: 1.2rem; }
+        .announcement-content h3 { font-size: 1.1rem; }
+        .announcement-content p {
+            margin-bottom: 12px;
+        }
+        .announcement-content ul,
+        .announcement-content ol {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+        .announcement-content li {
+            margin-bottom: 5px;
+        }
+        .announcement-content a {
+            color: #D9232D;
+            font-weight: 500;
+            text-decoration: underline;
+        }
+        .announcement-content strong { font-weight: 700; }
+        .announcement-content em { font-style: italic; }
+        /* --- (AKHIR PERUBAHAN CSS) --- */
 
         .announcement-empty {
             font-size: 0.9rem;
@@ -618,13 +670,13 @@
             font-size: 0.9rem;
         }
 
-        /* (BARU) CSS untuk Notifikasi "Toast" */
+        /* (CSS Tidak Berubah) */
         .toast-notification {
             position: fixed;
-            bottom: -100px; /* Mulai dari tersembunyi */
+            bottom: -100px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #D93025; /* Warna merah error */
+            background-color: #D93025;
             color: white;
             padding: 16px 24px;
             border-radius: 8px;
@@ -637,7 +689,7 @@
             transition: bottom 0.5s ease-in-out;
         }
         .toast-notification.show {
-            bottom: 30px; /* Posisi saat muncul */
+            bottom: 30px;
         }
         .toast-notification i {
             font-size: 1.5rem;
@@ -651,7 +703,7 @@
             height: 100vh;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 2000;
-            display: none; /* Diatur oleh JS */
+            display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -667,7 +719,7 @@
             max-width: 500px;
             z-index: 2001;
             overflow: hidden;
-            display: none; /* Diatur oleh JS */
+            display: none;
             opacity: 0;
             transform: translate(-50%, -45%);
             transition: opacity 0.3s ease, transform 0.3s ease;
@@ -714,7 +766,7 @@
             border-radius: 8px;
             font-weight: 500;
             margin-bottom: 20px;
-            display: none; /* Sembunyi by default */
+            display: none;
         }
         #modal-holiday-info i {
             margin-right: 8px;
@@ -837,6 +889,10 @@
             }
             .portal-card h3 {
                 font-size: 1.2rem;
+            }
+            /* (BARU) Responsive untuk tag */
+            .ann-item-tags {
+                margin-top: 10px;
             }
         }
     </style>
@@ -1074,9 +1130,10 @@
             onValue, 
             set, 
             push,
-            query,
-            orderByChild,
-            limitToLast,
+            // (DIHAPUS) Query tidak lagi se-simple ini
+            // query,
+            // orderByChild,
+            // limitToLast,
             get 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -1103,20 +1160,16 @@
         const userGreeting = document.getElementById('user-greeting');
         const logoutBtn = document.getElementById('logout-btn');
 
-        // --- (PERBAIKAN) MENAMBAHKAN EVENT LISTENER UNTUK LOGOUT ---
+        // (Fungsi tidak berubah)
         logoutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
-                // Sign-out successful.
                 console.log("Logout berhasil, mengalihkan ke login...");
-                window.location.href = 'login.html'; // Alihkan ke halaman login
+                window.location.href = 'login.html'; 
             }).catch((error) => {
-                // An error happened.
                 console.error("Gagal logout:", error);
-                // Gunakan fungsi showToast yang sudah Anda buat
                 showToast("Gagal logout, silakan coba lagi."); 
             });
         });
-        // --- (AKHIR PERBAIKAN) ---
 
         // Variabel global
         let nationalHolidays = {};
@@ -1124,20 +1177,33 @@
         let currentSelectedDate = null;
         let loggedInUserName = "Tamu";
 
-        // (BARU) Fungsi untuk menampilkan Notifikasi Toast
+        // (Fungsi tidak berubah)
         function showToast(message) {
             const toast = document.getElementById('toast-notification');
             if (toast) {
                 toast.querySelector('p').textContent = message;
                 toast.classList.add('show');
-                // Sembunyikan setelah 3 detik
                 setTimeout(() => {
                     toast.classList.remove('show');
                 }, 3000);
             }
         }
 
-        // --- AUTH GUARD & DATA LOADER ---
+        // (BARU) Helper function untuk escape HTML (mencegah XSS pada data non-HTML)
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match];
+            });
+        }
+
+        // --- AUTH GUARD & DATA LOADER (Tidak berubah) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Pengguna terautentikasi, memvalidasi status:", user.uid);
@@ -1146,7 +1212,7 @@
                 
                 get(userRef).then((snapshot) => {
                     
-                    let isHRD = false; // (BARU) Flag untuk status HRD
+                    let isHRD = false; 
                     const manageCard = document.getElementById('manage-content-card');
                     const hrQuickLink = document.getElementById('hr-quick-link');
 
@@ -1155,25 +1221,20 @@
                         console.log("Akses disetujui: ADMIN.");
                         userGreeting.innerHTML = `Halo, <span>ADMIN (Root)</span>`;
                         loggedInUserName = "Admin"; 
-                        isHRD = true; // (BARU) Admin dianggap HRD
-                        
-                        // (DIHAPUS) Tidak perlu menampilkan/menyembunyikan kartu di sini lagi
-                        // if(manageCard) manageCard.style.display = 'flex'; 
-                        // if(hrQuickLink) hrQuickLink.style.display = 'flex'; 
+                        isHRD = true; 
 
                         mainContent.style.display = 'block';
                         loadingScreen.style.display = 'none';
 
-                        // Inisialisasi widget untuk admin
                         runClock();
                         initCalendar(); 
                         initTodoWidget(); 
-                        initAnnouncementWidget(); // (PERUBAHAN) Jalankan fungsi baru
+                        initAnnouncementWidget(); // Jalankan fungsi baru
                         
                         fetchHolidays();
                         fetchCalendarNotes();
                         initIntersectionObserver();
-                        return; // Hentikan eksekusi
+                        return;
                     }
 
                     // Jika BUKAN ADMIN, lanjutkan pengecekan status
@@ -1181,26 +1242,22 @@
                         const userData = snapshot.val();
                         
                         if (userData.status === 'approved') {
-                            // --- DISETUJUI: Lanjutkan memuat dashboard ---
                             console.log("Akses disetujui.");
                             const nama = userData.nama || user.email;
                             userGreeting.innerHTML = `Halo, <span>${nama}</span>`;
                             loggedInUserName = nama; 
                             
-                            // --- (PERUBAHAN) Logika untuk menampilkan kartu HRD ---
                             if (userData.departemen === 'HRD' || userData.departemen === 'Human Resources') {
-                                isHRD = true; // (BARU) User ini adalah HRD
+                                isHRD = true;
                             }
-                            // --- (AKHIR PERUBAHAN) ---
                             
                             mainContent.style.display = 'block';
                             loadingScreen.style.display = 'none';
 
-                            // Inisialisasi semua widget
                             runClock();
                             initCalendar(); 
                             initTodoWidget(); 
-                            initAnnouncementWidget(); // (PERUBAHAN) Jalankan fungsi baru
+                            initAnnouncementWidget();
                             
                             fetchHolidays();
                             fetchCalendarNotes();
@@ -1209,19 +1266,16 @@
                         } else if (userData.status === 'pending') {
                             console.log("Akses ditolak: Akun 'pending'.");
                             signOut(auth).then(() => {
-                            // (PERBAIKAN) Alasan redirect salah, seharusnya 'pending'
                             window.location.href = 'login.html?reason=pending'; 
                         });
                         
                         } else if (userData.status === 'rejected') { 
-                            // (BARU) Blok ini hilang dan menyebabkan bug 'stuck loading'
                             console.log("Akses ditolak: Akun 'rejected'.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=rejected';
                             });
                         
                         } else { 
-                            // (BARU) Blok ini juga hilang
                             console.log("Akses ditolak: Status akun tidak diketahui.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=invalid';
@@ -1229,19 +1283,15 @@
                         }
                         
                     } else {
-                        // --- (PERBAIKAN) BLOK INI KOSONG, MENYEBABKAN BUG ---
-                        // --- Data user tidak ada di DB DAN BUKAN ADMIN ---
                         console.log("Akses ditolak: Data user tidak ada di DB.");
                         signOut(auth).then(() => {
                             window.location.href = 'login.html?reason=no_data';
                         });
                     }
 
-                    // (BARU) Terapkan event listener jika BUKAN HRD
-                    // Logika ini hilang di file Anda dan perlu ditambahkan kembali
                     if (!isHRD) {
                         const accessDeniedHandler = (e) => {
-                            e.preventDefault(); // Hentikan navigasi
+                            e.preventDefault(); 
                             showToast("Akses Ditolak. Menu ini khusus untuk Departemen HRD.");
                         };
                         
@@ -1254,7 +1304,6 @@
                     }
 
                 }).catch((error) => {
-                    // (BARU) Menambahkan .catch() yang hilang untuk menangani error DB
                     console.error("Gagal memvalidasi user:", error);
                     signOut(auth).then(() => {
                         window.location.href = 'login.html?reason=db_error';
@@ -1262,16 +1311,13 @@
                 });
 
             } else {
-                // (PERBAIKAN) BLOK INI KOSONG, INILAH PENYEBAB UTAMA ANDA STUCK
-                // Tidak ada user yang login, alihkan ke login
                 console.log("Pengguna tidak terautentikasi, mengalihkan...");
                 window.location.href = 'login.html';
             }
         });
 
-        // --- Widget Jam ---
+        // --- Widget Jam (Tidak berubah) ---
         function runClock() {
-            // (Fungsi ini tidak berubah)
             const clockEl = document.querySelector('.digital-clock');
             const dateEl = document.querySelector('.digital-date');
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1288,40 +1334,89 @@
             setInterval(updateTime, 1000);
         }
 
-        // --- (PERUBAHAN) FUNGSI PENGUMUMAN (DARI FIREBASE) ---
+        // --- (PERUBAHAN TOTAL) FUNGSI PENGUMUMAN (DARI FIREBASE) ---
         function initAnnouncementWidget() {
             const listEl = document.getElementById('announcement-list');
-            // Ambil 5 pengumuman terbaru berdasarkan timestamp
-            const announcementsRef = query(ref(db, 'announcements'), orderByChild('timestamp'), limitToLast(5));
+            // (BARU) Ambil SEMUA pengumuman, sorting dan filtering akan dilakukan di client
+            const announcementsRef = ref(db, 'announcements');
 
             onValue(announcementsRef, (snapshot) => {
                 listEl.innerHTML = ''; 
+                
+                // (BARU) Dapatkan tanggal hari ini untuk filter kadaluwarsa
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const todayStr = `${year}-${month}-${day}`;
+
+                let postsArray = []; // Array untuk menampung post yang valid
+                
                 if (snapshot.exists()) {
-                    const announcements = [];
-                    snapshot.forEach(childSnapshot => {
-                        announcements.push(childSnapshot.val());
-                    });
-                    
-                    // Balik urutannya agar yang terbaru di atas
-                    announcements.reverse().forEach(ann => {
-                        const date = new Date(ann.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-                        const li = document.createElement('li');
-                        li.className = 'announcement-item'; // (BARU) Kasih class
+                    const data = snapshot.val();
+                    // Loop semua data dan filter
+                    for (let key in data) {
+                        const post = data[key];
                         
-                        // (BARU) Render HTML yang lebih kompleks
+                        // (BARU) LOGIKA FILTER KADALUWARSA
+                        if (post.expiresAt && post.expiresAt < todayStr) {
+                            continue; // Lewati post ini
+                        }
+                        
+                        // Jika lolos, masukkan ke array
+                        postsArray.push({ key, ...post });
+                    }
+                } 
+                
+                if (postsArray.length > 0) {
+                    // (BARU) LOGIKA SORTING KOMPLEKS
+                    // 1. Utamakan Pin (isPinned: true)
+                    // 2. Jika status pin sama, urutkan berdasarkan timestamp terbaru
+                    postsArray.sort((a, b) => {
+                        if (a.isPinned && !b.isPinned) return -1; // a (pinned) comes before b (not pinned)
+                        if (!a.isPinned && b.isPinned) return 1; // b (pinned) comes before a (not pinned)
+                        return b.timestamp - a.timestamp; // Jika status pin sama, sort by date
+                    });
+
+                    // (BARU) Ambil 5 post teratas setelah disortir
+                    const limitedPosts = postsArray.slice(0, 5);
+
+                    limitedPosts.forEach(post => {
+                        const li = document.createElement('li');
+                        li.className = 'announcement-item';
+                        
+                        const date = new Date(post.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+                        
+                        // (BARU) Buat Tags HTML
+                        let tagsHtml = '';
+                        if (post.isPinned) {
+                            tagsHtml += `<span class="tag tag-pin"><i class="fa-solid fa-thumbtack"></i> Disematkan</span>`;
+                        }
+                        // Tentukan kelas CSS untuk kategori
+                        const categoryClass = `tag-cat-${post.category?.toLowerCase() || 'umum'}`;
+                        tagsHtml += `<span class="tag tag-cat ${categoryClass}">${escapeHTML(post.category || 'Umum')}</span>`;
+                        
+                        if (post.expiresAt) {
+                            tagsHtml += `<span class="tag tag-expiry"><i class="fa-solid fa-calendar-times"></i> Berakhir: ${post.expiresAt}</span>`;
+                        }
+                        
+                        // (BARU) Render HTML yang kompleks
                         li.innerHTML = `
                             <div class="announcement-header">
-                                <div>
-                                    <p>${ann.title}</p>
-                                    <small>
+                                <div class="ann-item-main">
+                                    <h3 class="ann-item-title">${escapeHTML(post.title)}</h3>
+                                    <div class="ann-item-meta">
                                         <i class="fa-solid fa-calendar-day"></i> ${date}
-                                        ${ann.author ? `| <i class="fa-solid fa-user"></i> ${ann.author}` : ''}
-                                    </small>
+                                        ${post.author ? `| <i class="fa-solid fa-user"></i> ${escapeHTML(post.author)}` : ''}
+                                    </div>
+                                    <div class="ann-item-tags">
+                                        ${tagsHtml}
+                                    </div>
                                 </div>
                                 <i class="fa-solid fa-chevron-down expand-icon"></i>
                             </div>
                             <div class="announcement-content">
-                                <p>${ann.content ? ann.content.replace(/\n/g, '<br>') : '<em>Tidak ada isi.</em>'}</p>
+                                ${post.content || '<em>Tidak ada isi.</em>'}
                             </div>
                         `;
                         listEl.appendChild(li);
@@ -1334,28 +1429,26 @@
                 listEl.innerHTML = '<li class="announcement-empty">Gagal memuat data.</li>';
             });
 
-            // (BARU) Tambahkan event listener untuk expand/collapse
+            // (Event listener tidak berubah, masih berfungsi)
             listEl.addEventListener('click', (e) => {
                 const header = e.target.closest('.announcement-header');
                 if (header) {
-                    const content = header.nextElementSibling; // Ambil .announcement-content
-                    const icon = header.querySelector('.expand-icon'); // Ambil icon chevron
+                    const content = header.nextElementSibling; 
+                    const icon = header.querySelector('.expand-icon');
                     
                     if (content) {
                         const isVisible = content.style.display === 'block';
                         content.style.display = isVisible ? 'none' : 'block';
-                        // Putar icon
                         icon.style.transform = isVisible ? 'rotate(0deg)' : 'rotate(180deg)';
                     }
                 }
             });
         }
-        // --- (AKHIR PERUBAHAN) ---
+        // --- (AKHIR PERUBAHAN PENGUMUMAN) ---
 
 
-        // --- FUNGSI TUGAS SAYA (LOCALSTORAGE) ---
+        // --- FUNGSI TUGAS SAYA (LOCALSTORAGE) (Tidak berubah) ---
         function initTodoWidget() {
-            // (Fungsi ini tidak berubah)
             const inputEl = document.getElementById('todo-input');
             const addBtn = document.getElementById('add-todo-btn');
             const listEl = document.getElementById('todo-list');
@@ -1374,8 +1467,7 @@
                     li.className = todo.completed ? 'completed' : '';
                     li.innerHTML = `
                         <input type="checkbox" data-index="${index}" ${todo.completed ? 'checked' : ''}>
-                        <span>${todo.text}</span>
-                        <button class="delete-todo" data-index="${index}"><i class="fa-solid fa-trash-can"></i></button>
+                        <span>${escapeHTML(todo.text)}</span> <button class="delete-todo" data-index="${index}"><i class="fa-solid fa-trash-can"></i></button>
                     `;
                     listEl.appendChild(li);
                 });
@@ -1412,9 +1504,8 @@
             renderTodos();
         }
 
-        // --- FUNGSI DATA EKSTERNAL KALENDER ---
+        // --- FUNGSI DATA EKSTERNAL KALENDER (Tidak berubah) ---
         async function fetchHolidays() {
-            // (Fungsi ini tidak berubah)
             const year = new Date().getFullYear();
             try {
                 const response = await fetch(`https://api-harilibur.vercel.app/api?year=${year}`);
@@ -1432,7 +1523,6 @@
             }
         }
         function fetchCalendarNotes() {
-            // (Fungsi ini tidak berubah)
             const notesRef = ref(db, 'calendar_notes');
             onValue(notesRef, (snapshot) => {
                 calendarNotes = snapshot.val() || {};
@@ -1441,10 +1531,9 @@
             });
         }
 
-        // --- FUNGSI KALENDER UTAMA ---
+        // --- FUNGSI KALENDER UTAMA (Tidak berubah) ---
         let currentDate = new Date();
         function initCalendar() {
-            // (Fungsi ini tidak berubah)
             const daysEl = document.getElementById('calendar-days');
             const prevBtn = document.getElementById('prev-month');
             const nextBtn = document.getElementById('next-month');
@@ -1467,7 +1556,6 @@
             renderCalendar();
         }
         function renderCalendar() {
-            // (Fungsi ini tidak berubah)
             const monthYearEl = document.getElementById('month-year');
             const daysEl = document.getElementById('calendar-days');
             const today = new Date();
@@ -1500,9 +1588,8 @@
             }
         }
 
-        // --- FUNGSI MODAL KALENDER ---
+        // --- FUNGSI MODAL KALENDER (Tidak berubah) ---
         function initCalendarModal() {
-            // (Fungsi ini tidak berubah)
             const backdrop = document.getElementById('calendar-modal-backdrop');
             const content = document.getElementById('calendar-modal-content');
             const closeBtn = document.getElementById('modal-close-btn');
@@ -1521,7 +1608,6 @@
             });
         }
         function openCalendarModal(dateStr) {
-            // (Fungsi ini tidak berubah)
             currentSelectedDate = dateStr;
             const backdrop = document.getElementById('calendar-modal-backdrop');
             const content = document.getElementById('calendar-modal-content');
@@ -1547,9 +1633,8 @@
                     noteItem.className = 'note-item';
                     const time = new Date(note.timestamp).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
                     noteItem.innerHTML = `
-                        <p>${note.note.replace(/\n/g, '<br>')}</p>
-                        <div class="note-item-meta">
-                            Oleh <span>${note.user}</span> pada ${time}
+                        <p>${escapeHTML(note.note).replace(/\n/g, '<br>')}</p> <div class="note-item-meta">
+                            Oleh <span>${escapeHTML(note.user)}</span> pada ${time}
                         </div>
                     `;
                     notesListEl.appendChild(noteItem);
@@ -1561,7 +1646,6 @@
             content.classList.add('visible');
         }
         function saveNoteToFirebase(dateStr, noteText) {
-            // (Fungsi ini tidak berubah)
             const saveBtn = document.getElementById('save-note-btn');
             const noteTextarea = document.getElementById('note-textarea');
             saveBtn.disabled = true;
@@ -1580,7 +1664,6 @@
                 })
                 .catch((error) => {
                     console.error("Gagal menyimpan catatan:", error);
-                    // (PERBAIKAN) Mengganti alert() dengan fungsi toast baru
                     showToast("Gagal menyimpan catatan. Silakan coba lagi.");
                 })
                 .finally(() => {
@@ -1589,9 +1672,8 @@
                 });
         }
 
-        // --- Animasi Scroll (Intersection Observer) ---
+        // --- Animasi Scroll (Intersection Observer) (Tidak berubah) ---
         function initIntersectionObserver() {
-            // (Fungsi ini tidak berubah)
             const animatedElements = document.querySelectorAll('.fade-in-up');
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
