@@ -22,7 +22,7 @@
         }
         .container {
             width: 100%;
-            max-width: 900px; /* Dibuat lebih ramping untuk form */
+            max-width: 900px;
             margin: 0 auto;
             padding: 0 24px;
         }
@@ -43,8 +43,6 @@
             z-index: 9999;
             font-size: 1.2rem;
         }
-
-        /* (BARU) Menambahkan spinner CSS dari dashboard */
         .spinner {
             width: 50px;
             height: 50px;
@@ -106,26 +104,54 @@
             color: #ffffff;
         }
 
-        /* Konten Form */
+        /* Konten Halaman */
         .main-page {
             padding: 60px 0;
+        }
+        .page-header {
+            margin-bottom: 24px;
         }
         .section-title {
             font-size: 1.8rem;
             font-weight: 700;
             color: #1f2937;
-            margin-bottom: 24px;
             border-left: 4px solid #D9232D;
             padding-left: 12px;
+            margin-bottom: 8px;
         }
+        
+        .back-to-dashboard {
+            display: inline-block;
+            font-size: 0.95rem;
+            color: #D9232D;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+            transition: color 0.3s;
+        }
+        .back-to-dashboard:hover {
+            color: #B01B22;
+        }
+        .back-to-dashboard i {
+            margin-right: 5px;
+        }
+
         .widget-card {
             background-color: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
             overflow: hidden;
+            margin-bottom: 32px;
         }
         .widget-body {
             padding: 24px 32px;
+        }
+        .widget-header {
+            padding: 20px 32px;
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 1.1rem;
+            font-weight: 700;
         }
 
         /* Form Styling */
@@ -199,7 +225,151 @@
             color: #16a34a;
             border: 1px solid #16a34a;
         }
-         .footer {
+
+        /* Daftar Pengumuman */
+        #announcement-list {
+            margin-top: 20px;
+        }
+        .announcement-item {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .announcement-item-content {
+            flex-grow: 1;
+            margin-right: 16px;
+        }
+        .announcement-item-content h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .announcement-item-content .meta {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+        .announcement-item-content p {
+            font-size: 0.95rem;
+            color: #374151;
+            white-space: pre-wrap; /* Agar format baris baru terlihat */
+        }
+        .announcement-item-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        .action-button {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        .edit-btn {
+            color: #3b82f6;
+        }
+        .edit-btn:hover {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+        }
+        .delete-btn {
+            color: #D9232D;
+        }
+        .delete-btn:hover {
+            background-color: #fee2e2;
+            border-color: #D9232D;
+        }
+        .no-announcements {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        /* (BARU) Info masa berlaku di daftar */
+        .announcement-item-content .meta.expiry {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #D9232D;
+            background-color: #fee2e2;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none; /* Sembunyi */
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            padding: 32px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .modal-button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-button-primary {
+            background-color: #D9232D;
+            color: white;
+        }
+        .modal-button-primary:hover {
+            background-color: #B01B22;
+        }
+        .modal-button-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .modal-button-secondary:hover {
+            background-color: #d1d5db;
+        }
+         
+        .footer {
             text-align: center;
             padding: 40px 24px;
             background-color: #ffffff;
@@ -212,7 +382,6 @@
 </head>
 <body>
 
-    <!-- (PERUBAHAN) Memperbaiki tampilan loading screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
         <p>Memverifikasi akses HRD...</p>
@@ -233,11 +402,19 @@
         </nav>
         
         <main class="main-page container">
-            <h2 class="section-title">Manajemen Pengumuman</h2>
+            
+            <div class="page-header">
+                <h2 class="section-title">Manajemen Pengumuman</h2>
+                <a href="dashboard.html" class="back-to-dashboard">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
+                </a>
+            </div>
+
             <div class="widget-card">
+                <div class="widget-header">
+                    Buat Pengumuman Baru
+                </div>
                 <div class="widget-body">
-                    <p style="margin-bottom: 20px; font-size: 0.95rem; color: #4b5563;">Buat dan publikasikan pengumuman baru untuk seluruh perusahaan. Pengumuman akan langsung tampil di Dashboard.</p>
-                    
                     <form id="announcement-form">
                         <div class="form-group">
                             <label for="ann-title">Judul Pengumuman</label>
@@ -249,12 +426,31 @@
                             <textarea id="ann-content" class="form-textarea" placeholder="Tulis isi lengkap pengumuman di sini..." required></textarea>
                         </div>
                         
+                        <div class="form-group">
+                            <label for="ann-expiry">Tanggal Berakhir (Opsional)</label>
+                            <input type="date" id="ann-expiry" class="form-input">
+                            <small style="font-size: 0.8rem; color: #6b7280;">
+                                Biarkan kosong jika pengumuman berlaku selamanya.
+                            </small>
+                        </div>
+                        
                         <button type="submit" class="form-button" id="submit-button">
                             Publikasikan Pengumuman
                         </button>
 
                         <div id="form-msg" class="message-box"></div>
                     </form>
+                </div>
+            </div>
+
+            <div class="widget-card">
+                <div class="widget-header">
+                    Daftar Pengumuman Aktif
+                </div>
+                <div class="widget-body">
+                    <div id="announcement-list">
+                        <div class="no-announcements">Memuat pengumuman...</div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -264,18 +460,71 @@
         </footer>
     </div>
 
+
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-header">Edit Pengumuman</h3>
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label for="edit-title">Judul Pengumuman</label>
+                    <input type="text" id="edit-title" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-content">Isi Pengumuman</label>
+                    <textarea id="edit-content" class="form-textarea" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-expiry">Tanggal Berakhir (Opsional)</label>
+                    <input type="date" id="edit-expiry" class="form-input">
+                    <small style="font-size: 0.8rem; color: #6b7280;">
+                        Biarkan kosong jika pengumuman berlaku selamanya.
+                    </small>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="modal-button modal-button-secondary" id="cancel-edit-btn">
+                        Batal
+                    </button>
+                    <button type="submit" class="modal-button modal-button-primary" id="save-edit-btn">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-header">Konfirmasi Hapus</h3>
+            <p>Apakah Anda yakin ingin menghapus pengumuman ini secara permanen? Tindakan ini tidak dapat diurungkan.</p>
+            <div class="modal-buttons">
+                <button class="modal-button modal-button-secondary" id="cancel-delete-btn">
+                    Batal
+                </button>
+                <button class="modal-button modal-button-primary" id="confirm-delete-btn">
+                    Ya, Hapus
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <script type="module">
         // Import functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         
-        // Import RTDB
         import { 
             getDatabase, 
             ref, 
             get,
             set,
             push,
+            onValue, 
+            remove, 
+            update, 
             serverTimestamp 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -306,44 +555,28 @@
         // --- AUTH GUARD (PENTING!) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User login, cek data di RTDB
                 const userRef = ref(db, 'users/' + user.uid);
                 
                 get(userRef).then((snapshot) => {
                     // Cek jika user Admin (root)
                     if (user.email === 'root@zeppelin.center') {
-                        console.log("Akses disetujui: ADMIN.");
                         loggedInUserName = "Admin (Root)";
-                        loggedInUserDept = "IT"; // Admin dianggap IT/HRD
-                        mainContent.style.display = 'block';
-                        loadingScreen.style.display = 'none';
-                        return; // Loloskan admin
+                        loggedInUserDept = "IT";
+                        showPage();
+                        return; 
                     }
 
-                    // Jika bukan admin, cek data departemen
                     if (snapshot.exists()) {
                         const userData = snapshot.val();
                         
-                        // --- KONDISI AKSES: Approved DAN Departemen HRD ---
                         if (userData.status === 'approved' && (userData.departemen === 'HRD' || userData.departemen === 'Human Resources')) {
-                            console.log("Akses disetujui: HRD.");
                             loggedInUserName = userData.nama || "HRD User";
                             loggedInUserDept = userData.departemen;
-                            
-                            // Tampilkan halaman
-                            mainContent.style.display = 'block';
-                            loadingScreen.style.display = 'none';
-
+                            showPage(); // Tampilkan halaman
                         } else {
-                            // --- AKSES DITOLAK: Bukan HRD atau belum approved ---
-                            console.log("Akses ditolak: Bukan HRD atau status tidak diizinkan.");
-                            loadingScreen.innerHTML = "<p>Anda tidak memiliki hak akses untuk halaman ini. Mengalihkan...</p>";
-                            setTimeout(() => {
-                                window.location.href = 'dashboard.html'; // Tendang ke dashboard
-                            }, 2000);
+                            redirectToDashboard("Akses ditolak: Bukan HRD.");
                         }
                     } else {
-                        // Data user tidak ada
                         console.log("Akses ditolak: Data user tidak ditemukan.");
                         loadingScreen.innerHTML = "<p>Data akun tidak ditemukan. Mengalihkan...</p>";
                         signOut(auth).then(() => {
@@ -351,7 +584,6 @@
                         });
                     }
                 }).catch((error) => {
-                    // Gagal baca DB
                     console.error("Gagal memvalidasi user:", error);
                     loadingScreen.innerHTML = "<p>Gagal terhubung ke server. Mengalihkan...</p>";
                     signOut(auth).then(() => {
@@ -360,11 +592,24 @@
                 });
 
             } else {
-                // Tidak ada user yang login, alihkan ke login
                 console.log("Pengguna tidak terautentikasi.");
                 window.location.href = 'login.html';
             }
         });
+
+        function showPage() {
+            mainContent.style.display = 'block';
+            loadingScreen.style.display = 'none';
+            loadAnnouncements();
+        }
+
+        function redirectToDashboard(message) {
+            console.log(message);
+            loadingScreen.innerHTML = `<p>${message} Mengalihkan...</p>`;
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        }
 
         // --- Fungsi Logout ---
         logoutBtn.addEventListener('click', () => {
@@ -375,7 +620,7 @@
             });
         });
 
-        // --- (BARU) Fungsi Tampilkan Pesan Form ---
+        // --- Fungsi Tampilkan Pesan Form ---
         function showFormMessage(message, isError = true) {
             const msgBox = document.getElementById('form-msg');
             msgBox.textContent = message;
@@ -386,10 +631,11 @@
             document.getElementById('form-msg').style.display = 'none';
         }
 
-        // --- LOGIKA FORM SUBMIT ---
+        // --- LOGIKA FORM SUBMIT (CREATE) ---
         const annForm = document.getElementById('announcement-form');
         const annTitle = document.getElementById('ann-title');
         const annContent = document.getElementById('ann-content');
+        const annExpiry = document.getElementById('ann-expiry'); // (BARU)
         const submitButton = document.getElementById('submit-button');
 
         annForm.addEventListener('submit', (e) => {
@@ -398,6 +644,7 @@
 
             const titleVal = annTitle.value.trim();
             const contentVal = annContent.value.trim();
+            const expiryVal = annExpiry.value; // (BARU)
 
             if (!titleVal || !contentVal) {
                 showFormMessage("Judul dan Isi Pengumuman tidak boleh kosong.");
@@ -407,35 +654,228 @@
             submitButton.disabled = true;
             submitButton.textContent = "Memproses...";
 
-            // Buat data pengumuman baru
             const newAnnouncement = {
                 title: titleVal,
                 content: contentVal,
                 author: loggedInUserName,
-                timestamp: serverTimestamp() // Gunakan timestamp server
+                timestamp: serverTimestamp()
             };
 
-            // Simpan ke database di path 'announcements'
+            // (BARU) Hanya tambahkan 'expiresAt' jika diisi
+            if (expiryVal) {
+                newAnnouncement.expiresAt = expiryVal;
+            }
+
             const announcementsRef = ref(db, 'announcements');
-            const newPostRef = push(announcementsRef); // Buat ID unik
+            const newPostRef = push(announcementsRef); 
 
             set(newPostRef, newAnnouncement)
                 .then(() => {
                     showFormMessage("Pengumuman berhasil dipublikasikan!", false);
-                    annForm.reset(); // Kosongkan form
-                    
+                    annForm.reset();
                     submitButton.disabled = false;
                     submitButton.textContent = "Publikasikan Pengumuman";
-                    
                     setTimeout(hideFormMessage, 3000);
                 })
                 .catch((error) => {
                     console.error("Gagal menyimpan pengumuman:", error);
                     showFormMessage("Gagal menyimpan pengumuman. Coba lagi.");
-                    
                     submitButton.disabled = false;
                     submitButton.textContent = "Publikasikan Pengumuman";
                 });
+        });
+
+
+        // --- LOGIKA MENAMPILKAN DAFTAR (READ) ---
+        const announcementsList = document.getElementById('announcement-list');
+        const announcementsRef = ref(db, 'announcements');
+
+        function loadAnnouncements() {
+            onValue(announcementsRef, (snapshot) => {
+                announcementsList.innerHTML = ''; // Kosongkan daftar
+                
+                // (BARU) Dapatkan tanggal hari ini dalam format YYYY-MM-DD (Waktu Lokal)
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const todayStr = `${year}-${month}-${day}`;
+                
+                let hasVisibleAnnouncements = false; // (BARU) Flag
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    // Urutkan (yang terbaru di atas)
+                    const keys = Object.keys(data).sort((a, b) => data[b].timestamp - data[a].timestamp);
+
+                    keys.forEach(key => {
+                        const post = data[key];
+
+                        // (BARU) LOGIKA FILTER MASA BERLAKU
+                        // Jika 'expiresAt' ada DAN 'expiresAt' sudah lewat (kurang dari hari ini)
+                        if (post.expiresAt && post.expiresAt < todayStr) {
+                            return; // Lewati post ini, jangan tampilkan
+                        }
+
+                        // Jika lolos filter, tampilkan
+                        hasVisibleAnnouncements = true;
+                        const postElement = createAnnouncementElement(key, post);
+                        announcementsList.appendChild(postElement);
+                    });
+                } 
+                
+                // (BARU) Perbarui pesan jika tidak ada post yang terlihat
+                if (!hasVisibleAnnouncements) {
+                    announcementsList.innerHTML = '<div class="no-announcements">Belum ada pengumuman yang dibuat (atau semua sudah kedaluwarsa).</div>';
+                }
+
+            }, (error) => {
+                console.error("Gagal memuat data:", error);
+                announcementsList.innerHTML = '<div class="no-announcements error">Gagal memuat pengumuman.</div>';
+            });
+        }
+
+        function createAnnouncementElement(key, post) {
+            const item = document.createElement('div');
+            item.className = 'announcement-item';
+
+            // Konversi timestamp ke tanggal
+            const date = new Date(post.timestamp).toLocaleString('id-ID', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+            });
+
+            // (BARU) Tambahkan info masa berlaku jika ada
+            let expiryHtml = '';
+            if (post.expiresAt) {
+                expiryHtml = `<div class="meta expiry">
+                    <i class="fa-solid fa-calendar-times"></i> Berakhir: ${post.expiresAt}
+                </div>`;
+            }
+
+            item.innerHTML = `
+                <div class="announcement-item-content">
+                    <h3>${escapeHTML(post.title)}</h3>
+                    <div class="meta">Oleh ${escapeHTML(post.author)} - ${date}</div>
+                    <p>${escapeHTML(post.content).replace(/\n/g, '<br>')}</p>
+                    ${expiryHtml} </div>
+                <div class="announcement-item-actions">
+                    <button class="action-button edit-btn" data-id="${key}">
+                        <i class="fa-solid fa-pencil"></i> Edit
+                    </button>
+                    <button class="action-button delete-btn" data-id="${key}">
+                        <i class="fa-solid fa-trash"></i> Hapus
+                    </button>
+                </div>
+            `;
+
+            // Tambah event listener untuk tombol
+            item.querySelector('.edit-btn').addEventListener('click', () => handleEdit(key, post));
+            item.querySelector('.delete-btn').addEventListener('click', () => handleDelete(key));
+
+            return item;
+        }
+
+        // Helper untuk mencegah XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(match) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                }[match];
+            });
+        }
+
+
+        // --- LOGIKA EDIT & DELETE ---
+        
+        // Modal Elements
+        const editModal = document.getElementById('edit-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const editForm = document.getElementById('edit-form');
+        const editIdInput = document.getElementById('edit-id');
+        const editTitleInput = document.getElementById('edit-title');
+        const editContentInput = document.getElementById('edit-content');
+        const editExpiryInput = document.getElementById('edit-expiry'); // (BARU)
+
+        // --- Logika Edit (Update) ---
+        function handleEdit(key, post) {
+            editIdInput.value = key;
+            editTitleInput.value = post.title;
+            editContentInput.value = post.content;
+            editExpiryInput.value = post.expiresAt || ''; // (BARU) Isi tanggal, atau kosongkan
+            editModal.style.display = 'flex';
+        }
+
+        document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+            editModal.style.display = 'none';
+        });
+
+        editForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = editIdInput.value;
+            const newTitle = editTitleInput.value.trim();
+            const newContent = editContentInput.value.trim();
+            const newExpiry = editExpiryInput.value; // (BARU)
+
+            if (!newTitle || !newContent) {
+                alert("Judul dan Konten tidak boleh kosong.");
+                return;
+            }
+
+            const updates = {
+                title: newTitle,
+                content: newContent,
+                expiresAt: newExpiry || null // (BARU) Set ke nilai baru, atau null jika dikosongkan
+            };
+            
+            const postRef = ref(db, 'announcements/' + id);
+            update(postRef, updates)
+                .then(() => {
+                    editModal.style.display = 'none';
+                    showFormMessage("Pengumuman berhasil diperbarui!", false);
+                    setTimeout(hideFormMessage, 3000);
+                })
+                .catch((error) => {
+                    console.error("Gagal update:", error);
+                    alert("Gagal memperbarui pengumuman.");
+                });
+        });
+
+        // --- Logika Delete (Delete) ---
+        let deleteKey = null; // Variabel untuk menyimpan key yang akan dihapus
+
+        function handleDelete(key) {
+            deleteKey = key;
+            deleteModal.style.display = 'flex';
+        }
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            deleteKey = null;
+            deleteModal.style.display = 'none';
+        });
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            if (deleteKey) {
+                const postRef = ref(db, 'announcements/' + deleteKey);
+                remove(postRef)
+                    .then(() => {
+                        deleteModal.style.display = 'none';
+                        showFormMessage("Pengumuman berhasil dihapus.", false);
+                        setTimeout(hideFormMessage, 3000);
+                        deleteKey = null;
+                    })
+                    .catch((error) => {
+                        console.error("Gagal hapus:", error);
+                        alert("Gagal menghapus pengumuman.");
+                        deleteModal.style.display = 'none';
+                        deleteKey = null;
+                    });
+            }
         });
 
     </script>
