@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard - Zeppelin Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* [CSS TIDAK BERUBAH] */
+        /* [CSS STANDARD] */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        html {
-            scroll-behavior: smooth;
+        /* [PERBAIKAN CSS GLOBAL]: Memastikan tidak ada overflow horizontal */
+        html, body {
+            overflow-x: hidden; 
         }
         body {
             font-family: 'Roboto', sans-serif;
@@ -27,7 +29,8 @@
             width: 100%;
             max-width: 1280px;
             margin: 0 auto;
-            padding: 0 24px;
+            /* Padding disetel ke 12px untuk mobile (akan di override di media query) */
+            padding: 0 24px; 
         }
         .loading-screen {
             position: fixed;
@@ -103,7 +106,7 @@
             font-size: 1.1rem;
             color: #6b7280;
             text-decoration: none;
-            position: relative; /* Untuk Tooltip */
+            position: relative; 
             transition: color 0.3s ease;
         }
         .shortcut-icon:hover {
@@ -160,6 +163,63 @@
             color: #ffffff;
             border-color: #D9232D;
         }
+        
+        .menu-toggle {
+            display: none; 
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #1f2937;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%; 
+            max-width: 300px;
+            height: 100vh;
+            background-color: #ffffff;
+            box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+            z-index: 1001;
+            padding: 20px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            flex-direction: column;
+            gap: 10px; 
+            overflow-y: auto; /* Memungkinkan scroll vertikal jika menu terlalu panjang */
+        }
+        .mobile-menu.active {
+            display: flex;
+            transform: translateX(0);
+        }
+        .mobile-menu a {
+            padding: 10px 0;
+            border-bottom: 1px solid #f3f4f6;
+            color: #1f2937;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            font-size: 0.95rem; 
+        }
+        .mobile-menu a:last-of-type {
+            border-bottom: none;
+        }
+        .mobile-menu i {
+            margin-right: 10px;
+            color: #D9232D;
+            font-size: 1.1rem;
+        }
+        .mobile-menu hr {
+            border: 0;
+            border-top: 1px solid #e5e7eb;
+            margin: 10px 0;
+        }
+
+
         .hero {
             background-color: #ffffff;
             padding: 80px 0;
@@ -224,7 +284,7 @@
             width: 350px;
             height: 350px;
             border-radius: 50%;
-            background-color: #fff7f2; /* Oranye sangat muda */
+            background-color: #fff7f2; 
             position: relative;
             display: flex;
             justify-content: center;
@@ -274,6 +334,7 @@
         .icon-orange { background-color: #fff7ed; color: #F37321; }
         .icon-gray { background-color: #f3f4f6; color: #4b5563; }
         .icon-blue { background-color: #e0e7ff; color: #4338ca; }
+        .icon-green { background-color: #d1fae5; color: #10b981; } 
 
         .portal-card h3 {
             font-size: 1.3rem;
@@ -301,7 +362,8 @@
             padding: 60px 0;
         }
         .main-grid {
-            grid-template-columns: 2fr 1fr; /* Kolom kiri lebih lebar */
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
             gap: 32px;
         }
         .section-title {
@@ -315,12 +377,12 @@
         .main-column-left {
             display: flex;
             flex-direction: column;
-            gap: 32px; /* Jarak antar card di kolom kiri */
+            gap: 32px; 
         }
         .main-column-right {
             display: flex;
             flex-direction: column;
-            gap: 32px; /* Jarak antar card di kolom kanan */
+            gap: 32px; 
         }
         .portal-list {
             display: flex;
@@ -376,7 +438,7 @@
             background-color: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-            overflow: hidden; /* Agar rapi */
+            overflow: hidden; 
         }
         .widget-header {
             padding: 20px 24px;
@@ -486,10 +548,10 @@
             right: 4px;
         }
 
-        /* --- (PERUBAHAN TOTAL) CSS UNTUK PENGUMUMAN KOMPLEKS --- */
+        /* --- CSS UNTUK PENGUMUMAN KOMPLEKS --- */
         #announcement-list {
             list-style: none;
-            max-height: 500px; /* Sedikit lebih tinggi */
+            max-height: 500px; 
             overflow-y: auto;
             padding-right: 10px;
         }
@@ -499,25 +561,24 @@
         .announcement-item:last-child {
             border-bottom: none;
         }
-        /* Header yang bisa diklik */
         .announcement-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start; /* Ubah ke flex-start */
+            align-items: flex-start; 
             cursor: pointer;
-            padding: 16px 4px; /* Beri padding */
+            padding: 16px 4px; 
         }
-        .ann-item-main { /* (BARU) Wrapper untuk teks */
+        .ann-item-main { 
             flex-grow: 1;
             margin-right: 16px;
         }
-        .ann-item-title { /* (BARU) Judul */
+        .ann-item-title { 
             font-size: 1.1rem;
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 4px;
         }
-        .ann-item-meta { /* (BARU) Info tanggal & author */
+        .ann-item-meta { 
             font-size: 0.8rem;
             color: #6b7280;
             margin-bottom: 12px;
@@ -525,14 +586,13 @@
         .ann-item-meta i {
             margin-right: 4px;
         }
-        .ann-item-tags { /* (BARU) Wrapper untuk tags */
+        .ann-item-tags { 
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
         }
-        /* (BARU) Style untuk Tags (dicopy dari content-management) */
         .tag {
-            font-size: 0.7rem; /* Dikecilkan sedikit untuk dashboard */
+            font-size: 0.7rem; 
             font-weight: 700;
             padding: 3px 8px;
             border-radius: 99px;
@@ -549,9 +609,8 @@
             color: #9ca3af;
             transition: transform 0.3s ease;
             font-size: 0.9rem;
-            padding-top: 4px; /* Sejajarkan dengan judul */
+            padding-top: 4px; 
         }
-        /* Konten yang tersembunyi */
         .announcement-content {
             padding: 16px;
             font-size: 0.9rem;
@@ -559,9 +618,8 @@
             line-height: 1.6;
             background-color: #fdfdfd;
             border-top: 1px solid #f3f4f6;
-            display: none; /* Sembunyi by default */
+            display: none; 
         }
-        /* (BARU) Style untuk Rich Text Content */
         .announcement-content h1,
         .announcement-content h2,
         .announcement-content h3 {
@@ -591,7 +649,6 @@
         }
         .announcement-content strong { font-weight: 700; }
         .announcement-content em { font-style: italic; }
-        /* --- (AKHIR PERUBAHAN CSS) --- */
 
         .announcement-empty {
             font-size: 0.9rem;
@@ -669,7 +726,7 @@
             font-size: 0.9rem;
         }
 
-        /* (CSS Tidak Berubah) */
+        /* (CSS Modal dan Toast - Tidak Berubah) */
         .toast-notification {
             position: fixed;
             bottom: -100px;
@@ -828,70 +885,165 @@
         #save-note-btn:hover {
             background-color: #B01B22;
         }
+        
+        /* --- (PERBAIKAN) CSS Untuk Menyembunyikan Akses Non-HRD --- */
+        .hidden-non-hrd {
+            display: none !important;
+        }
+        /* --- (AKHIR PERBAIKAN) --- */
+        
+        /* ======================================= */
+        /* === MEDIA QUERY UNTUK LAYAR MOBILE === */
+        /* ======================================= */
         @media (max-width: 768px) {
-            .nav-shortcuts, #user-greeting { display: none; } 
-            .hero-container { flex-direction: column; gap: 30px; }
-            .hero { padding: 40px 0; text-align: center; }
-            .hero-text { max-width: 100%; }
-            .hero-text h1 { font-size: 2.5rem; }
-            .icon-spinner { width: 250px; height: 250px; }
-            .portal-grid { grid-template-columns: 1fr; }
-            .main-content {
-                padding: 40px 0;
+            /* 1. GLOBAL & CONTAINER */
+            .container {
+                /* Padding dikurangi lagi */
+                padding: 0 12px; 
             }
-            .main-grid {
-                grid-template-columns: 1fr;
-                gap: 40px; 
+            /* Memastikan body tidak memiliki lebar tetap */
+            body {
+                overflow-x: hidden; 
             }
-            .main-column-left,
-            .main-column-right {
-                gap: 40px; 
+
+            /* 2. NAVBAR */
+            .navbar {
+                padding: 10px 12px;
             }
-            .portal-list a {
-                padding: 15px;
+            .nav-shortcuts, 
+            #user-greeting { 
+                display: none !important; 
+            } 
+            .menu-toggle {
+                display: block; 
             }
-            .link-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-                margin-right: 15px;
+            .nav-right {
+                gap: 8px; 
             }
-            .widget-body {
-                padding: 20px;
-            }
-            .digital-clock {
-                font-size: 2.2rem; 
-            }
-            #clock-widget {
-                padding-bottom: 20px;
-                margin-bottom: 20px;
-            }
-            #calendar-widget {
+            .logout-button {
+                padding: 5px 8px; 
                 font-size: 0.8rem;
             }
-            .calendar-grid {
-                gap: 5px;
+            .mobile-menu {
+                width: 90vw; 
+                max-width: 280px;
             }
-            .calendar-grid div {
-                padding: 5px;
+
+
+            /* 3. HERO SECTION */
+            .hero { 
+                padding: 25px 0; 
+                text-align: center; 
             }
-            .cal-nav button {
-                width: 25px;
-                height: 25px;
+            .hero-container { 
+                flex-direction: column; 
+                gap: 15px; 
             }
-            .section-title {
-                font-size: 1.3rem;
-                margin-bottom: 20px;
+            .hero-text { 
+                max-width: 100%; 
             }
-            .link-text h3 {
-                font-size: 1rem;
+            .hero-text h1 { 
+                font-size: 2rem; 
+                margin-bottom: 8px;
+            }
+            .hero-text p {
+                font-size: 0.95rem; 
+                margin-bottom: 15px;
+            }
+            .hero-button {
+                padding: 10px 20px; 
+                font-size: 0.9rem;
+            }
+            .hero-visual {
+                order: -1; 
+            }
+            .icon-spinner { 
+                width: 180px; 
+                height: 180px; 
+            }
+            .icon-spinner .center-icon {
+                font-size: 4rem; 
+            }
+
+            /* 4. PORTAL SECTION (Grid Bawah Hero) */
+            .portal-section {
+                padding: 25px 0;
+            }
+            .portal-grid { 
+                grid-template-columns: 1fr; 
+                gap: 12px; 
+            }
+            .portal-card {
+                padding: 18px;
             }
             .portal-card h3 {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
-            /* (BARU) Responsive untuk tag */
-            .ann-item-tags {
-                margin-top: 10px;
+            .portal-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+
+            /* 5. MAIN CONTENT (Grid Utama) */
+            .main-content {
+                padding: 25px 0;
+            }
+            .main-grid {
+                grid-template-columns: 1fr; 
+                gap: 25px; 
+            }
+            .section-title {
+                font-size: 1.2rem;
+                margin-bottom: 12px;
+                padding-left: 8px;
+            }
+
+            /* 6. WIDGETS & LISTS */
+            .widget-body {
+                padding: 12px;
+            }
+            #clock-widget {
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+            }
+            .digital-clock {
+                font-size: 1.8rem; 
+            }
+            .digital-date {
+                font-size: 0.85rem;
+            }
+            .calendar-grid {
+                gap: 3px; 
+            }
+            .calendar-grid div {
+                padding: 3px; 
+                font-size: 0.8rem;
+            }
+            .link-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+                margin-right: 12px;
+            }
+            .link-text h3 {
+                font-size: 0.95rem;
+            }
+            .link-text p {
+                font-size: 0.8rem;
+            }
+            .portal-list a {
+                padding: 12px;
+            }
+            .announcement-header {
+                padding: 10px 0; 
+            }
+
+            /* 7. FOOTER */
+            .footer {
+                margin-top: 20px;
+                padding: 20px 12px;
             }
         }
     </style>
@@ -911,6 +1063,8 @@
                     <i class="fa-solid fa-gear"></i> ZEPPELIN
                 </a>
                 <div class="nav-right">
+                    <button class="menu-toggle" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+
                     <div class="nav-shortcuts">
                         <a href="https://itdevhiro-glitch.github.io/workspace-itsupport/user.html" target="_blank" class="shortcut-icon">
                             <i class="fa-solid fa-headset"></i>
@@ -938,6 +1092,20 @@
                 </div>
             </div>
         </nav>
+        
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="https://itdevhiro-glitch.github.io/workspace-itsupport/user.html" target="_blank"><i class="fa-solid fa-headset"></i> Layanan IT</a>
+            <a href="chat.html"><i class="fa-solid fa-comments"></i> Pusat Kolaborasi</a>
+            <a href="permintaanuser.html"><i class="fa-solid fa-laptop-file"></i> Permintaan Perangkat</a>
+            <a href="#" id="mobile-hr-link"><i class="fa-solid fa-pen-to-square"></i> Manajemen Pengumuman</a>
+            <hr>
+            <a href="#"><i class="fa-solid fa-bullhorn"></i> Pemasaran</a>
+            <a href="#"><i class="fa-solid fa-boxes-stacked"></i> Stok</a>
+            <hr>
+            <button id="logout-btn-mobile" class="logout-button" style="width: 100%;">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar
+            </button>
+        </div>
         
         <section class="hero">
             <div class="container hero-container">
@@ -967,14 +1135,14 @@
                     </a>
                     
                     <a href="chat.html" class="portal-card fade-in-up" style="transition-delay: 200ms;">
-                        <div class="portal-icon icon-gray">
+                        <div class="portal-icon icon-green">
                             <i class="fa-solid fa-comments"></i>
                         </div>
                         <h3>Pusat Kolaborasi</h3>
                         <p>Fitur komunikasi internal: chat antar karyawan, grup departemen, dan Admin.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
-                    <a id="manage-content-card" href="content-management.html" class="portal-card fade-in-up" style="transition-delay: 300ms;"> <div class="portal-icon icon-blue"> <i class="fa-solid fa-pen-to-square"></i>
+                    <a id="manage-content-card" href="#" class="portal-card fade-in-up" style="transition-delay: 300ms;"> <div class="portal-icon icon-blue"> <i class="fa-solid fa-pen-to-square"></i>
                         </div>
                         <h3>Manajemen Pengumuman</h3> <p>Hanya untuk HRD. Update pengumuman perusahaan terbaru.</p> <span class="portal-link">Buka Halaman <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
@@ -1046,14 +1214,14 @@
                         <div class="portal-list">
                             
                             <a href="chat.html">
-                                <i class="link-icon icon-gray fa-solid fa-comments"></i>
+                                <i class="link-icon icon-green fa-solid fa-comments"></i>
                                 <div class="link-text">
                                     <h3>Pusat Kolaborasi</h3>
                                     <p>Chat internal antar karyawan dan grup departemen.</p>
                                 </div>
                                 <i class="link-arrow fa-solid fa-arrow-right"></i>
                             </a>
-                            <a id="hr-quick-link" href="content-management.html"> <i class="link-icon icon-blue fa-solid fa-pen-to-square"></i> <div class="link-text">
+                            <a id="hr-quick-link" href="#"> <i class="link-icon icon-blue fa-solid fa-pen-to-square"></i> <div class="link-text">
                                     <h3>Buat Pengumuman</h3>
                                     <p>Buka halaman manajemen konten (Khusus HRD).</p>
                                 </div>
@@ -1161,17 +1329,36 @@
         const loadingScreen = document.getElementById('loading-screen');
         const userGreeting = document.getElementById('user-greeting');
         const logoutBtn = document.getElementById('logout-btn');
+        // Elemen HRD
+        const manageCard = document.getElementById('manage-content-card');
+        const hrQuickLink = document.getElementById('hr-quick-link');
+        const mobileHrLink = document.getElementById('mobile-hr-link');
+        
+        // Mobile Menu DOM
+        const menuToggleBtn = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const logoutBtnMobile = document.getElementById('logout-btn-mobile');
+
+        // Mobile Menu Event Listener
+        menuToggleBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+
 
         // (Fungsi tidak berubah)
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
+        const handleLogout = () => {
+             signOut(auth).then(() => {
                 console.log("Logout berhasil, mengalihkan ke login...");
                 window.location.href = 'login.html'; 
             }).catch((error) => {
                 console.error("Gagal logout:", error);
                 showToast("Gagal logout, silakan coba lagi."); 
             });
-        });
+        };
+        
+        logoutBtn.addEventListener('click', handleLogout);
+        logoutBtnMobile.addEventListener('click', handleLogout); 
+        
 
         // Variabel global
         let nationalHolidays = {};
@@ -1205,7 +1392,7 @@
             });
         }
 
-        // --- AUTH GUARD & DATA LOADER (Tidak berubah) ---
+        // --- AUTH GUARD & DATA LOADER (Diperbarui dengan remove() logic) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Pengguna terautentikasi, memvalidasi status:", user.uid);
@@ -1215,8 +1402,6 @@
                 get(userRef).then((snapshot) => {
                     
                     let isHRD = false; 
-                    const manageCard = document.getElementById('manage-content-card');
-                    const hrQuickLink = document.getElementById('hr-quick-link');
 
                     // Cek Admin
                     if (user.email === 'root@zeppelin.center') {
@@ -1225,22 +1410,7 @@
                         loggedInUserName = "Admin"; 
                         isHRD = true; 
 
-                        mainContent.style.display = 'block';
-                        loadingScreen.style.display = 'none';
-
-                        runClock();
-                        initCalendar(); 
-                        initTodoWidget(); 
-                        initAnnouncementWidget(); // Jalankan fungsi baru
-                        
-                        fetchHolidays();
-                        fetchCalendarNotes();
-                        initIntersectionObserver();
-                        return;
-                    }
-
-                    // Jika BUKAN ADMIN, lanjutkan pengecekan status
-                    if (snapshot.exists()) {
+                    } else if (snapshot.exists()) {
                         const userData = snapshot.val();
                         
                         if (userData.status === 'approved') {
@@ -1253,35 +1423,26 @@
                                 isHRD = true;
                             }
                             
-                            mainContent.style.display = 'block';
-                            loadingScreen.style.display = 'none';
-
-                            runClock();
-                            initCalendar(); 
-                            initTodoWidget(); 
-                            initAnnouncementWidget();
-                            
-                            fetchHolidays();
-                            fetchCalendarNotes();
-                            initIntersectionObserver();
-
                         } else if (userData.status === 'pending') {
                             console.log("Akses ditolak: Akun 'pending'.");
                             signOut(auth).then(() => {
                             window.location.href = 'login.html?reason=pending'; 
                         });
+                        return;
                         
                         } else if (userData.status === 'rejected') { 
                             console.log("Akses ditolak: Akun 'rejected'.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=rejected';
                             });
+                            return;
                         
                         } else { 
                             console.log("Akses ditolak: Status akun tidak diketahui.");
                             signOut(auth).then(() => {
                                 window.location.href = 'login.html?reason=invalid';
                             });
+                            return;
                         }
                         
                     } else {
@@ -1289,21 +1450,63 @@
                         signOut(auth).then(() => {
                             window.location.href = 'login.html?reason=no_data';
                         });
+                        return;
                     }
 
+                    // --- [PERBAIKAN FINAL: Penanganan Akses HRD (Remove/Toast)] ---
                     if (!isHRD) {
+                        
+                        // Handler pencegahan klik (Ini akan dipasang pada TAUTAN DENGAN HREF='#')
                         const accessDeniedHandler = (e) => {
                             e.preventDefault(); 
+                            mobileMenu.classList.remove('active');
                             showToast("Akses Ditolak. Menu ini khusus untuk Departemen HRD.");
                         };
-                        
+
+                        // 1. Sembunyikan elemen secara visual (menggunakan kelas CSS)
                         if (manageCard) {
+                            manageCard.classList.add('hidden-non-hrd');
                             manageCard.addEventListener('click', accessDeniedHandler);
+                            console.log("Kartu Manajemen Pengumuman disembunyikan.");
+                        }
+                        // 2. Sembunyikan quick link
+                        if (hrQuickLink) {
+                            hrQuickLink.classList.add('hidden-non-hrd');
+                            hrQuickLink.addEventListener('click', accessDeniedHandler);
+                            console.log("Quick Link HRD disembunyikan.");
+                        }
+                        // 3. Sembunyikan link di Mobile Menu
+                        if (mobileHrLink) {
+                            mobileHrLink.classList.add('hidden-non-hrd');
+                            mobileHrLink.addEventListener('click', accessDeniedHandler);
+                            console.log("Mobile Link HRD disembunyikan.");
+                        }
+                        
+                    } else {
+                        // Jika IS HRD, pastikan linknya berfungsi
+                        if (manageCard) {
+                            manageCard.href = "content-management.html";
                         }
                         if (hrQuickLink) {
-                            hrQuickLink.addEventListener('click', accessDeniedHandler);
+                            hrQuickLink.href = "content-management.html";
+                        }
+                        if (mobileHrLink) {
+                            mobileHrLink.href = "content-management.html";
                         }
                     }
+                    
+                    // Tampilkan konten utama setelah semua validasi dan pengaturan selesai
+                    mainContent.style.display = 'block';
+                    loadingScreen.style.display = 'none';
+
+                    runClock();
+                    initCalendar(); 
+                    initTodoWidget(); 
+                    initAnnouncementWidget();
+                    
+                    fetchHolidays();
+                    fetchCalendarNotes();
+                    initIntersectionObserver();
 
                 }).catch((error) => {
                     console.error("Gagal memvalidasi user:", error);
@@ -1317,8 +1520,8 @@
                 window.location.href = 'login.html';
             }
         });
-
-        // --- Widget Jam (Tidak berubah) ---
+        
+        // --- Sisa Fungsi (Tidak Berubah) ---
         function runClock() {
             const clockEl = document.querySelector('.digital-clock');
             const dateEl = document.querySelector('.digital-date');
@@ -1336,51 +1539,41 @@
             setInterval(updateTime, 1000);
         }
 
-        // --- (PERUBAHAN TOTAL) FUNGSI PENGUMUMAN (DARI FIREBASE) ---
         function initAnnouncementWidget() {
             const listEl = document.getElementById('announcement-list');
-            // (BARU) Ambil SEMUA pengumuman, sorting dan filtering akan dilakukan di client
             const announcementsRef = ref(db, 'announcements');
 
             onValue(announcementsRef, (snapshot) => {
                 listEl.innerHTML = ''; 
                 
-                // (BARU) Dapatkan tanggal hari ini untuk filter kadaluwarsa
                 const now = new Date();
                 const year = now.getFullYear();
                 const month = String(now.getMonth() + 1).padStart(2, '0');
                 const day = String(now.getDate()).padStart(2, '0');
                 const todayStr = `${year}-${month}-${day}`;
 
-                let postsArray = []; // Array untuk menampung post yang valid
+                let postsArray = [];
                 
                 if (snapshot.exists()) {
                     const data = snapshot.val();
-                    // Loop semua data dan filter
                     for (let key in data) {
                         const post = data[key];
                         
-                        // (BARU) LOGIKA FILTER KADALUWARSA
                         if (post.expiresAt && post.expiresAt < todayStr) {
-                            continue; // Lewati post ini
+                            continue; 
                         }
                         
-                        // Jika lolos, masukkan ke array
                         postsArray.push({ key, ...post });
                     }
                 } 
                 
                 if (postsArray.length > 0) {
-                    // (BARU) LOGIKA SORTING KOMPLEKS
-                    // 1. Utamakan Pin (isPinned: true)
-                    // 2. Jika status pin sama, urutkan berdasarkan timestamp terbaru
                     postsArray.sort((a, b) => {
-                        if (a.isPinned && !b.isPinned) return -1; // a (pinned) comes before b (not pinned)
-                        if (!a.isPinned && b.isPinned) return 1; // b (pinned) comes before a (not pinned)
-                        return b.timestamp - a.timestamp; // Jika status pin sama, sort by date
+                        if (a.isPinned && !b.isPinned) return -1;
+                        if (!a.isPinned && b.isPinned) return 1;
+                        return b.timestamp - a.timestamp;
                     });
 
-                    // (BARU) Ambil 5 post teratas setelah disortir
                     const limitedPosts = postsArray.slice(0, 5);
 
                     limitedPosts.forEach(post => {
@@ -1389,12 +1582,10 @@
                         
                         const date = new Date(post.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
                         
-                        // (BARU) Buat Tags HTML
                         let tagsHtml = '';
                         if (post.isPinned) {
                             tagsHtml += `<span class="tag tag-pin"><i class="fa-solid fa-thumbtack"></i> Disematkan</span>`;
                         }
-                        // Tentukan kelas CSS untuk kategori
                         const categoryClass = `tag-cat-${post.category?.toLowerCase() || 'umum'}`;
                         tagsHtml += `<span class="tag tag-cat ${categoryClass}">${escapeHTML(post.category || 'Umum')}</span>`;
                         
@@ -1402,7 +1593,6 @@
                             tagsHtml += `<span class="tag tag-expiry"><i class="fa-solid fa-calendar-times"></i> Berakhir: ${post.expiresAt}</span>`;
                         }
                         
-                        // (BARU) Render HTML yang kompleks
                         li.innerHTML = `
                             <div class="announcement-header">
                                 <div class="ann-item-main">
@@ -1431,7 +1621,6 @@
                 listEl.innerHTML = '<li class="announcement-empty">Gagal memuat data.</li>';
             });
 
-            // (Event listener tidak berubah, masih berfungsi)
             listEl.addEventListener('click', (e) => {
                 const header = e.target.closest('.announcement-header');
                 if (header) {
@@ -1446,10 +1635,7 @@
                 }
             });
         }
-        // --- (AKHIR PERUBAHAN PENGUMUMAN) ---
 
-
-        // --- FUNGSI TUGAS SAYA (LOCALSTORAGE) (Tidak berubah) ---
         function initTodoWidget() {
             const inputEl = document.getElementById('todo-input');
             const addBtn = document.getElementById('add-todo-btn');
@@ -1506,7 +1692,6 @@
             renderTodos();
         }
 
-        // --- FUNGSI DATA EKSTERNAL KALENDER (Tidak berubah) ---
         async function fetchHolidays() {
             const year = new Date().getFullYear();
             try {
@@ -1533,7 +1718,6 @@
             });
         }
 
-        // --- FUNGSI KALENDER UTAMA (Tidak berubah) ---
         let currentDate = new Date();
         function initCalendar() {
             const daysEl = document.getElementById('calendar-days');
@@ -1590,7 +1774,6 @@
             }
         }
 
-        // --- FUNGSI MODAL KALENDER (Tidak berubah) ---
         function initCalendarModal() {
             const backdrop = document.getElementById('calendar-modal-backdrop');
             const content = document.getElementById('calendar-modal-content');
@@ -1674,7 +1857,6 @@
                 });
         }
 
-        // --- Animasi Scroll (Intersection Observer) (Tidak berubah) ---
         function initIntersectionObserver() {
             const animatedElements = document.querySelectorAll('.fade-in-up');
             const observer = new IntersectionObserver((entries) => {
