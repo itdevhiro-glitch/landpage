@@ -301,7 +301,6 @@
             padding: 60px 0;
         }
         .main-grid {
-            display: grid;
             grid-template-columns: 2fr 1fr; /* Kolom kiri lebih lebar */
             gap: 32px;
         }
@@ -917,9 +916,9 @@
                             <i class="fa-solid fa-headset"></i>
                             <span class="tooltip">Layanan IT</span>
                         </a>
-                        <a href="#" class="shortcut-icon">
-                            <i class="fa-solid fa-file-invoice-dollar"></i>
-                            <span class="tooltip">Keuangan</span>
+                        <a href="chat.html" class="shortcut-icon">
+                            <i class="fa-solid fa-comments"></i>
+                            <span class="tooltip">Pusat Kolaborasi (Chat)</span>
                         </a>
                         <a href="#" class="shortcut-icon">
                             <i class="fa-solid fa-bullhorn"></i>
@@ -967,15 +966,14 @@
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
                     
-                    <a href="#" class="portal-card fade-in-up" style="transition-delay: 200ms;">
+                    <a href="chat.html" class="portal-card fade-in-up" style="transition-delay: 200ms;">
                         <div class="portal-icon icon-gray">
-                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <i class="fa-solid fa-comments"></i>
                         </div>
-                        <h3>Manajemen Keuangan</h3>
-                        <p>Akses data akuntansi, anggaran, dan laporan finansial perusahaan.</p>
+                        <h3>Pusat Kolaborasi</h3>
+                        <p>Fitur komunikasi internal: chat antar karyawan, grup departemen, dan Admin.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
-
                     <a id="manage-content-card" href="content-management.html" class="portal-card fade-in-up" style="transition-delay: 300ms;"> <div class="portal-icon icon-blue"> <i class="fa-solid fa-pen-to-square"></i>
                         </div>
                         <h3>Manajemen Pengumuman</h3> <p>Hanya untuk HRD. Update pengumuman perusahaan terbaru.</p> <span class="portal-link">Buka Halaman <i class="fa-solid fa-arrow-right"></i></span>
@@ -1047,6 +1045,14 @@
                         <h2 class="section-title">Alat Bantu Cepat</h2>
                         <div class="portal-list">
                             
+                            <a href="chat.html">
+                                <i class="link-icon icon-gray fa-solid fa-comments"></i>
+                                <div class="link-text">
+                                    <h3>Pusat Kolaborasi</h3>
+                                    <p>Chat internal antar karyawan dan grup departemen.</p>
+                                </div>
+                                <i class="link-arrow fa-solid fa-arrow-right"></i>
+                            </a>
                             <a id="hr-quick-link" href="content-management.html"> <i class="link-icon icon-blue fa-solid fa-pen-to-square"></i> <div class="link-text">
                                     <h3>Buat Pengumuman</h3>
                                     <p>Buka halaman manajemen konten (Khusus HRD).</p>
@@ -1130,10 +1136,6 @@
             onValue, 
             set, 
             push,
-            // (DIHAPUS) Query tidak lagi se-simple ini
-            // query,
-            // orderByChild,
-            // limitToLast,
             get 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
