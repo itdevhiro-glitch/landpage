@@ -299,7 +299,8 @@
             margin-bottom: 5px;
             color: #F37321;
         }
-        .message-item.received.private .message-sender {
+        .message-item.received.private .message-sender,
+        .message-item.received.admin .message-sender {
             display: none; 
         }
 
@@ -540,8 +541,8 @@
         let usersData = {}; // Cache data semua user
         let chatUnsubscribe = null; // Untuk unsubscribe listener chat aktif
         const ADMIN_ROOT_EMAIL = 'root@zeppelin.center';
-        // (PERBAIKAN) Gunakan UID palsu yang konsisten untuk Admin Root
-        const ADMIN_ROOT_UID_KEY = 'Ogy9lUbGHbSu8wYIYx2gQsTtFDF2'; // Mengambil UID admin dari rules, asumsikan ini Admin IT
+        // UID admin dari rules
+        const ADMIN_ROOT_UID_KEY = 'Ogy9lUbGHbSu8wYIYx2gQsTtFDF2'; 
 
         // --- Elemen DOM ---
         const logoutBtn = document.getElementById('logout-btn');
@@ -614,35 +615,32 @@
             if (user) {
                 loggedInUser = user;
                 
-                // Ambil data user
                 const userRef = ref(db, 'users/' + user.uid);
                 
                 get(userRef).then((snapshot) => {
                     const userData = snapshot.val();
                     
-                    if (user.email === ADMIN_ROOT_EMAIL || user.uid === ADMIN_ROOT_UID_KEY) {
-                        // (PERBAIKAN) Admin Root harus menggunakan UID yang konsisten
+                    if (user.uid === ADMIN_ROOT_UID_KEY) {
                         loggedInUserData = {
-                            uid: user.uid, // Gunakan UID asli jika login via email admin, atau gunakan ADMIN_ROOT_UID_KEY jika Anda ingin dia selalu jadi admin IT
-                            nama: "Admin Root",
+                            uid: user.uid, 
+                            nama: "Admin IT (Root)",
                             departemen: "IT/Admin",
-                            email: ADMIN_ROOT_EMAIL,
+                            email: user.email,
                             status: 'approved'
                         };
-                        userGreeting.innerHTML = `Halo, <span>Admin Root</span>`;
+                        userGreeting.innerHTML = `Halo, <span>Admin IT</span>`;
                     
                     } else if (snapshot.exists() && userData.status === 'approved') {
                         loggedInUserData = userData;
                         userGreeting.innerHTML = `Halo, <span>${userData.nama || user.email}</span>`;
                     
                     } else {
-                        // User tidak disetujui
+                        // Jika statusnya bukan 'approved' atau data tidak ada, tendang ke login
                         signOut(auth);
                         window.location.href = 'login.html?reason=invalid';
                         return;
                     }
                     
-                    // Lanjutkan inisialisasi setelah data user lengkap
                     fetchUsersAndSetupLists();
                     setupListeners();
 
@@ -663,15 +661,30 @@
             onValue(ref(db, 'users'), (snapshot) => {
                 usersData = {};
                 const usersArray = [];
-                snapshot.forEach((childSnapshot) => {
-                    const user = childSnapshot.val();
-                    if (user.status === 'approved' && user.uid !== loggedInUser.uid) {
-                        usersData[user.uid] = user;
-                        usersArray.push(user);
-                    }
-                });
                 
-                // (PERBAIKAN) Tambahkan Admin IT sebagai kontak chat jika user BUKAN Admin IT itu sendiri
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        let user = childSnapshot.val();
+                        
+                        // *** PERBAIKAN KRITIS UNTUK STRUKTUR DATA TIDAK LENGKAP ***
+                        // 1. Pastikan objek user memiliki UID. Jika tidak, ambil dari kunci (childSnapshot.key).
+                        const userUid = user.uid || childSnapshot.key;
+                        
+                        // 2. Jika UID tidak valid (misal: "status" atau key aneh lainnya), lewati.
+                        if (!userUid || userUid.length < 5 || userUid === 'status') return; 
+                        
+                        // 3. Update UID di objek user (untuk konsistensi)
+                        user.uid = userUid;
+
+                        // KONDISI FILTER:
+                        if (user.status === 'approved' && user.uid !== loggedInUser.uid) {
+                            usersData[user.uid] = user;
+                            usersArray.push(user);
+                        }
+                    });
+                }
+                
+                // Inject Admin IT (Root) ke usersData sebagai kontak jika user BUKAN Admin IT itu sendiri
                 if (loggedInUser.uid !== ADMIN_ROOT_UID_KEY) {
                     usersData[ADMIN_ROOT_UID_KEY] = {
                         uid: ADMIN_ROOT_UID_KEY,
@@ -687,15 +700,13 @@
                 renderPrivateChatList(usersArray);
             }, (error) => {
                 console.error("Gagal memuat daftar user:", error);
-                // Menampilkan error pada daftar kontak jika gagal
-                privateChatListEl.innerHTML = '<div class="chat-item" data-type="empty"><p class="chat-info">Gagal memuat kontak.</p></div>';
+                privateChatListEl.innerHTML = '<div class="chat-item" data-type="empty"><p class="chat-info">Gagal memuat kontak. Cek koneksi & Rules Firebase.</p></div>';
             });
         }
         
         function renderGroupChatList() {
             groupChatListEl.innerHTML = '';
             
-            // 1. Grup Divisi
             const myDept = loggedInUserData.departemen;
             if (myDept) {
                 const deptId = myDept.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -704,10 +715,9 @@
                 
                 groupChatListEl.innerHTML += createChatItemHTML('group', deptId, groupName, lastMessage, 'fa-users', 'group-avatar');
             } else {
-                groupChatListEl.innerHTML += `<div class="chat-item" data-type="empty"><p class="chat-info">Divisi tidak terdeteksi.</p></div>`;
+                groupChatListEl.innerHTML = `<div class="chat-item" data-type="empty"><p class="chat-info">Divisi tidak terdeteksi.</p></div>`;
             }
             
-            // 2. Grup All Employee
             const allId = 'all_employees';
             const allName = 'Semua Karyawan';
             const allLastMessage = "Grup chat seluruh karyawan Zeppelin.";
@@ -715,12 +725,10 @@
         }
 
         function renderAdminChatList() {
-             // Admin Chat hanya muncul jika user bukan Admin IT (ADMIN_ROOT_UID_KEY)
              if (loggedInUser.uid !== ADMIN_ROOT_UID_KEY) {
                 adminChatSectionEl.style.display = 'block';
                 adminChatListEl.innerHTML = '';
                 
-                // (PERBAIKAN) Gunakan ADMIN_ROOT_UID_KEY sebagai ID kontak
                 const adminId = ADMIN_ROOT_UID_KEY; 
                 const adminName = "Admin IT (Root)";
                 const adminLastMessage = "Chat khusus dengan Admin Portal.";
@@ -733,7 +741,8 @@
         }
 
         function renderPrivateChatList(users) {
-            privateChatListEl.innerHTML = '';
+            privateChatListEl.innerHTML = ''; 
+            
             if (users.length === 0) {
                 privateChatListEl.innerHTML = '<div class="chat-item" data-type="empty"><p class="chat-info">Tidak ada kontak lain saat ini.</p></div>';
                 return;
@@ -742,13 +751,19 @@
             users.sort((a, b) => (a.nama || a.email).localeCompare(b.nama || b.email));
 
             users.forEach(user => {
-                // Pastikan user.uid sudah ada di usersData
-                if(user.uid && usersData[user.uid]) {
-                    const initials = (user.nama || user.email).split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                    const name = user.nama || user.email;
+                if(user.uid) { 
+                    const name = user.nama || user.email; 
                     const lastMessage = user.departemen || user.email;
                     
-                    // Gunakan UID user sebagai data-id
+                    let initials;
+                    if (user.nama) {
+                         initials = user.nama.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    } else if (user.email) {
+                         initials = user.email.substring(0, 2).toUpperCase(); 
+                    } else {
+                         initials = '??';
+                    }
+                    
                     privateChatListEl.innerHTML += createChatItemHTML('private', user.uid, name, lastMessage, initials, '');
                 }
             });
@@ -757,13 +772,11 @@
         function createChatItemHTML(type, id, name, lastMessage, avatarContent, avatarClass) {
             let dataId = id;
             if (type === 'admin') {
-                // Untuk Admin, ID yang digunakan adalah UID-nya (ADMIN_ROOT_UID_KEY)
                 dataId = `admin_${id}`;
             } else if (type === 'group') {
                 dataId = `group_${id}`;
             }
             
-            // Avatar content: jika ada avatarClass (group/admin), gunakan icon, jika tidak, gunakan inisial
             const avatarHtml = avatarClass ? `<i class="fa-solid ${avatarContent}"></i>` : avatarContent;
 
             return `
@@ -782,8 +795,7 @@
         // --- CHAT LOGIC ---
 
         function setupListeners() {
-            // Event listener untuk memilih chat
-            // Menggunakan event delegation pada container yang ada
+            // Event delegation pada container chat
             document.querySelector('.chat-list-container').addEventListener('click', function(e) {
                 const item = e.target.closest('.chat-item');
                 if (item && item.getAttribute('data-type') !== 'empty') {
@@ -809,7 +821,6 @@
                 chatSidebar.classList.toggle('open');
             });
             
-            // Tampilkan tombol toggle di mobile
             if (window.innerWidth <= 900) {
                 sidebarToggleBtn.style.display = 'block';
             }
@@ -818,22 +829,22 @@
         function switchChat(id, type, name) {
             if (activeChat.id === id) return;
 
-            // 1. Clear previous listeners
             if (chatUnsubscribe) {
                 chatUnsubscribe();
             }
 
-            // 2. Update active chat
             activeChat = { id, type, name };
 
-            // 3. Update UI header
             document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
-            // Gunakan ID yang telah diolah untuk mencari item
-            const activeItem = document.querySelector(`.chat-item[data-id="${CSS.escape(id)}"]`);
+            
+            // Gunakan CSS.escape() untuk mencari elemen dengan ID yang aman
+            const safeId = CSS.escape(id);
+            const activeItem = document.querySelector(`.chat-item[data-id="${safeId}"]`);
+            
             if (activeItem) {
                  activeItem.classList.add('active');
             } else {
-                 console.warn("Active chat item tidak ditemukan.");
+                 console.warn(`Active chat item tidak ditemukan untuk ID: ${id}.`);
             }
             
             welcomeScreen.style.display = 'none';
@@ -842,9 +853,8 @@
             activeChatNameEl.textContent = name;
             
             // Perbarui Avatar di Header
-            const chatItem = document.querySelector(`.chat-item[data-id="${CSS.escape(id)}"]`);
-            if (chatItem) {
-                const avatarClone = chatItem.querySelector('.chat-avatar').cloneNode(true);
+            if (activeItem) {
+                const avatarClone = activeItem.querySelector('.chat-avatar').cloneNode(true);
                 avatarClone.id = 'active-chat-avatar';
                 const currentAvatar = document.getElementById('active-chat-avatar');
                 if (currentAvatar) {
@@ -863,24 +873,19 @@
                 chatPath = `chats/group_chats/${targetUID}`; 
             
             } else if (type === 'admin') {
-                // (PERBAIKAN) Ambil UID Admin dari ID item
                 targetUID = id.replace('admin_', ''); 
                 const myId = loggedInUser.uid; 
                 
-                // Gunakan UID yang sudah terverifikasi (logged-in user UID dan ADMIN_ROOT_UID_KEY)
                 const combinedId = [myId, targetUID].sort().join('_'); 
                 chatPath = `chats/private_chats/${combinedId}`;
                 
-                // Jika Admin IT chat dengan dirinya sendiri (menu ini seharusnya tersembunyi, tapi jaga-jaga)
                 if (myId === ADMIN_ROOT_UID_KEY) {
-                     isInputDisabled = true; 
+                     isInputDisabled = false; 
                 }
 
             } else if (type === 'private') {
-                // Chat Privat sesama user
-                targetUID = id; // Target UID
+                targetUID = id; 
                 const myId = loggedInUser.uid;
-                // Gunakan kombinasi UID untuk Private Chat
                 const combinedId = [myId, targetUID].sort().join('_'); 
                 chatPath = `chats/private_chats/${combinedId}`;
                 
@@ -898,7 +903,7 @@
 
             // 5. Setup new listener for messages
             const messagesQuery = query(ref(db, chatPath), orderByChild('timestamp'), limitToLast(50));
-            chatMessagesEl.innerHTML = ''; // Clear old messages
+            chatMessagesEl.innerHTML = ''; 
             
             chatUnsubscribe = onValue(messagesQuery, (snapshot) => {
                 chatMessagesEl.innerHTML = '';
@@ -914,10 +919,8 @@
                     chatMessagesEl.innerHTML = '<div class="welcome-screen" style="height: auto; padding-top: 50px;"><i class="fa-solid fa-cloud"></i><h4>Mulai Percakapan Baru</h4><p>Belum ada pesan di sini. Jadilah yang pertama!</p></div>';
                 }
 
-                // Scroll to bottom
                 chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
                 
-                // Tutup sidebar di mobile
                  if (window.innerWidth <= 900) {
                     chatSidebar.classList.remove('open');
                 }
@@ -933,30 +936,31 @@
             const isSent = message.senderId === loggedInUser.uid;
             const itemClass = isSent ? 'sent' : 'received';
             const itemElement = document.createElement('div');
-            itemElement.className = `message-item ${itemClass} ${chatType === 'private' || chatType === 'admin' ? 'private' : 'group'}`;
+            itemElement.className = `message-item ${itemClass} ${chatType}`;
             
             const time = new Date(message.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
             
-            let senderName = '';
-            if (!isSent) {
-                // Gunakan senderId untuk mencari nama di cache usersData
-                const sender = usersData[message.senderId] || { nama: 'Pengirim' };
-                senderName = sender.nama || 'Pengirim';
+            let senderNameHtml = '';
+            
+            // Tampilkan nama hanya jika chatType adalah 'group'
+            if (!isSent && chatType === 'group') {
                 
-                // Jika private chat atau chat admin, jangan tampilkan nama pengirim
-                if (chatType !== 'private' && chatType !== 'admin') {
-                    senderName = `<span class="message-sender">${escapeHTML(senderName)}</span>`;
+                let senderName;
+                if (message.senderName) {
+                    senderName = message.senderName;
                 } else {
-                    senderName = ''; 
+                    const sender = usersData[message.senderId] || { nama: 'Pengirim' };
+                    senderName = sender.nama || 'Pengirim';
                 }
+                
+                senderNameHtml = `<span class="message-sender">${escapeHTML(senderName)}</span>`;
             }
 
-            // Isi pesan
             const content = escapeHTML(message.text).replace(/\n/g, '<br>');
 
             itemElement.innerHTML = `
                 <div class="message-content">
-                    ${senderName}
+                    ${senderNameHtml}
                     ${content}
                     <span class="message-time">${time}</span>
                 </div>
@@ -969,14 +973,14 @@
             const text = messageInput.value.trim();
             if (!text || !activeChat.id || sendButton.disabled) return;
             
-            messageInput.value = ''; // Clear input
-            autoExpand(messageInput); // Reset textarea size
-            sendButton.disabled = true; // Nonaktifkan sementara
+            messageInput.value = ''; 
+            autoExpand(messageInput); 
+            sendButton.disabled = true; 
             
             const message = {
                 senderId: loggedInUser.uid,
-                senderName: loggedInUserData.nama || loggedInUserData.email,
-                text: text, // Nama properti pesan harus 'text' agar sesuai dengan JS dan rules
+                senderName: loggedInUserData.nama || loggedInUserData.email, 
+                text: text, 
                 timestamp: Date.now()
             };
             
@@ -988,11 +992,9 @@
                 chatRef = ref(db, `chats/group_chats/${targetUID}`);
             
             } else if (activeChat.type === 'admin' || activeChat.type === 'private') {
-                // (PERBAIKAN) Target UID adalah ID item yang sudah diolah/dibersihkan dari prefix (UID user lain / ADMIN_ROOT_UID_KEY)
                 targetUID = activeChat.id.replace('admin_', ''); 
                 const myId = loggedInUser.uid;
                 
-                // Gunakan UID yang sudah terverifikasi (logged-in user UID dan target UID)
                 const combinedId = [myId, targetUID].sort().join('_'); 
                 chatRef = ref(db, `chats/private_chats/${combinedId}`);
                 
