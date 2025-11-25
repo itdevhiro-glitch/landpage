@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* [CSS Umum] */
         * {
             margin: 0;
             padding: 0;
@@ -26,14 +25,12 @@
             color: inherit;
         }
         
-        /* Layout Utama */
         .chat-layout {
             display: flex;
             height: 100vh;
             padding-top: 65px; 
         }
         
-        /* Navbar (Sama dengan Dashboard) */
         .navbar {
             background-color: #ffffff;
             padding: 16px 24px;
@@ -59,6 +56,8 @@
             text-decoration: none;
             display: flex;
             align-items: center;
+            /* Perbaiki agar logo tetap di kiri saat tombol mobile ada */
+            margin-right: auto;
         }
         .nav-logo i {
             color: #F37321;
@@ -87,7 +86,16 @@
             border-color: #D9232D;
         }
         
-        /* Sidebar (Daftar Chat) */
+        /* [BARU] Styling untuk tombol mobile dashboard */
+        .mobile-only-nav {
+            display: none !important; /* Sembunyikan di desktop */
+            margin-right: auto; /* Dorong elemen lain ke kanan di mobile */
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+        }
+
         .chat-sidebar {
             width: 350px; 
             flex-shrink: 0;
@@ -119,7 +127,6 @@
             font-size: 0.95rem;
         }
         
-        /* Daftar Kontak/Grup */
         .chat-list-container {
             flex-grow: 1;
             overflow-y: auto;
@@ -189,7 +196,6 @@
             margin-top: 3px;
         }
         
-        /* Konten Chat Utama */
         .chat-main {
             flex-grow: 1;
             display: flex;
@@ -198,7 +204,6 @@
             height: 100%;
         }
         
-        /* Header Chat */
         .chat-header {
             padding: 15px 24px;
             border-bottom: 1px solid #e5e7eb;
@@ -213,7 +218,6 @@
             margin-left: 10px;
         }
         
-        /* Area Pesan */
         .chat-messages {
             flex-grow: 1;
             padding: 24px;
@@ -291,7 +295,6 @@
             left: 0;
         }
         
-        /* Nama Pengirim untuk Pesan Grup/Received */
         .message-sender {
             display: block;
             font-size: 0.8rem;
@@ -304,7 +307,6 @@
             display: none; 
         }
 
-        /* Area Input */
         .chat-input-area {
             border-top: 1px solid #e5e7eb;
             padding: 15px 24px;
@@ -353,7 +355,6 @@
             cursor: not-allowed;
         }
         
-        /* Notifikasi Toast */
         .toast-notification {
             position: fixed;
             bottom: -100px;
@@ -375,7 +376,6 @@
             bottom: 30px;
         }
         
-        /* Media Queries */
         @media (max-width: 900px) {
             .chat-sidebar {
                 position: absolute;
@@ -405,8 +405,29 @@
                 cursor: pointer;
             }
         }
+        
         @media (max-width: 768px) {
-            .nav-logo, .nav-right #user-greeting { display: none; }
+            .nav-logo, .nav-right #user-greeting { 
+                display: none; 
+            }
+            
+            /* [BARU] Tampilkan Tombol Dashboard Mobile */
+            .mobile-only-nav {
+                display: flex !important; 
+                align-items: center;
+                gap: 5px;
+                padding: 8px 12px;
+                border: none;
+                background: none;
+                color: #D9232D; 
+            }
+            .mobile-only-nav:hover {
+                background-color: #f3f4f6;
+            }
+            
+            .logout-button {
+                padding: 6px 10px;
+            }
             .chat-item { padding: 10px 15px; }
             .chat-list-title, .sidebar-header { padding-left: 15px; padding-right: 15px; }
             .sidebar-search { padding-left: 15px; padding-right: 15px; }
@@ -422,7 +443,12 @@
             <a href="dashboard.html" class="nav-logo">
                 <i class="fa-solid fa-gear"></i> ZEPPELIN
             </a>
+            
             <div class="nav-right">
+                <button id="mobile-dashboard-btn" class="logout-button mobile-only-nav" onclick="window.location.href='dashboard.html'">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </button>
+                
                 <div id="user-greeting">Halo, <span>Tamu</span></div>
                 <button id="logout-btn" class="logout-button">
                     <i class="fa-solid fa-right-from-bracket"></i> Keluar
@@ -498,7 +524,6 @@
 
 
     <script type="module">
-        // Import functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { 
@@ -513,7 +538,6 @@
             limitToLast
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Konfigurasi Firebase Anda
         const firebaseConfig = {
             apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
             authDomain: "it-support-53eeb.firebaseapp.com",
@@ -525,26 +549,22 @@
             measurementId: "G-33K6DDE1VR"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app); 
 
-        // --- Variabel Global ---
         let loggedInUser = null;
         let loggedInUserData = null;
         let activeChat = {
             id: null,
-            type: null, // 'private', 'group', 'admin'
+            type: null,
             name: null
         };
-        let usersData = {}; // Cache data semua user
-        let chatUnsubscribe = null; // Untuk unsubscribe listener chat aktif
+        let usersData = {};
+        let chatUnsubscribe = null;
         const ADMIN_ROOT_EMAIL = 'root@zeppelin.center';
-        // UID admin dari rules
         const ADMIN_ROOT_UID_KEY = 'Ogy9lUbGHbSu8wYIYx2gQsTtFDF2'; 
 
-        // --- Elemen DOM ---
         const logoutBtn = document.getElementById('logout-btn');
         const userGreeting = document.getElementById('user-greeting');
         const chatSidebar = document.getElementById('chat-sidebar');
@@ -564,8 +584,6 @@
         const adminChatSectionEl = document.getElementById('admin-chat-section');
         const privateChatListEl = document.getElementById('private-chat-list');
 
-        // --- Helper & Utility Functions ---
-        
         function showToast(message) {
             const toast = document.getElementById('toast-notification');
             if (toast) {
@@ -588,7 +606,6 @@
                 }[match];
             });
         }
-        // Auto expand textarea
         window.autoExpand = function(field) {
             field.style.height = 'inherit';
             const computed = window.getComputedStyle(field);
@@ -601,8 +618,6 @@
             field.style.height = height + 'px';
         };
 
-        // --- AUTENTIKASI DAN SETUP AWAL ---
-        
         logoutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
                 window.location.href = 'login.html'; 
@@ -628,14 +643,16 @@
                             email: user.email,
                             status: 'approved'
                         };
-                        userGreeting.innerHTML = `Halo, <span>Admin IT</span>`;
+                        userGreeting.innerHTML = `Halo, <span>Admin IT (Root)</span>`;
                     
                     } else if (snapshot.exists() && userData.status === 'approved') {
                         loggedInUserData = userData;
-                        userGreeting.innerHTML = `Halo, <span>${userData.nama || user.email}</span>`;
+                        const nama = userData.nama || user.email;
+                        const departemen = userData.departemen ? `(${userData.departemen})` : '';
+                        
+                        userGreeting.innerHTML = `Halo, <span>${nama} ${departemen}</span>`; 
                     
                     } else {
-                        // Jika statusnya bukan 'approved' atau data tidak ada, tendang ke login
                         signOut(auth);
                         window.location.href = 'login.html?reason=invalid';
                         return;
@@ -655,8 +672,6 @@
             }
         });
 
-        // --- FETCH USERS & RENDER LISTS ---
-
         function fetchUsersAndSetupLists() {
             onValue(ref(db, 'users'), (snapshot) => {
                 usersData = {};
@@ -666,17 +681,12 @@
                     snapshot.forEach((childSnapshot) => {
                         let user = childSnapshot.val();
                         
-                        // *** PERBAIKAN KRITIS UNTUK STRUKTUR DATA TIDAK LENGKAP ***
-                        // 1. Pastikan objek user memiliki UID. Jika tidak, ambil dari kunci (childSnapshot.key).
                         const userUid = user.uid || childSnapshot.key;
                         
-                        // 2. Jika UID tidak valid (misal: "status" atau key aneh lainnya), lewati.
                         if (!userUid || userUid.length < 5 || userUid === 'status') return; 
                         
-                        // 3. Update UID di objek user (untuk konsistensi)
                         user.uid = userUid;
 
-                        // KONDISI FILTER:
                         if (user.status === 'approved' && user.uid !== loggedInUser.uid) {
                             usersData[user.uid] = user;
                             usersArray.push(user);
@@ -684,7 +694,6 @@
                     });
                 }
                 
-                // Inject Admin IT (Root) ke usersData sebagai kontak jika user BUKAN Admin IT itu sendiri
                 if (loggedInUser.uid !== ADMIN_ROOT_UID_KEY) {
                     usersData[ADMIN_ROOT_UID_KEY] = {
                         uid: ADMIN_ROOT_UID_KEY,
@@ -792,10 +801,7 @@
             `;
         }
         
-        // --- CHAT LOGIC ---
-
         function setupListeners() {
-            // Event delegation pada container chat
             document.querySelector('.chat-list-container').addEventListener('click', function(e) {
                 const item = e.target.closest('.chat-item');
                 if (item && item.getAttribute('data-type') !== 'empty') {
@@ -807,7 +813,28 @@
                 }
             });
 
-            // Event listener tombol kirim
+            const navLogo = document.querySelector('.nav-logo');
+            if (navLogo) {
+                navLogo.addEventListener('click', (e) => {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault(); 
+                        window.location.href = 'dashboard.html';
+                    }
+                });
+            }
+
+            sidebarToggleBtn.addEventListener('click', () => {
+                if (chatSidebar.classList.contains('open')) {
+                    chatSidebar.classList.remove('open');
+                } else {
+                    chatSidebar.classList.add('open');
+                }
+            });
+            
+            if (window.innerWidth <= 900) {
+                sidebarToggleBtn.style.display = 'block';
+            }
+            
             sendButton.addEventListener('click', sendMessage);
             messageInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -815,15 +842,6 @@
                     sendMessage();
                 }
             });
-            
-            // Event listener untuk toggle sidebar (Mobile)
-            sidebarToggleBtn.addEventListener('click', () => {
-                chatSidebar.classList.toggle('open');
-            });
-            
-            if (window.innerWidth <= 900) {
-                sidebarToggleBtn.style.display = 'block';
-            }
         }
         
         function switchChat(id, type, name) {
@@ -837,7 +855,6 @@
 
             document.querySelectorAll('.chat-item').forEach(item => item.classList.remove('active'));
             
-            // Gunakan CSS.escape() untuk mencari elemen dengan ID yang aman
             const safeId = CSS.escape(id);
             const activeItem = document.querySelector(`.chat-item[data-id="${safeId}"]`);
             
@@ -852,7 +869,6 @@
             
             activeChatNameEl.textContent = name;
             
-            // Perbarui Avatar di Header
             if (activeItem) {
                 const avatarClone = activeItem.querySelector('.chat-avatar').cloneNode(true);
                 avatarClone.id = 'active-chat-avatar';
@@ -862,8 +878,6 @@
                 }
             }
 
-
-            // 4. Set Chat Ref dan Input State
             let chatPath;
             let targetUID;
             let isInputDisabled = false;
@@ -901,7 +915,6 @@
                 sendButton.disabled = false;
             }
 
-            // 5. Setup new listener for messages
             const messagesQuery = query(ref(db, chatPath), orderByChild('timestamp'), limitToLast(50));
             chatMessagesEl.innerHTML = ''; 
             
@@ -942,7 +955,6 @@
             
             let senderNameHtml = '';
             
-            // Tampilkan nama hanya jika chatType adalah 'group'
             if (!isSent && chatType === 'group') {
                 
                 let senderName;
@@ -1014,7 +1026,6 @@
                 });
         }
         
-        // --- Search Functionality (Tambahan) ---
         document.getElementById('search-contact').addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
             document.querySelectorAll('.chat-item:not([data-type="empty"])').forEach(item => {
