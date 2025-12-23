@@ -890,7 +890,11 @@
         .hidden-non-hrd {
             display: none !important;
         }
-        /* --- (AKHIR PERBAIKAN) --- */
+        
+        /* --- (BARU) CSS Untuk Menyembunyikan Akses Non-IT --- */
+        .hidden-non-it {
+            display: none !important;
+        }
         
         /* ======================================= */
         /* === MEDIA QUERY UNTUK LAYAR MOBILE === */
@@ -1154,6 +1158,16 @@
                         <p>Ajukan permintaan perangkat IT baru, upgrade, atau aksesori.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
+
+                    <a id="it-ticket-card" href="https://itdevhiro-glitch.github.io/itteam/tiketing.html" target="_blank" class="portal-card fade-in-up hidden-non-it" style="transition-delay: 500ms;">
+                        <div class="portal-icon icon-gray">
+                            <i class="fa-solid fa-screwdriver-wrench"></i>
+                        </div>
+                        <h3>IT</h3>
+                        <p>Panel Penanganan Tiket (Ticketing Handle).</p>
+                        <span class="portal-link">Buka Panel <i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+
                 </div>
             </div>
         </section>
@@ -1288,7 +1302,7 @@
 
     <div id="toast-notification" class="toast-notification">
         <i class="fa-solid fa-circle-xmark"></i>
-        <p>Akses Ditolak. Menu ini khusus untuk Departemen HRD.</p>
+        <p>Akses Ditolak.</p>
     </div>
 
 
@@ -1333,6 +1347,9 @@
         const manageCard = document.getElementById('manage-content-card');
         const hrQuickLink = document.getElementById('hr-quick-link');
         const mobileHrLink = document.getElementById('mobile-hr-link');
+        
+        // [BARU] Elemen IT
+        const itCard = document.getElementById('it-ticket-card');
         
         // Mobile Menu DOM
         const menuToggleBtn = document.getElementById('menu-toggle');
@@ -1392,7 +1409,7 @@
             });
         }
 
-        // --- AUTH GUARD & DATA LOADER (Diperbarui dengan remove() logic) ---
+        // --- AUTH GUARD & DATA LOADER ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Pengguna terautentikasi, memvalidasi status:", user.uid);
@@ -1402,6 +1419,7 @@
                 get(userRef).then((snapshot) => {
                     
                     let isHRD = false; 
+                    let isIT = false; // [BARU] Status IT
 
                     // Cek Admin
                     if (user.email === 'root@zeppelin.center') {
@@ -1409,6 +1427,7 @@
                         userGreeting.innerHTML = `Halo, <span>ADMIN (Root)</span>`;
                         loggedInUserName = "Admin"; 
                         isHRD = true; 
+                        isIT = true; // Admin dianggap IT juga
 
                     } else if (snapshot.exists()) {
                         const userData = snapshot.val();
@@ -1419,8 +1438,15 @@
                             userGreeting.innerHTML = `Halo, <span>${nama}</span>`;
                             loggedInUserName = nama; 
                             
+                            // Cek Departemen HRD
                             if (userData.departemen === 'HRD' || userData.departemen === 'Human Resources') {
                                 isHRD = true;
+                            }
+
+                            // [BARU] Cek Departemen IT
+                            // Anda bisa menyesuaikan nama departemen sesuai database (misal: "Information Technology" atau "IT")
+                            if (userData.departemen === 'IT' || userData.departemen === 'Information Technology' || userData.departemen === 'Teknologi Informasi') {
+                                isIT = true;
                             }
                             
                         } else if (userData.status === 'pending') {
@@ -1453,45 +1479,45 @@
                         return;
                     }
 
-                    // --- [PERBAIKAN FINAL: Penanganan Akses HRD (Remove/Toast)] ---
+                    // --- [PERBAIKAN FINAL: Penanganan Akses HRD] ---
                     if (!isHRD) {
-                        
-                        // Handler pencegahan klik (Ini akan dipasang pada TAUTAN DENGAN HREF='#')
                         const accessDeniedHandler = (e) => {
                             e.preventDefault(); 
                             mobileMenu.classList.remove('active');
                             showToast("Akses Ditolak. Menu ini khusus untuk Departemen HRD.");
                         };
-
-                        // 1. Sembunyikan elemen secara visual (menggunakan kelas CSS)
                         if (manageCard) {
                             manageCard.classList.add('hidden-non-hrd');
                             manageCard.addEventListener('click', accessDeniedHandler);
-                            console.log("Kartu Manajemen Pengumuman disembunyikan.");
                         }
-                        // 2. Sembunyikan quick link
                         if (hrQuickLink) {
                             hrQuickLink.classList.add('hidden-non-hrd');
                             hrQuickLink.addEventListener('click', accessDeniedHandler);
-                            console.log("Quick Link HRD disembunyikan.");
                         }
-                        // 3. Sembunyikan link di Mobile Menu
                         if (mobileHrLink) {
                             mobileHrLink.classList.add('hidden-non-hrd');
                             mobileHrLink.addEventListener('click', accessDeniedHandler);
-                            console.log("Mobile Link HRD disembunyikan.");
                         }
-                        
                     } else {
-                        // Jika IS HRD, pastikan linknya berfungsi
-                        if (manageCard) {
-                            manageCard.href = "content-management.html";
+                        if (manageCard) manageCard.href = "content-management.html";
+                        if (hrQuickLink) hrQuickLink.href = "content-management.html";
+                        if (mobileHrLink) mobileHrLink.href = "content-management.html";
+                    }
+
+                    // --- [BARU: Penanganan Akses IT] ---
+                    if (isIT) {
+                        // Jika IT, hapus class hidden agar tombol muncul
+                        if (itCard) {
+                            itCard.classList.remove('hidden-non-it');
                         }
-                        if (hrQuickLink) {
-                            hrQuickLink.href = "content-management.html";
-                        }
-                        if (mobileHrLink) {
-                            mobileHrLink.href = "content-management.html";
+                    } else {
+                        // Jika BUKAN IT, pastikan hidden dan kunci akses
+                        if (itCard) {
+                            itCard.classList.add('hidden-non-it');
+                            itCard.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                showToast("Akses Ditolak. Menu ini khusus Departemen IT.");
+                            });
                         }
                     }
                     
