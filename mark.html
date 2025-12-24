@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z-MARK - Zeppelin Marketing Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --zeppelin-red: #D9232D;
+            --zeppelin-orange: #F37321;
+            --dark-gray: #1f2937;
+        }
+        body { font-family: 'Roboto', sans-serif; background: #f3f4f6; margin: 0; padding: 15px; }
+        .container { max-width: 1200px; margin: auto; }
+        
+        .header {
+            background: linear-gradient(135deg, var(--zeppelin-red), var(--zeppelin-orange));
+            color: white; padding: 25px; border-radius: 15px; margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 12px rgba(217, 35, 45, 0.2);
+        }
+
+        /* Inventory Grid */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white; border-radius: 12px; padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative; transition: 0.3s;
+            border-top: 5px solid transparent;
+        }
+        .card:hover { transform: translateY(-5px); }
+        .card.low-stock { border-top-color: var(--zeppelin-red); }
+
+        .stock-badge {
+            position: absolute; top: 15px; right: 15px;
+            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold;
+        }
+        .bg-safe { background: #dcfce7; color: #166534; }
+        .bg-low { background: #fee2e2; color: #991b1b; }
+
+        .icon-box { font-size: 35px; color: #e5e7eb; margin-bottom: 15px; }
+        .item-name { font-size: 18px; font-weight: 700; color: var(--dark-gray); margin-bottom: 5px; }
+        .item-cat { font-size: 13px; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; }
+
+        .btn-request {
+            width: 100%; margin-top: 15px; padding: 10px;
+            border: none; border-radius: 8px; background: var(--zeppelin-orange);
+            color: white; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-request:hover { background: #d65f1a; }
+        .btn-request:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* Modal */
+        .modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+            align-items: center; justify-content: center; z-index: 1000; padding: 15px;
+        }
+        .modal-content {
+            background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-cancel { background: #e5e7eb; color: #374151; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div>
+            <h1 style="margin:0;"><i class="fa-solid fa-boxes-packing"></i> Z-MARK</h1>
+            <p style="margin:5px 0 0 0; opacity: 0.9;">Zeppelin Marketing Stock Management</p>
+        </div>
+        <button onclick="window.location.href='dashboard.html'" style="background: rgba(255,255,255,0.2); border:none; color:white; padding: 10px 20px; border-radius: 8px; cursor:pointer;">
+            <i class="fa-solid fa-house"></i> Dashboard
+        </button>
+    </div>
+
+    <div id="loading" style="text-align:center; padding: 20px; color: #666;">
+        <i class="fa-solid fa-spinner fa-spin"></i> Memuat data inventory...
+    </div>
+
+    <div class="inventory-grid" id="inventoryList"></div>
+</div>
+
+<div id="modalRequest" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle" style="margin-top:0;">Ambil Barang</h3>
+        <p id="modalStockInfo" style="font-size: 14px; color: #666;"></p>
+        
+        <label style="font-size:12px; font-weight:bold;">Jumlah</label>
+        <input type="number" id="inputQty" placeholder="0" min="1">
+        
+        <label style="font-size:12px; font-weight:bold;">Keperluan</label>
+        <input type="text" id="inputNote" placeholder="Contoh: Event Pameran / Display Toko">
+        
+        <div class="btn-group">
+            <button class="btn-cancel" onclick="closeModal()">Batal</button>
+            <button class="btn-request" style="margin-top:0;" onclick="processTransaction()">Konfirmasi</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, update, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // -----------------------------------------------------------
+    // ⚠️ WAJIB DIISI: Copy config dari Firebase Console Anda ⚠️
+    // -----------------------------------------------------------
+    const firebaseConfig = {
+        apiKey: "API_KEY_ANDA_DISINI",
+        authDomain: "PROJECT-ID.firebaseapp.com",
+        databaseURL: "https://PROJECT-ID-default-rtdb.firebaseio.com",
+        projectId: "PROJECT-ID",
+        storageBucket: "PROJECT-ID.appspot.com",
+        messagingSenderId: "SENDER_ID",
+        appId: "APP_ID"
+    };
+
+    // Inisialisasi Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Variabel Global untuk menyimpan data lokal agar mudah diakses
+    let localInventoryData = {};
+    let selectedItemId = null;
+
+    // --- 1. Load Data Realtime ---
+    const inventoryRef = ref(db, 'marketing_inventory');
+    const listContainer = document.getElementById('inventoryList');
+    const loadingDiv = document.getElementById('loading');
+
+    onValue(inventoryRef, (snapshot) => {
+        loadingDiv.style.display = 'none'; // Sembunyikan loading
+        listContainer.innerHTML = '';
+        localInventoryData = {}; // Reset data lokal
+
+        const data = snapshot.val();
+
+        if (!data) {
+            listContainer.innerHTML = '<p style="text-align:center; width:100%;">Belum ada data barang di database.</p>';
+            return;
+        }
+
+        // Loop data
+        for (let key in data) {
+            const item = data[key];
+            // Simpan ke variabel global agar aman saat dipanggil di onClick
+            localInventoryData[key] = item; 
+
+            const isLow = item.stok < 10;
+            const isDisabled = item.stok <= 0 ? 'disabled' : '';
+            const btnText = item.stok <= 0 ? 'Stok Habis' : 'Ambil Barang';
+
+            // Render HTML
+            listContainer.innerHTML += `
+                <div class="card ${isLow ? 'low-stock' : ''}">
+                    <span class="stock-badge ${isLow ? 'bg-low' : 'bg-safe'}">Stok: ${item.stok}</span>
+                    <div class="icon-box"><i class="${item.icon || 'fa-solid fa-box'}"></i></div>
+                    <div class="item-name">${item.nama}</div>
+                    <div class="item-cat">${item.kategori || 'Umum'}</div>
+                    <button class="btn-request" ${isDisabled} onclick="window.openModal('${key}')">
+                        ${btnText}
+                    </button>
+                </div>
+            `;
+        }
+    });
+
+    // --- 2. Fungsi Modal (Ditempel ke Window agar bisa dipanggil HTML) ---
+    window.openModal = (key) => {
+        const item = localInventoryData[key];
+        if (!item) return;
+
+        selectedItemId = key; // Simpan ID yang dipilih
+        document.getElementById('modalTitle').innerText = "Ambil: " + item.nama;
+        document.getElementById('modalStockInfo').innerText = "Sisa stok saat ini: " + item.stok + " unit";
+        document.getElementById('inputQty').max = item.stok; // Set max input
+        document.getElementById('modalRequest').style.display = 'flex';
+        document.getElementById('inputQty').focus();
+    };
+
+    window.closeModal = () => {
+        document.getElementById('modalRequest').style.display = 'none';
+        document.getElementById('inputQty').value = '';
+        document.getElementById('inputNote').value = '';
+        selectedItemId = null;
+    };
+
+    // --- 3. Proses Transaksi ---
+    window.processTransaction = () => {
+        if (!selectedItemId) return;
+
+        const item = localInventoryData[selectedItemId];
+        const qty = parseInt(document.getElementById('inputQty').value);
+        const note = document.getElementById('inputNote').value;
+        
+        // Cek User Login (Fallback jika null)
+        let userNow = localStorage.getItem('loggedInUser');
+        if (!userNow) {
+            userNow = prompt("Anda belum login. Masukkan nama Anda untuk mencatat pengambilan ini:");
+            if(!userNow) return alert("Nama wajib diisi!");
+            localStorage.setItem('loggedInUser', userNow); // Simpan sementara
+        }
+
+        // Validasi
+        if (!qty || qty <= 0) return alert("Masukkan jumlah yang benar (minimal 1)!");
+        if (qty > item.stok) return alert("Stok tidak cukup! Maksimal: " + item.stok);
+        if (!note) return alert("Tujuan/Alasan pengambilan harus diisi!");
+
+        const newStok = item.stok - qty;
+
+        // Update Database Firebase
+        // 1. Kurangi Stok
+        update(ref(db, 'marketing_inventory/' + selectedItemId), { 
+            stok: newStok 
+        })
+        .then(() => {
+            // 2. Simpan Riwayat (Log)
+            const logRef = ref(db, 'marketing_transactions');
+            const newLog = push(logRef);
+            set(newLog, {
+                barang_id: selectedItemId,
+                nama_barang: item.nama,
+                jumlah: qty,
+                tujuan: note,
+                oleh: userNow,
+                tipe: 'OUT', // Penanda barang keluar
+                waktu: new Date().toLocaleString('id-ID'), // Format waktu Indonesia
+                timestamp: Date.now()
+            });
+
+            alert(`Berhasil mengambil ${qty} ${item.nama}. Stok tersisa: ${newStok}`);
+            window.closeModal();
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            alert("Gagal melakukan transaksi: " + error.message);
+        });
+    };
+</script>
+
+</body>
+</html>
