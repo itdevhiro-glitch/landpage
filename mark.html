@@ -152,7 +152,7 @@
         }
         .btn-edit-abs:hover { background: var(--light); color: var(--dark); }
 
-        /* --- HISTORY / LOG STYLES (NEW) --- */
+        /* --- HISTORY / LOG STYLES --- */
         .btn-history-abs {
             position: absolute; top: 12px; left: 12px; 
             width: 28px; height: 28px; border-radius: 50%;
@@ -438,7 +438,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        // Import tambahan: query, orderByChild, equalTo
         import { getDatabase, ref, onValue, update, push, remove, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
@@ -460,7 +459,7 @@
         let selectedId = null;
         let transType = 'OUT';
 
-        // --- AUTH & SECURITY ---
+        // --- AUTH & SECURITY (UPDATED) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(db, 'users/' + user.uid);
@@ -469,19 +468,22 @@
                     const isAllowed = u && (u.departemen === 'Marketing' || u.departemen === 'Pemasaran' || user.email === 'root@zeppelin.center');
                     
                     if (isAllowed) {
+                        // Akses Diberikan
                         document.getElementById('loading-screen').classList.add('hidden');
                         document.getElementById('main-content').style.display = 'block';
                         initApp();
                     } else {
-                        showToast("Akses Ditolak. Khusus Marketing.", true);
-                        setTimeout(() => window.location.href = 'dashboard.html', 2000);
+                        // KICK! Direct Replace tanpa history back
+                        alert("AKSES DITOLAK: Halaman ini khusus Departemen Marketing!");
+                        window.location.replace('dashboard.html');
                     }
                 }).catch(() => {
-                    showToast("Gagal memuat profil.", true);
-                    setTimeout(() => window.location.href = 'login.html', 2000);
+                    // Error ambil data user, tendang ke login
+                    window.location.replace('login.html');
                 });
             } else {
-                window.location.href = 'login.html';
+                // Tidak ada sesi login, tendang ke login
+                window.location.replace('login.html');
             }
         });
 
@@ -542,7 +544,6 @@
                 const badge = isLow ? `<span class="stock-badge badge-low">Menipis</span>` : `<span class="stock-badge badge-ok">Aman</span>`;
                 const icon = getIcon(item.kategori);
 
-                // Ada tombol btn-history-abs di kiri atas
                 listEl.innerHTML += `
                     <div class="card">
                         <button class="btn-history-abs" onclick="window.openHistory('${item.id}')"><i class="fa-solid fa-clock-rotate-left"></i></button>
@@ -590,11 +591,10 @@
         }
 
         // --- ACTIONS: ADD/EDIT ---
-        window.openManageModal = () => window.openManage(); // Alias untuk FAB
+        window.openManageModal = () => window.openManage();
 
         window.openManage = (id = null) => {
             selectedId = id;
-            const modal = document.getElementById('modalManage');
             const delBtn = document.getElementById('btnDelete');
             
             if (id) {
@@ -651,24 +651,21 @@
             }
         };
 
-        // --- ACTIONS: HISTORY (NEW LOGIC) ---
+        // --- ACTIONS: HISTORY ---
         window.openHistory = (id) => {
             const item = allData.find(i => i.id === id);
             if(!item) return;
 
-            // Set Header Info
             document.getElementById('histItemName').innerText = item.nama;
             document.getElementById('histItemSku').innerText = item.sku || 'Tanpa SKU';
             
             const listContainer = document.getElementById('historyListContainer');
             const loader = document.getElementById('historyLoader');
             
-            // Reset View
             listContainer.innerHTML = '';
             loader.classList.remove('hidden');
             openModal('modalHistory');
 
-            // Query transaksi: Cari di 'marketing_transactions' yang 'itemId' == id barang
             const logsRef = query(ref(db, 'marketing_transactions'), orderByChild('itemId'), equalTo(id));
             
             get(logsRef).then((snapshot) => {
@@ -679,12 +676,10 @@
                         logs.push(child.val());
                     });
 
-                    // Sort: Terbaru ke Terlama
                     logs.sort((a, b) => new Date(b.date) - new Date(a.date));
 
                     logs.forEach(log => {
                         const dateObj = new Date(log.date);
-                        // Format tanggal Indonesia
                         const dateStr = dateObj.toLocaleDateString('id-ID', {
                             day: 'numeric', month: 'short', year: 'numeric', 
                             hour: '2-digit', minute:'2-digit'
@@ -751,20 +746,18 @@
 
             if (qty <= 0) return showToast("Jumlah tidak valid", true);
             if (transType === 'OUT' && qty > item.stok) return showToast("Stok tidak cukup!", true);
-            if (!note) return showToast("Catatan wajib diisi!", true); // Wajib isi catatan untuk log
+            if (!note) return showToast("Catatan wajib diisi!", true);
 
             const newStok = transType === 'IN' ? (item.stok + qty) : (item.stok - qty);
             
             const updates = {};
-            // Update stok barang utama
             updates['marketing_inventory/' + selectedId + '/stok'] = newStok;
             
-            // Simpan Log Transaksi
             const logId = push(ref(db, 'marketing_transactions')).key;
             updates['marketing_transactions/' + logId] = {
                 itemId: selectedId,
                 itemName: item.nama,
-                type: transType, // 'IN' atau 'OUT'
+                type: transType,
                 qty: qty,
                 note: note,
                 user: auth.currentUser.email,
