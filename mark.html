@@ -30,9 +30,7 @@
         
         /* --- UTILS --- */
         .hidden { display: none !important; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+        
         /* --- LOADING SCREEN --- */
         .loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
@@ -64,7 +62,7 @@
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        /* --- STATS CARD (SCROLLABLE ON MOBILE) --- */
+        /* --- STATS CARD --- */
         .stats-container {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 24px;
         }
@@ -85,10 +83,10 @@
 
         /* --- SEARCH & FILTER --- */
         .toolbar {
-            display: flex; gap: 10px; margin-bottom: 20px;
+            display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
         }
         .search-wrapper {
-            flex: 1; position: relative;
+            flex: 2; min-width: 200px; position: relative;
         }
         .search-wrapper i {
             position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray); font-size: 14px;
@@ -100,8 +98,8 @@
         .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(217, 35, 45, 0.1); }
         
         .filter-select {
-            padding: 0 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--white);
-            font-size: 13px; font-weight: 500; color: var(--dark); outline: none;
+            flex: 1; min-width: 150px; padding: 0 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--white);
+            font-size: 13px; font-weight: 500; color: var(--dark); outline: none; cursor: pointer;
         }
 
         /* --- INVENTORY LIST --- */
@@ -153,6 +151,31 @@
             background: transparent; color: #9ca3af; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
         .btn-edit-abs:hover { background: var(--light); color: var(--dark); }
+
+        /* --- HISTORY / LOG STYLES (NEW) --- */
+        .btn-history-abs {
+            position: absolute; top: 12px; left: 12px; 
+            width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(0,0,0,0.05); color: var(--gray); border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .btn-history-abs:hover { background: var(--secondary); color: white; }
+
+        .history-list { display: flex; flex-direction: column; gap: 12px; }
+        .history-item {
+            background: #f9fafb; border: 1px solid var(--border);
+            padding: 12px; border-radius: 10px; display: flex; gap: 12px;
+        }
+        .history-date { font-size: 10px; color: var(--gray); font-family: monospace; margin-bottom: 2px; display: block; }
+        .history-badge { font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+        .h-in { background: #dcfce7; color: #166534; }
+        .h-out { background: #fff7ed; color: #c2410c; }
+        .history-content { flex: 1; }
+        .history-title { font-size: 13px; font-weight: 600; color: var(--dark); margin: 0 0 2px 0; }
+        .history-note { font-size: 12px; color: var(--gray); font-style: italic; margin: 0; }
+        .history-user { font-size: 10px; color: #9ca3af; margin-top: 4px; display: block; }
+
 
         /* --- FLOATING ACTION BUTTON (FAB) --- */
         .fab {
@@ -292,11 +315,14 @@
                     <input type="text" id="searchInput" class="search-input" placeholder="Cari barang atau SKU...">
                 </div>
                 <select id="filterCategory" class="filter-select">
-                    <option value="All">Semua</option>
-                    <option value="Cetak">Cetak</option>
-                    <option value="Merchandise">Merch</option>
-                    <option value="Display">Display</option>
-                    <option value="Elektronik">Elektronik</option>
+                    <option value="All">Semua Kategori</option>
+                    <option value="Cetak">Cetak & Dokumen</option>
+                    <option value="Merchandise">Merchandise & Souvenir</option>
+                    <option value="Display">Display & Booth</option>
+                    <option value="Elektronik">Elektronik & Gadget</option>
+                    <option value="Seragam">Seragam & Pakaian</option>
+                    <option value="Stationery">Stationery (ATK)</option>
+                    <option value="Event">Perlengkapan Event</option>
                     <option value="Lainnya">Lainnya</option>
                 </select>
             </div>
@@ -324,31 +350,35 @@
             <input type="text" class="form-input" id="itemName" placeholder="Contoh: Kaos Event 2025">
 
             <div class="form-row">
-                <div>
+                <div style="grid-column: span 2;">
                     <label class="form-label">Kategori</label>
                     <select class="form-input" id="itemCat">
-                        <option value="Merchandise">Merchandise</option>
-                        <option value="Cetak">Cetak (Flyer)</option>
-                        <option value="Display">Display/Banner</option>
-                        <option value="Elektronik">Elektronik</option>
+                        <option value="Cetak">Cetak (Brosur/Flyer/Katalog)</option>
+                        <option value="Merchandise">Merchandise (Mug/Tumblr/Payung)</option>
+                        <option value="Display">Display (Banner/Backdrop/Booth)</option>
+                        <option value="Elektronik">Elektronik (Tablet/Speaker/TV)</option>
+                        <option value="Seragam">Seragam / Kaos Tim</option>
+                        <option value="Stationery">Stationery / Alat Tulis Kantor</option>
+                        <option value="Event">Perlengkapan Event / Dekorasi</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
-                </div>
-                <div>
-                    <label class="form-label">SKU (Kode)</label>
-                    <input type="text" class="form-input" id="itemSku" placeholder="MRK-001">
                 </div>
             </div>
 
             <div class="form-row">
                 <div>
+                    <label class="form-label">SKU (Kode)</label>
+                    <input type="text" class="form-input" id="itemSku" placeholder="MRK-001">
+                </div>
+                <div>
                     <label class="form-label">Lokasi Rak</label>
                     <input type="text" class="form-input" id="itemLoc" placeholder="Rak A1">
                 </div>
-                <div>
-                    <label class="form-label">Stok Awal</label>
-                    <input type="number" class="form-input" id="itemStock" value="0">
-                </div>
+            </div>
+
+            <div>
+                <label class="form-label">Stok Awal</label>
+                <input type="number" class="form-input" id="itemStock" value="0">
             </div>
 
             <button class="btn-full btn-primary" onclick="saveItem()">Simpan Data</button>
@@ -373,10 +403,31 @@
             <label class="form-label">Jumlah Unit</label>
             <input type="number" class="form-input" id="transQty" placeholder="0" style="font-size:18px; font-weight:700;">
 
-            <label class="form-label">Catatan</label>
-            <input type="text" class="form-input" id="transNote" placeholder="Keperluan / Vendor...">
+            <label class="form-label">Catatan (Wajib)</label>
+            <input type="text" class="form-input" id="transNote" placeholder="Contoh: Event JCC / Restock Vendor...">
 
             <button class="btn-full btn-primary" onclick="processTransaction()">Konfirmasi</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalHistory">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Riwayat Barang</h3>
+                <button class="modal-close" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div style="background:var(--light); padding:10px; border-radius:8px; margin-bottom:15px;">
+                <h4 id="histItemName" style="margin:0; font-size:14px;">Nama Barang</h4>
+                <span id="histItemSku" style="font-size:11px; color:var(--gray); font-family:monospace;">SKU</span>
+            </div>
+
+            <div id="historyLoader" style="text-align:center; padding:20px;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="color:var(--gray);"></i>
+            </div>
+            
+            <div id="historyListContainer" class="history-list">
+                </div>
         </div>
     </div>
 
@@ -387,7 +438,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, update, push, remove, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        // Import tambahan: query, orderByChild, equalTo
+        import { getDatabase, ref, onValue, update, push, remove, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
@@ -453,13 +505,15 @@
             document.getElementById('filterCategory').addEventListener('change', renderList);
         }
 
-        // --- AUTO ICON LOGIC ---
         function getIcon(cat) {
             const icons = {
                 'Cetak': 'fa-solid fa-print',
-                'Merchandise': 'fa-solid fa-shirt',
-                'Display': 'fa-solid fa-flag',
+                'Merchandise': 'fa-solid fa-gift',
+                'Display': 'fa-solid fa-store',
                 'Elektronik': 'fa-solid fa-plug',
+                'Seragam': 'fa-solid fa-shirt',
+                'Stationery': 'fa-solid fa-pen-ruler',
+                'Event': 'fa-solid fa-calendar-star',
                 'Lainnya': 'fa-solid fa-box-open'
             };
             return icons[cat] || 'fa-solid fa-box';
@@ -488,9 +542,12 @@
                 const badge = isLow ? `<span class="stock-badge badge-low">Menipis</span>` : `<span class="stock-badge badge-ok">Aman</span>`;
                 const icon = getIcon(item.kategori);
 
+                // Ada tombol btn-history-abs di kiri atas
                 listEl.innerHTML += `
                     <div class="card">
+                        <button class="btn-history-abs" onclick="window.openHistory('${item.id}')"><i class="fa-solid fa-clock-rotate-left"></i></button>
                         <button class="btn-edit-abs" onclick="window.openManage('${item.id}')"><i class="fa-solid fa-pen"></i></button>
+                        
                         <div class="card-body">
                             <div class="card-icon"><i class="${icon}"></i></div>
                             <div class="card-content">
@@ -532,7 +589,9 @@
             document.getElementById('statLow').innerText = low;
         }
 
-        // --- ACTIONS ---
+        // --- ACTIONS: ADD/EDIT ---
+        window.openManageModal = () => window.openManage(); // Alias untuk FAB
+
         window.openManage = (id = null) => {
             selectedId = id;
             const modal = document.getElementById('modalManage');
@@ -563,14 +622,16 @@
 
         window.saveItem = () => {
             const nama = document.getElementById('itemName').value;
+            const kat = document.getElementById('itemCat').value;
+            
             if (!nama) return showToast("Nama barang wajib diisi!", true);
 
             const data = {
                 nama: nama,
-                kategori: document.getElementById('itemCat').value,
+                kategori: kat,
                 sku: document.getElementById('itemSku').value.toUpperCase(),
                 lokasi: document.getElementById('itemLoc').value,
-                icon: getIcon(document.getElementById('itemCat').value)
+                icon: getIcon(kat)
             };
 
             if (selectedId) {
@@ -590,7 +651,75 @@
             }
         };
 
-        // --- TRANSACTION ---
+        // --- ACTIONS: HISTORY (NEW LOGIC) ---
+        window.openHistory = (id) => {
+            const item = allData.find(i => i.id === id);
+            if(!item) return;
+
+            // Set Header Info
+            document.getElementById('histItemName').innerText = item.nama;
+            document.getElementById('histItemSku').innerText = item.sku || 'Tanpa SKU';
+            
+            const listContainer = document.getElementById('historyListContainer');
+            const loader = document.getElementById('historyLoader');
+            
+            // Reset View
+            listContainer.innerHTML = '';
+            loader.classList.remove('hidden');
+            openModal('modalHistory');
+
+            // Query transaksi: Cari di 'marketing_transactions' yang 'itemId' == id barang
+            const logsRef = query(ref(db, 'marketing_transactions'), orderByChild('itemId'), equalTo(id));
+            
+            get(logsRef).then((snapshot) => {
+                loader.classList.add('hidden');
+                if (snapshot.exists()) {
+                    const logs = [];
+                    snapshot.forEach(child => {
+                        logs.push(child.val());
+                    });
+
+                    // Sort: Terbaru ke Terlama
+                    logs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                    logs.forEach(log => {
+                        const dateObj = new Date(log.date);
+                        // Format tanggal Indonesia
+                        const dateStr = dateObj.toLocaleDateString('id-ID', {
+                            day: 'numeric', month: 'short', year: 'numeric', 
+                            hour: '2-digit', minute:'2-digit'
+                        });
+                        
+                        const isIn = log.type === 'IN';
+                        const badgeClass = isIn ? 'h-in' : 'h-out';
+                        const typeLabel = isIn ? 'Restock' : 'Keluar';
+                        const icon = isIn ? 'fa-arrow-down' : 'fa-arrow-up';
+
+                        listContainer.innerHTML += `
+                            <div class="history-item">
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:5px; min-width:40px;">
+                                    <div style="width:30px; height:30px; border-radius:50%; background:${isIn ? '#ecfdf5' : '#fff7ed'}; display:flex; align-items:center; justify-content:center; color:${isIn ? '#10b981' : '#f97316'}; font-size:12px;">
+                                        <i class="fa-solid ${icon}"></i>
+                                    </div>
+                                </div>
+                                <div class="history-content">
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <h5 class="history-title">${log.qty} Unit <span class="history-badge ${badgeClass}">${typeLabel}</span></h5>
+                                        <span class="history-date">${dateStr}</span>
+                                    </div>
+                                    <p class="history-note">"${log.note || '-'}"</p>
+                                    <span class="history-user">Oleh: ${log.user}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    listContainer.innerHTML = `<p style="text-align:center; font-size:13px; color:var(--gray); padding:20px;">Belum ada riwayat transaksi untuk barang ini.</p>`;
+                }
+            });
+        };
+
+        // --- ACTIONS: TRANSACTION ---
         window.openTrans = (id, type) => {
             selectedId = id;
             const item = allData.find(i => i.id === id);
@@ -622,17 +751,20 @@
 
             if (qty <= 0) return showToast("Jumlah tidak valid", true);
             if (transType === 'OUT' && qty > item.stok) return showToast("Stok tidak cukup!", true);
+            if (!note) return showToast("Catatan wajib diisi!", true); // Wajib isi catatan untuk log
 
             const newStok = transType === 'IN' ? (item.stok + qty) : (item.stok - qty);
             
             const updates = {};
+            // Update stok barang utama
             updates['marketing_inventory/' + selectedId + '/stok'] = newStok;
             
+            // Simpan Log Transaksi
             const logId = push(ref(db, 'marketing_transactions')).key;
             updates['marketing_transactions/' + logId] = {
                 itemId: selectedId,
                 itemName: item.nama,
-                type: transType,
+                type: transType, // 'IN' atau 'OUT'
                 qty: qty,
                 note: note,
                 user: auth.currentUser.email,
