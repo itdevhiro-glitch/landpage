@@ -3,164 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome - Zeppelin Kitchen Solutions</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Zeppelin - Employee Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary-color: #D9232D;
+            --text-light: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             height: 100vh;
-            /* Menggunakan Gradient yang sama persis dengan Login.html agar transisi halus */
-            background: linear-gradient(135deg, #D9232D 0%, #F37321 100%);
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #fff; /* Teks putih agar kontras dengan background */
+            color: var(--text-light);
+            /* Gradient background tetap sama (brand color) */
+            background: linear-gradient(-45deg, #8B0000, #D9232D, #F37321, #2c0b0e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            padding: 3rem 4rem;
+            border-radius: 24px;
             text-align: center;
-            overflow: hidden;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
-        .splash-container {
-            max-width: 600px;
-            padding: 20px;
-            animation: fadeInUp 1s ease-out forwards;
-        }
-
-        /* Animasi masuk */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        .logo-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
         }
 
         .logo-icon {
-            font-size: 5rem;
-            margin-bottom: 20px;
-            color: #fff;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
-            /* Animasi denyut halus */
-            animation: pulse 2s infinite ease-in-out; 
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            font-size: 3.5rem;
+            background: linear-gradient(to bottom, #fff, #ffcccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(243, 115, 33, 0.6)); 
         }
 
         .brand-name {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
             text-transform: uppercase;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+            margin-bottom: 0.2rem;
+            color: #fff;
         }
-
-        .tagline {
+        
+        /* Tambahan styling untuk teks "Internal" */
+        .brand-sub-name {
+            font-family: 'Montserrat', sans-serif;
             font-size: 1.2rem;
-            font-weight: 300;
-            margin-bottom: 40px;
+            font-weight: 600;
+            color: #ffd1d1;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
             opacity: 0.9;
         }
 
-        /* Loading Bar Container */
-        .loader-track {
-            width: 250px;
-            height: 6px;
-            background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Loading Bar Progress */
-        .loader-bar {
-            width: 0%;
-            height: 100%;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-            /* Durasi animasi loading (3 detik) */
-            animation: loadProgress 3s linear forwards; 
-        }
-
-        @keyframes loadProgress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-
-        .status-text {
-            margin-top: 15px;
+        .brand-tagline {
             font-size: 0.9rem;
             font-weight: 300;
-            letter-spacing: 1px;
-            animation: blink 1.5s infinite;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2.5rem;
+            line-height: 1.5;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .action-btn {
+            position: relative;
+            padding: 14px 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        /* Background Pattern Decoration (Subtle Kitchen Icons) */
-        .bg-pattern {
+        .action-btn:hover {
+            background: #fff;
+            color: var(--primary-color);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+            transform: translateY(-3px);
+            border-color: #fff;
+        }
+
+        .action-btn i { font-size: 0.8rem; transition: transform 0.3s ease; }
+        .action-btn:hover i { transform: translateX(3px); }
+
+        .loader-ring {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(217, 35, 45, 0.3);
+            border-top: 2px solid #D9232D;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Footer khusus internal */
+        .footer-info {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.05;
-            background-image: radial-gradient(#fff 2px, transparent 2px);
-            background-size: 30px 30px;
+            bottom: 25px;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 10;
         }
         
-        .floating-icon {
-            position: absolute;
-            color: rgba(255,255,255,0.1);
-            font-size: 8rem;
-            z-index: -1;
-        }
-        .icon-1 { top: 10%; left: 10%; transform: rotate(-15deg); }
-        .icon-2 { bottom: 15%; right: 10%; transform: rotate(15deg); }
+        .footer-info i { margin-right: 5px; }
 
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .fade-out { opacity: 0; transform: scale(0.95); transition: all 0.5s ease-in-out; }
     </style>
 </head>
 <body>
 
-    <div class="bg-pattern"></div>
-    <i class="fa-solid fa-utensils floating-icon icon-1"></i>
-    <i class="fa-solid fa-kitchen-set floating-icon icon-2"></i>
-
-    <div class="splash-container">
-        <div class="logo-icon">
-            <i class="fa-solid fa-fire-burner"></i>
+    <div class="glass-card" id="main-card">
+        <div class="logo-wrapper">
+            <div class="logo-icon">
+                <i class="fa-solid fa-id-card-clip"></i>
+            </div>
         </div>
         
         <h1 class="brand-name">ZEPPELIN</h1>
-        <p class="tagline">Professional Kitchen Equipment Solutions</p>
-
-        <div class="loader-track">
-            <div class="loader-bar"></div>
-        </div>
+        <h2 class="brand-sub-name">Internal System</h2>
         
-        <p class="status-text">Memuat Sistem...</p>
+        <p class="brand-tagline">
+            Employee Services & Integrated Dashboard<br>
+            <span style="font-size: 0.8em; opacity: 0.7;">Silakan login untuk akses operasional</span>
+        </p>
+
+        <a href="#" class="action-btn" onclick="enterPortal(event)">
+            <span id="btn-text">Akses Workspace</span>
+            <i class="fa-solid fa-arrow-right-to-bracket" id="btn-icon"></i>
+            <div class="loader-ring" id="loader"></div>
+        </a>
+    </div>
+
+    <div class="footer-info">
+        <i class="fa-solid fa-lock"></i> Restricted Access &bull; Authorized Personnel Only
     </div>
 
     <script>
-        // Script sederhana untuk redirect setelah 3.2 detik
-        // (Sedikit lebih lama dari animasi CSS 3s agar bar penuh dulu)
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 3200); 
+        function enterPortal(e) {
+            e.preventDefault();
+            
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
+            const loader = document.getElementById('loader');
+            const card = document.getElementById('main-card');
+            const btn = document.querySelector('.action-btn');
+
+            btnText.style.display = 'none';
+            btnIcon.style.display = 'none';
+            loader.style.display = 'block';
+            
+            btn.style.backgroundColor = '#fff';
+            btn.style.width = '55px'; 
+            btn.style.padding = '14px';
+            btn.style.pointerEvents = 'none';
+
+            setTimeout(() => {
+                card.classList.add('fade-out');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 500); 
+            }, 800); 
+        }
     </script>
 
 </body>
