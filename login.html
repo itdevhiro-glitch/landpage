@@ -3,158 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Registrasi - Zeppelin Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Login Access - Zeppelin Internal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
+        :root {
+            --primary-color: #D9232D;
+            --accent-color: #F37321;
+            --text-light: #ffffff;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --input-bg: rgba(0, 0, 0, 0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Inter', sans-serif;
             height: 100vh;
-            background: linear-gradient(135deg, #D9232D 0%, #F37321 100%);
+            /* Background animasi yang sama persis dengan index.html */
+            background: linear-gradient(-45deg, #8B0000, #D9232D, #F37321, #2c0b0e);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #333;
-            padding: 16px; /* (BARU) Padding untuk mobile */
+            color: var(--text-light);
+            padding: 16px;
+            overflow: hidden; /* Mencegah scroll saat animasi masuk */
         }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .container-wrapper {
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
+            position: relative;
+            perspective: 1000px;
         }
+
+        /* Glassmorphism Card Container */
         .form-container {
-            background-color: #ffffff;
-            padding: 30px 40px; /* (DIUBAH) Dikecilkan sedikit */
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 40px 40px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             width: 100%;
             text-align: center;
             opacity: 0;
-            transform: translateY(20px);
-            animation: fadeIn 0.6s ease-out forwards;
-            position: relative; /* (BARU) Untuk message box */
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Sembunyikan form registrasi by default */
         #register-container {
             display: none;
         }
         
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
+        /* Typography Header yang senada dengan Index */
+        .header-section {
+            margin-bottom: 30px;
         }
+        
         .form-logo {
-            font-size: 2.2rem; /* (DIUBAH) Dikecilkan sedikit */
-            font-weight: 700;
-            color: #D9232D;
-            margin-bottom: 8px;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff, #ffcccc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(243, 115, 33, 0.5));
         }
-        .form-logo i { color: #F37321; }
+
+        .brand-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
         .form-title {
-            font-size: 1.1rem; /* (DIUBAH) Dikecilkan sedikit */
-            font-weight: 300;
-            margin-bottom: 25px;
-            color: #555;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.7);
         }
+
+        /* Input Styling untuk Glass Theme */
         .input-group {
             position: relative;
-            margin-bottom: 20px; /* (DIUBAH) Jarak antar input */
+            margin-bottom: 20px;
         }
+
         .input-group i {
             position: absolute;
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            color: #aaa;
-        }
-        .input-field {
-            width: 100%;
-            padding: 14px 15px 14px 45px; /* (DIUBAH) Dikecilkan sedikit */
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            color: rgba(255, 255, 255, 0.6);
             font-size: 1rem;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: #D9232D;
-            box-shadow: 0 0 0 3px rgba(217, 35, 45, 0.1);
-        }
-        .form-button {
-            width: 100%;
-            padding: 14px; /* (DIUBAH) Dikecilkan sedikit */
-            border: none;
-            border-radius: 8px;
-            background-color: #D9232D;
-            color: white;
-            font-size: 1rem; /* (DIUBAH) Dikecilkan sedikit */
-            font-weight: 700;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .form-button:hover {
-            background-color: #B01B22;
-            transform: translateY(-2px);
-        }
-        .form-button:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
-            transform: none;
+            transition: color 0.3s;
         }
 
-        /* (BARU) Link untuk ganti form */
-        .form-switch {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #555;
+        .input-field {
+            width: 100%;
+            padding: 16px 15px 16px 45px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
         }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .input-field:focus {
+            outline: none;
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .input-field:focus + i, 
+        .input-group:focus-within i {
+            color: #fff;
+        }
+
+        /* Button Styling Modern */
+        .form-button {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 50px; /* Pill shape like index */
+            background: linear-gradient(90deg, #D9232D, #F37321);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(217, 35, 45, 0.4);
+            margin-top: 10px;
+        }
+
+        .form-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(243, 115, 33, 0.5);
+            filter: brightness(1.1);
+        }
+
+        .form-button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+
+        /* Switch Link Styling */
+        .form-switch {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
         .form-switch a {
-            color: #D9232D;
+            color: #fff;
             font-weight: 700;
             text-decoration: none;
             cursor: pointer;
-        }
-        .form-switch a:hover {
-            text-decoration: underline;
+            margin-left: 5px;
+            border-bottom: 1px dashed rgba(255,255,255,0.4);
+            transition: all 0.3s;
         }
 
-        /* (BARU) Kotak pesan error/sukses */
+        .form-switch a:hover {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        /* Message Box Styling (Glass Style) */
         .message-box {
-            font-size: 0.9rem;
-            margin-top: 15px;
-            padding: 10px;
+            font-size: 0.85rem;
+            margin-top: 20px;
+            padding: 12px;
             border-radius: 8px;
-            display: none; /* Sembunyi by default */
+            display: none;
+            backdrop-filter: blur(5px);
+            text-align: left;
         }
+        
         .error {
-            background-color: #fee2e2;
-            color: #D93025;
-            border: 1px solid #D93025;
+            background-color: rgba(220, 38, 38, 0.2); /* Red glass */
+            color: #ffb3b3;
+            border: 1px solid rgba(220, 38, 38, 0.4);
         }
+        
         .success {
-            background-color: #dcfce7;
-            color: #16a34a;
-            border: 1px solid #16a34a;
+            background-color: rgba(22, 163, 74, 0.2); /* Green glass */
+            color: #bbf7d0;
+            border: 1px solid rgba(22, 163, 74, 0.4);
         }
     </style>
 </head>
 <body>
 
     <div class="container-wrapper">
+        
         <div class="form-container" id="login-container">
-            <div class="form-logo">
-                <i class="fa-solid fa-gear"></i> ZEPPELIN
+            <div class="header-section">
+                <div class="form-logo">
+                    <i class="fa-solid fa-fingerprint"></i>
+                </div>
+                <h1 class="brand-name">ZEPPELIN</h1>
+                <p class="form-title">Internal Access Point</p>
             </div>
-            <p class="form-title">Portal Operasional Internal</p>
             
             <form id="login-form">
                 <div class="input-group">
                     <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="login-email" class="input-field" placeholder="Email" required>
+                    <input type="email" id="login-email" class="input-field" placeholder="Email Pengguna" required>
                 </div>
                 
                 <div class="input-group">
@@ -162,20 +256,25 @@
                     <input type="password" id="login-password" class="input-field" placeholder="Kata Sandi" required>
                 </div>
                 
-                <button type="submit" class="form-button" id="login-button">Masuk</button>
+                <button type="submit" class="form-button" id="login-button">
+                    Masuk Workspace
+                </button>
                 
                 <div id="login-msg" class="message-box"></div>
             </form>
             <div class="form-switch">
-                Belum punya akun? <a id="show-register">Daftar di sini</a>
+                Karyawan baru? <a id="show-register">Buat Akun</a>
             </div>
         </div>
 
         <div class="form-container" id="register-container">
-            <div class="form-logo">
-                <i class="fa-solid fa-user-plus"></i> ZEPPELIN
+            <div class="header-section">
+                <div class="form-logo">
+                    <i class="fa-solid fa-id-badge"></i>
+                </div>
+                <h1 class="brand-name">ZEPPELIN</h1>
+                <p class="form-title">Registrasi Karyawan</p>
             </div>
-            <p class="form-title">Registrasi Akun Baru</p>
             
             <form id="register-form">
                 <div class="input-group">
@@ -185,25 +284,27 @@
 
                 <div class="input-group">
                     <i class="fa-solid fa-briefcase"></i>
-                    <input type="text" id="reg-dept" class="input-field" placeholder="Departemen / Team" required>
+                    <input type="text" id="reg-dept" class="input-field" placeholder="Departemen / Divisi" required>
                 </div>
                 
                 <div class="input-group">
                     <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="reg-email" class="input-field" placeholder="Email (example@zeppelin.center)" required>
+                    <input type="email" id="reg-email" class="input-field" placeholder="Email Kerja" required>
                 </div>
                 
                 <div class="input-group">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="reg-password" class="input-field" placeholder="Kata Sandi (Min. 6 karakter)" required>
+                    <input type="password" id="reg-password" class="input-field" placeholder="Buat Kata Sandi (Min. 6)" required>
                 </div>
                 
-                <button type="submit" class="form-button" id="register-button">Daftar</button>
+                <button type="submit" class="form-button" id="register-button">
+                    Daftar Akun
+                </button>
                 
                 <div id="register-msg" class="message-box"></div>
             </form>
             <div class="form-switch">
-                Sudah punya akun? <a id="show-login">Login di sini</a>
+                Sudah punya akses? <a id="show-login">Login Sekarang</a>
             </div>
         </div>
 
@@ -211,9 +312,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        // [PERUBAHAN] Impor signOut
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        // [PERUBAHAN] Impor get dan child
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
@@ -231,10 +330,11 @@
         const auth = getAuth(app);
         const db = getDatabase(app); 
 
-        // --- (BARU) Fungsi Tampilkan Pesan ---
+        // --- Fungsi Tampilkan Pesan ---
         function showMessage(elementId, message, isError = true) {
             const msgBox = document.getElementById(elementId);
             msgBox.textContent = message;
+            // Class disesuaikan dengan CSS baru
             msgBox.className = isError ? 'message-box error' : 'message-box success';
             msgBox.style.display = 'block';
         }
@@ -242,8 +342,7 @@
             document.getElementById(elementId).style.display = 'none';
         }
 
-        // --- (BARU) Cek Alasan Redirect dari URL ---
-        // Ini akan menangkap jika user ditendang dari dashboard
+        // --- Cek Alasan Redirect dari URL ---
         const urlParams = new URLSearchParams(window.location.search);
         const reason = urlParams.get('reason');
         if (reason) {
@@ -253,32 +352,41 @@
             } else if (reason === 'rejected') {
                 msg = "Akun Anda ditolak. Silakan hubungi Admin.";
             } else if (reason === 'no_data' || reason === 'invalid') {
-                msg = "Terjadi masalah saat memvalidasi akun Anda. Hubungi Admin.";
+                msg = "Masalah validasi akun. Hubungi Admin.";
             } else if (reason === 'db_error') {
                 msg = "Gagal terhubung ke database. Coba lagi.";
             }
             showMessage('login-msg', msg);
         }
 
-        // --- (BARU) Elemen Tampilan ---
+        // --- Toggle Antar Form ---
         const loginContainer = document.getElementById('login-container');
         const registerContainer = document.getElementById('register-container');
         const showLoginBtn = document.getElementById('show-login');
         const showRegisterBtn = document.getElementById('show-register');
 
+        // Animasi transisi sederhana
+        function switchForm(hideEl, showEl) {
+            hideEl.style.display = 'none';
+            showEl.style.display = 'block';
+            showEl.style.opacity = '0';
+            showEl.style.transform = 'translateY(20px)';
+            // Trigger reflow
+            void showEl.offsetWidth; 
+            showEl.style.animation = 'fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards';
+        }
+
         showLoginBtn.addEventListener('click', () => {
-            registerContainer.style.display = 'none';
-            loginContainer.style.display = 'block';
+            switchForm(registerContainer, loginContainer);
             hideMessage('login-msg');
         });
         showRegisterBtn.addEventListener('click', () => {
-            loginContainer.style.display = 'none';
-            registerContainer.style.display = 'block';
+            switchForm(loginContainer, registerContainer);
             hideMessage('register-msg');
         });
 
 
-        // --- Logika LOGIN (TELAH DIPERBARUI) ---
+        // --- Logika LOGIN ---
         const loginForm = document.getElementById('login-form');
         const loginEmailInput = document.getElementById('login-email');
         const loginPasswordInput = document.getElementById('login-password');
@@ -290,12 +398,11 @@
             const password = loginPasswordInput.value;
             
             loginButton.disabled = true;
-            loginButton.innerText = "Memproses...";
+            loginButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
             hideMessage('login-msg');
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // [PERUBAHAN] Berhasil Auth, sekarang cek status di Database
                     const user = userCredential.user;
                     const userRef = ref(db, 'users/' + user.uid);
                     
@@ -304,63 +411,51 @@
                             const userData = snapshot.val();
                             
                             if (userData.status === 'approved') {
-                                // --- DISETUJUI ---
-                                // Berhasil login, arahkan ke dashboard utama
                                 window.location.href = 'dashboard.html';
-                            
                             } else if (userData.status === 'pending') {
-                                // --- PENDING ---
-                                showMessage('login-msg', "Akun Anda masih menunggu persetujuan Admin.");
-                                signOut(auth); // (PENTING) Logout kembali
+                                showMessage('login-msg', "Akun Anda menunggu persetujuan Admin.");
+                                signOut(auth);
                                 loginButton.disabled = false;
-                                loginButton.innerText = "Masuk";
-                            
+                                loginButton.innerText = "Masuk Workspace";
                             } else if (userData.status === 'rejected') {
-                                // --- DITOLAK ---
-                                showMessage('login-msg', "Akun Anda ditolak. Silakan hubungi Admin.");
-                                signOut(auth); // (PENTING) Logout kembali
+                                showMessage('login-msg', "Akun Anda ditolak. Hubungi Admin.");
+                                signOut(auth);
                                 loginButton.disabled = false;
-                                loginButton.innerText = "Masuk";
-                            
+                                loginButton.innerText = "Masuk Workspace";
                             } else {
-                                // --- STATUS LAIN ---
-                                showMessage('login-msg', "Status akun tidak valid. Hubungi Admin.");
+                                showMessage('login-msg', "Status akun tidak valid.");
                                 signOut(auth); 
                                 loginButton.disabled = false;
-                                loginButton.innerText = "Masuk";
+                                loginButton.innerText = "Masuk Workspace";
                             }
                         } else {
-                            // Data user tidak ada di DB (mungkin admin?)
-                            // Cek jika ini admin
                             if (user.email === 'root@zeppelin.center') {
-                                window.location.href = 'index.html'; // Arahkan admin ke dashboard admin
+                                window.location.href = 'index.html'; 
                                 return;
                             }
-                            showMessage('login-msg', "Data user tidak ditemukan di database. Hubungi Admin.");
+                            showMessage('login-msg', "Data user tidak ditemukan.");
                             signOut(auth); 
                             loginButton.disabled = false;
-                            loginButton.innerText = "Masuk";
+                            loginButton.innerText = "Masuk Workspace";
                         }
                     }).catch((dbError) => {
                         console.error("DB read error:", dbError);
-                        showMessage('login-msg', "Gagal memverifikasi status akun. Coba lagi.");
+                        showMessage('login-msg', "Gagal memverifikasi status.");
                         signOut(auth);
                         loginButton.disabled = false;
-                        loginButton.innerText = "Masuk";
+                        loginButton.innerText = "Masuk Workspace";
                     });
-
                 })
                 .catch((error) => {
-                    // Gagal login (email/password salah)
-                    console.error("Login error:", error.code, error.message);
-                    showMessage('login-msg', "Email atau kata sandi salah. Coba lagi.");
+                    console.error("Login error:", error.code);
+                    showMessage('login-msg', "Email atau kata sandi salah.");
                     loginButton.disabled = false;
-                    loginButton.innerText = "Masuk";
+                    loginButton.innerText = "Masuk Workspace";
                 });
         });
 
 
-        // --- Logika REGISTRASI (SAMA) ---
+        // --- Logika REGISTRASI ---
         const registerForm = document.getElementById('register-form');
         const regName = document.getElementById('reg-name');
         const regDept = document.getElementById('reg-dept');
@@ -387,46 +482,48 @@
             }
 
             registerButton.disabled = true;
-            registerButton.innerText = "Memproses...";
+            registerButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
 
             createUserWithEmailAndPassword(auth, emailVal, passVal)
                 .then((userCredential) => {
                     const user = userCredential.user;
                     
                     set(ref(db, 'users/' + user.uid), {
-                        uid: user.uid, // [TAMBAHAN] Simpan UID juga
+                        uid: user.uid,
                         nama: nameVal,
                         departemen: deptVal,
                         email: emailVal,
-                        status: 'pending' // <-- Status default menunggu persetujuan
+                        status: 'pending' 
                     })
                     .then(() => {
-                        showMessage('register-msg', "Registrasi berhasil! Akun Anda sedang menunggu persetujuan Admin.", false);
+                        showMessage('register-msg', "Registrasi berhasil! Menunggu persetujuan Admin.", false);
                         registerForm.reset();
                         registerButton.disabled = false;
-                        registerButton.innerText = "Daftar";
+                        registerButton.innerText = "Daftar Akun";
                         
                         setTimeout(() => {
                             showLoginBtn.click();
                             hideMessage('register-msg');
-                        }, 3000);
+                            // Tampilkan pesan di login form agar user tahu
+                            showMessage('login-msg', "Akun dibuat. Menunggu persetujuan Admin.", false); 
+                        }, 2500);
                     })
                     .catch((dbError) => {
                         console.error("DB error:", dbError);
-                        showMessage('register-msg', "Registrasi akun berhasil, tapi gagal simpan data user. Hubungi Admin.");
+                        showMessage('register-msg', "Gagal menyimpan data user.");
                         registerButton.disabled = false;
-                        registerButton.innerText = "Daftar";
+                        registerButton.innerText = "Daftar Akun";
                     });
                 })
                 .catch((authError) => {
                     console.error("Auth error:", authError.code);
                     if (authError.code === 'auth/email-already-in-use') {
-                        showMessage('register-msg', "Email ini sudah terdaftar. Silakan login.");
+                        showMessage('register-msg', "Email ini sudah terdaftar.");
                     } else {
                         showMessage('register-msg', "Registrasi gagal. Coba lagi.");
                     }
                     registerButton.disabled = false;
-                    registerButton.innerText = "Daftar";
+                    registerButton.innerText = "Daftar Akun";
                 });
         });
 
