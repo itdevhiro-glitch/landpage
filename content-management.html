@@ -3,434 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Konten - Zeppelin Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <title>HR Portal - Zeppelin CMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
     <style>
-        /* CSS Reset dan Konfigurasi Dasar */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* --- VARIABLES --- */
         :root {
-            --zeppelin-red: #D9232D;
-            --zeppelin-orange: #F37321;
-            --text-dark: #1f2937;
-            --text-gray: #6b7280;
-            --bg-light: #f9fafb;
-            --border-color: #e5e7eb;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            line-height: 1.6;
-        }
-        .container {
-            width: 100%;
-            max-width: 1000px; /* Dibuat lebih lebar untuk daftar */
-            margin: 0 auto;
-            padding: 0 24px;
+            --primary: #D9232D;
+            --primary-dark: #b01b22;
+            --accent: #F37321;
+            --bg-body: #F4F7FE;
+            --text-dark: #1B254B;
+            --text-grey: #A3AED0;
+            --border: #E0E5F2;
+            --sidebar-width: 260px;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
         }
 
-        /* Loading Screen (Tidak Berubah) */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, var(--zeppelin-red) 0%, var(--zeppelin-orange) 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-            z-index: 9999;
-            font-size: 1.2rem;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: #ffffff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        #main-content {
-            display: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-body); color: var(--text-dark); overflow-x: hidden; }
 
-        /* Navbar (Tidak Berubah) */
-        .navbar {
-            background-color: #ffffff;
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-        .nav-logo {
-            font-size: 1.8rem;
-            font-weight: 900;
-            color: var(--zeppelin-red);
-            text-decoration: none;
-        }
-        .nav-logo i { color: var(--zeppelin-orange); }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .logout-button {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--zeppelin-red);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-        .logout-button:hover {
-            background-color: var(--zeppelin-red);
-            color: #ffffff;
-        }
-
-        /* (BARU) Tata Letak Halaman Utama */
-        .main-page {
-            padding: 40px 0;
-        }
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        .page-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-        .create-new-btn {
-            background-color: var(--zeppelin-red);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .create-new-btn:hover {
-            background-color: #B01B22;
-            transform: translateY(-2px);
-        }
-        .create-new-btn i {
-            margin-right: 8px;
-        }
-        .back-to-dashboard {
-            display: inline-block;
-            font-size: 0.95rem;
-            color: var(--zeppelin-red);
-            text-decoration: none;
-            font-weight: 500;
-            margin-bottom: 24px;
-            transition: color 0.3s;
-        }
-        .back-to-dashboard:hover {
-            color: #B01B22;
-        }
-        .back-to-dashboard i {
-            margin-right: 5px;
-        }
-
-        /* (BARU) Widget Konten Utama (Daftar) */
-        .content-widget {
-            background-color: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-        .content-widget-header {
-            padding: 16px 24px;
-            background-color: var(--bg-light);
-            border-bottom: 1px solid var(--border-color);
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-        .content-widget-body {
-            padding: 8px; /* Padding minimal untuk list */
-        }
-        #announcement-list {
-            display: flex;
-            flex-direction: column;
-        }
-        .no-announcements {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-gray);
-            font-style: italic;
-        }
-
-        /* (BARU) Tampilan Item Daftar (List Item) */
-        .announcement-item {
-            display: flex;
-            align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.3s;
-        }
-        .announcement-item:last-child {
-            border-bottom: none;
-        }
-        .announcement-item:hover {
-            background-color: #fcfcfd;
-        }
-        .ann-item-main {
-            flex-grow: 1;
-            margin-right: 16px;
-        }
-        .ann-item-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 4px;
-        }
-        .ann-item-meta {
-            font-size: 0.85rem;
-            color: var(--text-gray);
-            margin-bottom: 8px;
-        }
-        .ann-item-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .tag {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 99px;
-            text-transform: uppercase;
-        }
-        .tag-pin { background-color: #fef08a; color: #a16207; }
-        .tag-expiry { background-color: #fee2e2; color: #b91c1c; }
-        .tag-cat { background-color: #e0e7ff; color: #4338ca; }
-        .tag-cat-penting { background-color: #fecaca; color: #dc2626; }
-        .tag-cat-event { background-color: #dbeafe; color: #1d4ed8; }
-        .tag-cat-peraturan { background-color: #fed7aa; color: #c2410c; }
+        /* --- LAYOUT UTAMA --- */
+        #main-content { display: none; min-height: 100vh; display: flex; }
         
-        .ann-item-actions {
-            display: flex;
-            gap: 10px;
-            flex-shrink: 0;
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width); background: #fff; position: fixed; height: 100%; 
+            border-right: 1px solid var(--border); padding: 25px; z-index: 100;
         }
-        .action-button {
-            background: none;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 6px 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        .edit-btn { color: #3b82f6; }
-        .edit-btn:hover { background-color: #eff6ff; border-color: #3b82f6; }
-        .delete-btn { color: var(--zeppelin-red); }
-        .delete-btn:hover { background-color: #fee2e2; border-color: var(--zeppelin-red); }
+        .brand { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.4rem; color: var(--primary); display: flex; align-items: center; gap: 10px; margin-bottom: 40px; text-decoration: none; }
+        .nav-group { margin-bottom: 20px; }
+        .nav-label { font-size: 0.75rem; color: var(--text-grey); font-weight: 600; text-transform: uppercase; margin-bottom: 10px; padding-left: 10px; letter-spacing: 0.5px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: var(--text-grey); text-decoration: none; border-radius: 10px; font-weight: 500; margin-bottom: 8px; transition: 0.2s; cursor: pointer; }
+        .nav-link:hover { background: #fff5f5; color: var(--primary); }
+        .nav-link.active { background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; box-shadow: 0 5px 15px rgba(217, 35, 45, 0.3); }
 
-        /* (BARU) Modal Styling (Umum) */
+        /* Main Panel */
+        .main-panel { margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); padding: 30px; }
+        .hidden { display: none !important; }
+        
+        /* Header & Cards */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-title h2 { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 700; }
+        .btn-logout { background: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 30px; color: var(--primary); cursor: pointer; transition: 0.2s; }
+        .btn-logout:hover { background: var(--primary); color: white; }
+
+        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); min-height: 500px; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        
+        .btn-primary { background: linear-gradient(90deg, var(--primary), var(--accent)); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(217, 35, 45, 0.2); }
+        .btn-primary:hover { transform: translateY(-2px); }
+
+        /* --- LIST PENGUMUMAN --- */
+        .announcement-item { display: flex; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; transition: 0.2s; align-items: center; }
+        .announcement-item:hover { border-color: var(--accent); box-shadow: 0 5px 15px rgba(0,0,0,0.03); }
+        .ann-content { flex: 1; padding-right: 20px; min-width: 0; }
+        .ann-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ann-meta { font-size: 0.85rem; color: var(--text-grey); display: flex; gap: 10px; margin-bottom: 8px; }
+        .tags { display: flex; gap: 5px; }
+        .tag { font-size: 0.75rem; padding: 2px 10px; border-radius: 20px; background: #f0f0f0; font-weight: 600; }
+        .tag-pin { background: #fff8e1; color: #ffbf00; border: 1px solid #ffe082; }
+        
+        /* --- TABEL KARYAWAN --- */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 15px; color: var(--text-grey); font-size: 0.85rem; font-weight: 600; border-bottom: 1px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.95rem; vertical-align: middle; }
+        tr:hover td { background: #fcfcfc; }
+        
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; }
+        .st-approved { background: #ecfdf5; color: var(--success); border: 1px solid #d1fae5; }
+        .st-pending { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+        .st-rejected { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+
+        .actions { display: flex; gap: 8px; }
+        .btn-icon { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: white; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-grey); transition: 0.2s; }
+        .btn-icon:hover { background: var(--bg-body); color: var(--primary); }
+
+        /* --- MODAL --- */
         .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            display: none; /* Sembunyi */
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-            overflow-y: auto; /* Izinkan scroll jika modal panjang */
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px;
         }
+
         .modal-content {
-            background-color: #ffffff;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 800px; /* Lebih lebar untuk editor */
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            animation: modalFadeIn 0.3s ease-out;
-            margin: auto 0; /* Center vertikal */
+            background: white; width: 100%; max-width: 650px; border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; flex-direction: column;
+            overflow: hidden; max-height: 90vh;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .modal-header {
-            padding: 24px 32px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        .modal-body {
-            padding: 24px 32px;
-        }
-        .modal-footer {
-            padding: 20px 32px;
-            background-color: var(--bg-light);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom-left-radius: 12px;
-            border-bottom-right-radius: 12px;
-        }
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-        .modal-button {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .modal-button-primary {
-            background-color: var(--zeppelin-red);
-            color: white;
-        }
-        .modal-button-primary:hover {
-            background-color: #B01B22;
-        }
-        .modal-button-primary:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
-        }
-        .modal-button-secondary {
-            background-color: var(--border-color);
-            color: var(--text-dark);
-        }
-        .modal-button-secondary:hover {
-            background-color: #d1d5db;
-        }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* (BARU) Styling Form di dalam Modal */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 8px;
-            color: #374151;
-        }
-        .form-input,
-        .form-select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: 'Roboto', sans-serif;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            background-color: #fff; /* Pastikan background putih */
-        }
-        .form-input:focus,
-        .form-select:focus {
-            outline: none;
-            border-color: var(--zeppelin-red);
-            box-shadow: 0 0 0 3px rgba(217, 35, 45, 0.1);
-        }
-        .form-row {
-            display: flex;
-            gap: 20px;
-        }
-        .form-row .form-group {
-            flex: 1;
-        }
-        .form-check {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background-color: #fef08a;
-            border: 1px solid #fde047;
-            border-radius: 8px;
-            color: #a16207;
-        }
-        .form-check input {
-            width: 1.2rem;
-            height: 1.2rem;
-            margin-right: 12px;
-            cursor: pointer;
-        }
-        .form-check label {
-            margin-bottom: 0;
-            font-weight: 700;
-            cursor: pointer;
-        }
+        .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border); background: #fff; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { padding: 30px; overflow-y: auto; }
+        .modal-footer { padding: 20px 30px; border-top: 1px solid var(--border); background: #f9fafb; display: flex; justify-content: flex-end; gap: 10px; }
 
-        /* (BARU) Styling Quill.js Editor */
-        #quill-editor-container,
-        #quill-editor-container-edit {
-            height: 250px; /* Tentukan tinggi editor */
-            background-color: #fff;
-        }
-        .ql-toolbar {
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-        .ql-container {
-            border-bottom-left-radius: 8px;
-            border-bottom-right-radius: 8px;
-        }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; transition: 0.2s; }
+        .form-control:focus { border-color: var(--primary); outline: none; }
+        .row-group { display: flex; gap: 20px; }
+        .col-half { flex: 1; }
 
-        /* Kotak Pesan */
-        .message-box {
-            font-size: 0.95rem;
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
-            display: none;
-            background-color: #dcfce7;
-            color: #16a34a;
-            border: 1px solid #16a34a;
-        }
-         
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 40px 24px;
-            background-color: #ffffff;
-            border-top: 1px solid var(--border-color);
-            margin-top: 60px;
-            color: var(--text-gray);
-            font-size: 0.9rem;
+        .editor-wrapper { display: flex; flex-direction: column; height: 300px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        
+        .btn-cancel { background: white; border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; cursor: pointer; color: var(--text-grey); font-weight: 600; }
+        .btn-submit { background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .btn-submit:hover { background: var(--primary-dark); }
+
+        /* Loading & Message */
+        .loading-screen { position: fixed; inset: 0; background: white; z-index: 2000; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #eee; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .msg-box { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; text-align: center; }
+        .msg-success { background: #d1fae5; color: #065f46; }
+        
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main-panel { margin-left: 0; width: 100%; }
         }
     </style>
 </head>
@@ -438,102 +133,139 @@
 
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
-        <p>Memverifikasi akses HRD...</p>
+        <p>Memuat Sistem HRD...</p>
     </div>
 
     <div id="main-content">
-        <nav class="navbar">
-            <div class="nav-container">
-                <a href="dashboard.html" class="nav-logo">
-                    <i class="fa-solid fa-gear"></i> ZEPPELIN
-                </a>
-                <div class="nav-right">
-                    <button id="logout-btn" class="logout-button">
-                        <i class="fa-solid fa-right-from-bracket"></i> Keluar
-                    </button>
+        
+        <nav class="sidebar">
+            <a href="#" class="brand"><i class="fa-solid fa-rocket"></i> ZEPPELIN</a>
+            
+            <div class="nav-group">
+                <div class="nav-label">Menu Utama</div>
+                <div class="nav-link active" onclick="switchTab('announcement')">
+                    <i class="fa-solid fa-bullhorn"></i> Pengumuman
                 </div>
+                <div class="nav-link" onclick="switchTab('employee')">
+                    <i class="fa-solid fa-users"></i> Data Karyawan
+                </div>
+            </div>
+            
+            <div class="nav-group">
+                <div class="nav-label">Lainnya</div>
+                <a href="dashboard.html" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Kembali ke Dashboard</a>
             </div>
         </nav>
-        
-        <main class="main-page container">
-            
-            <a href="dashboard.html" class="back-to-dashboard">
-                <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard
-            </a>
 
-            <div class="page-header">
-                <h2 class="page-title">Manajemen Pengumuman</h2>
-                <button class="create-new-btn" id="open-create-modal-btn">
-                    <i class="fa-solid fa-plus"></i> Buat Pengumuman Baru
-                </button>
-            </div>
-            
-            <div id="global-msg" class="message-box"></div>
-
-            <div class="content-widget">
-                <div class="content-widget-header">
-                    Daftar Pengumuman
+        <main class="main-panel">
+            <div class="top-bar">
+                <div class="page-title">
+                    <span style="color: var(--text-grey); font-size: 0.9rem;">Human Resources /</span>
+                    <h2 id="page-heading">Manajemen Konten</h2>
                 </div>
-                <div class="content-widget-body">
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <div style="text-align:right;">
+                        <div style="font-weight:600; font-size:0.9rem;" id="user-display-name">HR User</div>
+                        <div style="font-size:0.75rem; color:var(--text-grey);">HRD Department</div>
+                    </div>
+                    <button id="logout-btn" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+            </div>
+
+            <div id="global-msg" class="msg-box"></div>
+
+            <div id="view-announcement" class="content-view">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Daftar Pengumuman</h3>
+                        <button class="btn-primary" onclick="openCreateModal()">
+                            <i class="fa-solid fa-plus"></i> Buat Baru
+                        </button>
+                    </div>
                     <div id="announcement-list">
-                        <div class="no-announcements">Memuat pengumuman...</div>
+                        <div style="text-align: center; color: #999; padding: 40px;">Memuat data...</div>
                     </div>
                 </div>
             </div>
+
+            <div id="view-employee" class="content-view hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h3>Direktori Karyawan</h3>
+                            <p style="font-size:0.85rem; color:var(--text-grey);">Kelola data dan permintaan akses akun baru.</p>
+                        </div>
+                        <button class="btn-primary" onclick="openEmpModal(null)">
+                            <i class="fa-solid fa-user-plus"></i> Tambah Karyawan
+                        </button>
+                    </div>
+                    
+                    <div style="padding: 15px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; color: #b45309;">
+                        <i class="fa-solid fa-circle-info"></i> <b>Catatan Sistem:</b> Penambahan karyawan baru akan berstatus <b>Pending</b> sampai Admin IT menyetujui dan membuatkan kredensial login di Dashboard Utama.
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nama Lengkap</th>
+                                    <th>Email / Akun</th>
+                                    <th>Departemen</th>
+                                    <th>Jabatan</th>
+                                    <th>Status Akun</th>
+                                    <th style="text-align:center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employee-list">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </main>
-
-        <footer class="footer">
-            <p>&copy; 2025 Zeppelin Manufacturing. Halaman ini hanya untuk adminstrator terkait.</p>
-        </footer>
     </div>
-
 
     <div id="create-modal" class="modal-overlay">
         <div class="modal-content">
-            <form id="create-form">
+            <form id="create-form" style="display: flex; flex-direction: column; height: 100%;">
                 <div class="modal-header">
                     <h3 class="modal-title">Buat Pengumuman Baru</h3>
+                    <button type="button" style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('create-modal')"><i class="fa-solid fa-times"></i></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="ann-title">Judul Pengumuman</label>
-                        <input type="text" id="ann-title" class="form-input" placeholder="Contoh: Libur Nasional Hari Kemerdekaan" required>
+                        <label class="form-label">Judul Pengumuman</label>
+                        <input type="text" id="ann-title" class="form-control" required>
                     </div>
-                    
                     <div class="form-group">
-                        <label>Isi Pengumuman</label>
-                        <div id="quill-editor-container"></div>
+                        <label class="form-label">Isi Konten</label>
+                        <div class="editor-wrapper">
+                            <div id="quill-editor-container"></div>
+                        </div>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="ann-category">Kategori</label>
-                            <select id="ann-category" class="form-select">
+                    <div class="row-group">
+                        <div class="form-group col-half">
+                            <label class="form-label">Kategori</label>
+                            <select id="ann-category" class="form-control">
                                 <option value="Umum">Umum</option>
                                 <option value="Penting">Penting</option>
                                 <option value="Event">Event</option>
                                 <option value="Peraturan">Peraturan</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="ann-expiry">Tanggal Berakhir (Opsional)</label>
-                            <input type="date" id="ann-expiry" class="form-input">
+                        <div class="form-group col-half">
+                            <label class="form-label">Berakhir (Opsional)</label>
+                            <input type="date" id="ann-expiry" class="form-control">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="form-check">
-                        <input type="checkbox" id="ann-pin">
-                        <label for="ann-pin">Sematkan Pengumuman Ini</label>
+                    <div style="flex:1; display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="ann-pin"> <label for="ann-pin">Pin di Atas</label>
                     </div>
-                    <div class="modal-buttons">
-                        <button type="button" class="modal-button modal-button-secondary" id="cancel-create-btn">
-                            Batal
-                        </button>
-                        <button type="submit" class="modal-button modal-button-primary" id="submit-create-btn">
-                            Publikasikan
-                        </button>
-                    </div>
+                    <button type="button" class="btn-cancel" onclick="closeModal('create-modal')">Batal</button>
+                    <button type="submit" class="btn-submit" id="submit-create-btn">Publikasikan</button>
                 </div>
             </form>
         </div>
@@ -541,96 +273,116 @@
 
     <div id="edit-modal" class="modal-overlay">
         <div class="modal-content">
-            <form id="edit-form">
+            <form id="edit-form" style="display: flex; flex-direction: column; height: 100%;">
                 <input type="hidden" id="edit-id">
                 <div class="modal-header">
                     <h3 class="modal-title">Edit Pengumuman</h3>
+                    <button type="button" style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('edit-modal')"><i class="fa-solid fa-times"></i></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="edit-title">Judul Pengumuman</label>
-                        <input type="text" id="edit-title" class="form-input" required>
+                        <label class="form-label">Judul Pengumuman</label>
+                        <input type="text" id="edit-title" class="form-control" required>
                     </div>
-                    
                     <div class="form-group">
-                        <label>Isi Pengumuman</label>
-                        <div id="quill-editor-container-edit"></div>
+                        <label class="form-label">Isi Konten</label>
+                        <div class="editor-wrapper">
+                            <div id="quill-editor-container-edit"></div>
+                        </div>
                     </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="edit-category">Kategori</label>
-                            <select id="edit-category" class="form-select">
+                    <div class="row-group">
+                        <div class="form-group col-half">
+                            <label class="form-label">Kategori</label>
+                            <select id="edit-category" class="form-control">
                                 <option value="Umum">Umum</option>
                                 <option value="Penting">Penting</option>
                                 <option value="Event">Event</option>
-                                <option value="Peraturan">Peraturan</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="edit-expiry">Tanggal Berakhir (Opsional)</label>
-                            <input type="date" id="edit-expiry" class="form-input">
+                        <div class="form-group col-half">
+                            <label class="form-label">Berakhir</label>
+                            <input type="date" id="edit-expiry" class="form-control">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="form-check">
-                        <input type="checkbox" id="edit-pin">
-                        <label for="edit-pin">Sematkan Pengumuman Ini</label>
+                    <div style="flex:1; display:flex; align-items:center; gap:10px;">
+                        <input type="checkbox" id="edit-pin"> <label for="edit-pin">Pin di Atas</label>
                     </div>
-                    <div class="modal-buttons">
-                        <button type="button" class="modal-button modal-button-secondary" id="cancel-edit-btn">
-                            Batal
-                        </button>
-                        <button type="submit" class="modal-button modal-button-primary" id="save-edit-btn">
-                            Simpan Perubahan
-                        </button>
-                    </div>
+                    <button type="button" class="btn-cancel" onclick="closeModal('edit-modal')">Batal</button>
+                    <button type="submit" class="btn-submit" id="save-edit-btn">Simpan</button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <div id="delete-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px;">
+
+    <div id="emp-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px; height: auto;">
             <div class="modal-header">
-                <h3 class="modal-title">Konfirmasi Hapus</h3>
+                <h3 class="modal-title" id="emp-modal-title">Tambah Karyawan</h3>
+                <button type="button" style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('emp-modal')"><i class="fa-solid fa-times"></i></button>
             </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus pengumuman ini secara permanen? Tindakan ini tidak dapat diurungkan.</p>
-            </div>
-            <div class="modal-footer" style="justify-content: flex-end;">
-                <div class="modal-buttons">
-                    <button class="modal-button modal-button-secondary" id="cancel-delete-btn">
-                        Batal
-                    </button>
-                    <button class="modal-button modal-button-primary" id="confirm-delete-btn">
-                        Ya, Hapus
-                    </button>
+            <form id="emp-form">
+                <input type="hidden" id="emp-uid"> <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" id="emp-name" class="form-control" placeholder="Contoh: Budi Santoso" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Perusahaan</label>
+                        <input type="email" id="emp-email" class="form-control" placeholder="user@zeppelin.center" required>
+                        <small style="color:var(--text-grey); font-size:0.75rem;">Email ini akan digunakan untuk login setelah disetujui IT.</small>
+                    </div>
+                    <div class="row-group">
+                        <div class="form-group col-half">
+                            <label class="form-label">Departemen</label>
+                            <select id="emp-dept" class="form-control" required>
+                                <option value="">-- Pilih --</option>
+                                <option value="HRD">Human Resources</option>
+                                <option value="Finance">Finance / Accounting</option>
+                                <option value="Marketing">Marketing</option>
+                                <option value="Operational">Operational</option>
+                                <option value="IT">IT Support</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-half">
+                            <label class="form-label">Jabatan (Job Title)</label>
+                            <input type="text" id="emp-job" class="form-control" placeholder="Staff">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         <label class="form-label">NIK (Nomor Induk Karyawan)</label>
+                         <input type="text" id="emp-nik" class="form-control" placeholder="Opsional">
+                    </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal('emp-modal')">Batal</button>
+                    <button type="submit" class="btn-submit" id="btn-save-emp">Simpan Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; height: auto;">
+            <div class="modal-header" style="border:none; padding-bottom: 0;">
+                <h3 style="color: var(--primary);">Hapus Data?</h3>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 20px 30px;">
+                <p style="color: var(--text-grey);">Data ini akan dihapus permanen.</p>
+            </div>
+            <div class="modal-footer" style="justify-content: flex-end; border: none; background: white;">
+                <button class="btn-cancel" onclick="closeModal('delete-modal')" style="margin-right: 10px;">Batal</button>
+                <button class="btn-submit" id="confirm-delete-btn" style="background: var(--primary);">Ya, Hapus</button>
             </div>
         </div>
     </div>
 
-
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-    
     <script type="module">
-        // Import functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        
-        import { 
-            getDatabase, 
-            ref, 
-            get,
-            set,
-            push,
-            onValue, 
-            remove, 
-            update, 
-            serverTimestamp 
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, get, set, push, onValue, remove, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
@@ -643,396 +395,316 @@
             measurementId: "G-33K6DDE1VR"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app); 
 
-        // Elemen DOM
-        const mainContent = document.getElementById('main-content');
-        const loadingScreen = document.getElementById('loading-screen');
-        const logoutBtn = document.getElementById('logout-btn');
-        const globalMsg = document.getElementById('global-msg');
-        
+        // Quill Setup
+        const quillToolbarOptions = [ [{ 'header': [1, 2, false] }], ['bold', 'italic', 'underline', 'link'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['clean'] ];
+        const quillCreate = new Quill('#quill-editor-container', { theme: 'snow', modules: { toolbar: quillToolbarOptions } });
+        const quillEdit = new Quill('#quill-editor-container-edit', { theme: 'snow', modules: { toolbar: quillToolbarOptions } });
+
         let loggedInUserName = "Tamu";
-        let loggedInUserDept = null;
+        let deleteType = null; // 'announcement' or 'employee'
+        let deleteKey = null;
 
-        // (BARU) Opsi Toolbar Quill.js
-        const quillToolbarOptions = [
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline', 'link'],
-            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-            ['clean']
-        ];
-
-        // (BARU) Inisialisasi Quill Editor (Create)
-        const quillCreate = new Quill('#quill-editor-container', {
-            theme: 'snow',
-            modules: {
-                toolbar: quillToolbarOptions
-            }
-        });
-        
-        // (BARU) Inisialisasi Quill Editor (Edit)
-        const quillEdit = new Quill('#quill-editor-container-edit', {
-            theme: 'snow',
-            modules: {
-                toolbar: quillToolbarOptions
-            }
-        });
-
-        // --- AUTH GUARD (Tidak Berubah) ---
+        // AUTH CHECK
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(db, 'users/' + user.uid);
                 get(userRef).then((snapshot) => {
-                    if (user.email === 'root@zeppelin.center') {
-                        loggedInUserName = "Admin (Root)";
-                        loggedInUserDept = "IT";
-                        showPage();
-                        return; 
-                    }
-                    if (snapshot.exists()) {
-                        const userData = snapshot.val();
-                        if (userData.status === 'approved' && (userData.departemen === 'HRD' || userData.departemen === 'Human Resources')) {
-                            loggedInUserName = userData.nama || "HRD User";
-                            loggedInUserDept = userData.departemen;
-                            showPage();
-                        } else {
-                            redirectToDashboard("Akses ditolak: Bukan HRD.");
-                        }
+                    const userData = snapshot.val();
+                    const isRoot = (user.email === 'root@zeppelin.center');
+                    const isHR = (userData && userData.status === 'approved' && (userData.departemen === 'HRD' || userData.departemen === 'Human Resources'));
+                    
+                    if (isRoot || isHR) {
+                        loggedInUserName = isRoot ? "Administrator" : userData.nama;
+                        document.getElementById('user-display-name').textContent = loggedInUserName;
+                        document.getElementById('loading-screen').style.display = 'none';
+                        document.getElementById('main-content').style.display = 'flex';
+                        
+                        // Load Initial Data
+                        loadAnnouncements();
+                        loadEmployees();
                     } else {
-                        console.log("Akses ditolak: Data user tidak ditemukan.");
-                        loadingScreen.innerHTML = "<p>Data akun tidak ditemukan. Mengalihkan...</p>";
-                        signOut(auth).then(() => { window.location.href = 'login.html?reason=no_data'; });
+                        alert("Akses Ditolak: Khusus Department HRD.");
+                        window.location.href = 'dashboard.html';
                     }
-                }).catch((error) => {
-                    console.error("Gagal memvalidasi user:", error);
-                    loadingScreen.innerHTML = "<p>Gagal terhubung ke server. Mengalihkan...</p>";
-                    signOut(auth).then(() => { window.location.href = 'login.html?reason=db_error'; });
                 });
             } else {
-                console.log("Pengguna tidak terautentikasi.");
                 window.location.href = 'login.html';
             }
         });
 
-        function showPage() {
-            mainContent.style.display = 'block';
-            loadingScreen.style.display = 'none';
-            loadAnnouncements();
-        }
-        function redirectToDashboard(message) {
-            console.log(message);
-            loadingScreen.innerHTML = `<p>${message} Mengalihkan...</p>`;
-            setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
-        }
-        logoutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => { window.location.href = 'login.html'; });
-        });
+        // VIEW SWITCHER
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            // Set active class logic specifically based on tab name
+            const navs = document.querySelectorAll('.nav-link');
+            if(tab === 'announcement') navs[0].classList.add('active');
+            if(tab === 'employee') navs[1].classList.add('active');
 
-        // --- (BARU) Fungsi Tampilkan Pesan Global ---
-        function showGlobalMessage(message, isError = false) {
-            globalMsg.textContent = message;
-            globalMsg.className = isError ? 'message-box error' : 'message-box success';
-            globalMsg.style.display = 'block';
-            setTimeout(() => {
-                globalMsg.style.display = 'none';
-            }, 3000);
+            document.querySelectorAll('.content-view').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            
+            const titles = { 'announcement': 'Manajemen Konten', 'employee': 'Data Karyawan & Akses' };
+            document.getElementById('page-heading').textContent = titles[tab];
         }
 
-        // --- (BARU) LOGIKA MODAL (Umum) ---
-        const createModal = document.getElementById('create-modal');
-        const editModal = document.getElementById('edit-modal');
-        const deleteModal = document.getElementById('delete-modal');
-
-        // Buka Modal Create
-        document.getElementById('open-create-modal-btn').addEventListener('click', () => {
-            createModal.style.display = 'flex';
-        });
-        // Tutup Modal Create
-        document.getElementById('cancel-create-btn').addEventListener('click', () => {
-            createModal.style.display = 'none';
-        });
-
-        // Tutup Modal Edit
-        document.getElementById('cancel-edit-btn').addEventListener('click', () => {
-            editModal.style.display = 'none';
-        });
-        // Tutup Modal Delete
-        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
-            deleteModal.style.display = 'none';
-        });
-
-
-        // --- (REWORK) LOGIKA FORM SUBMIT (CREATE) ---
-        const createForm = document.getElementById('create-form');
-        const annTitle = document.getElementById('ann-title');
-        const annCategory = document.getElementById('ann-category');
-        const annExpiry = document.getElementById('ann-expiry');
-        const annPin = document.getElementById('ann-pin');
-        const submitCreateBtn = document.getElementById('submit-create-btn');
-
-        createForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const titleVal = annTitle.value.trim();
-            const contentVal = quillCreate.root.innerHTML; // Ambil HTML dari Quill
-            const categoryVal = annCategory.value;
-            const expiryVal = annExpiry.value;
-            const isPinnedVal = annPin.checked;
-
-            if (!titleVal || quillCreate.getLength() <= 1) { // quill.getLength() <= 1 berarti kosong
-                alert("Judul dan Isi Pengumuman tidak boleh kosong.");
-                return;
-            }
-
-            submitCreateBtn.disabled = true;
-            submitCreateBtn.textContent = "Memproses...";
-
-            const newAnnouncement = {
-                title: titleVal,
-                content: contentVal, // Simpan HTML
-                author: loggedInUserName,
-                category: categoryVal,
-                isPinned: isPinnedVal,
-                timestamp: serverTimestamp()
-            };
-
-            if (expiryVal) {
-                newAnnouncement.expiresAt = expiryVal;
-            }
-
-            const announcementsRef = ref(db, 'announcements');
-            const newPostRef = push(announcementsRef); 
-
-            set(newPostRef, newAnnouncement)
-                .then(() => {
-                    showGlobalMessage("Pengumuman berhasil dipublikasikan!", false);
-                    createForm.reset();
-                    quillCreate.root.innerHTML = ''; // Kosongkan editor
-                    createModal.style.display = 'none';
-                })
-                .catch((error) => {
-                    console.error("Gagal menyimpan pengumuman:", error);
-                    alert("Gagal menyimpan pengumuman. Coba lagi.");
-                })
-                .finally(() => {
-                    submitCreateBtn.disabled = false;
-                    submitCreateBtn.textContent = "Publikasikan";
-                });
-        });
-
-
-        // --- (REWORK) LOGIKA MENAMPILKAN DAFTAR (READ) ---
-        const announcementsList = document.getElementById('announcement-list');
-        const announcementsRef = ref(db, 'announcements');
-
-        function loadAnnouncements() {
-            onValue(announcementsRef, (snapshot) => {
-                announcementsList.innerHTML = ''; 
-                
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = String(now.getMonth() + 1).padStart(2, '0');
-                const day = String(now.getDate()).padStart(2, '0');
-                const todayStr = `${year}-${month}-${day}`;
-                
-                let postsArray = [];
-                
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    for (let key in data) {
-                        const post = data[key];
-                        
-                        // Filter kadaluwarsa
-                        if (post.expiresAt && post.expiresAt < todayStr) {
-                            continue; // Lewati
-                        }
-                        
-                        postsArray.push({ key, ...post });
-                    }
-                } 
-                
-                if (postsArray.length > 0) {
-                    // (BARU) LOGIKA SORTING KOMPLEKS
-                    // 1. Utamakan Pin (isPinned: true)
-                    // 2. Jika sama2 pin atau sama2 tidak, urutkan berdasarkan timestamp terbaru
-                    postsArray.sort((a, b) => {
-                        if (a.isPinned && !b.isPinned) return -1;
-                        if (!a.isPinned && b.isPinned) return 1;
-                        return b.timestamp - a.timestamp; // Jika status pin sama
-                    });
-
-                    postsArray.forEach(post => {
-                        const postElement = createAnnouncementElement(post.key, post);
-                        announcementsList.appendChild(postElement);
-                    });
-
-                } else {
-                    announcementsList.innerHTML = '<div class="no-announcements">Belum ada pengumuman yang dibuat (atau semua sudah kedaluwarsa).</div>';
-                }
-            }, (error) => {
-                console.error("Gagal memuat data:", error);
-                announcementsList.innerHTML = '<div class="no-announcements error">Gagal memuat pengumuman.</div>';
-            });
-        }
-
-        function createAnnouncementElement(key, post) {
-            const item = document.createElement('div');
-            item.className = 'announcement-item';
-
-            const date = new Date(post.timestamp).toLocaleString('id-ID', {
-                dateStyle: 'medium',
-                timeStyle: 'short'
-            });
-
-            // (BARU) Kategori
-            const categoryClass = `tag-cat-${post.category?.toLowerCase() || 'umum'}`;
-            let tagsHtml = `<span class="tag tag-cat ${categoryClass}">${escapeHTML(post.category || 'Umum')}</span>`;
-
-            // (BARU) Pin
-            if (post.isPinned) {
-                tagsHtml += `<span class="tag tag-pin"><i class="fa-solid fa-thumbtack"></i> Disematkan</span>`;
-            }
-
-            // (BARU) Expiry
-            if (post.expiresAt) {
-                tagsHtml += `<span class="tag tag-expiry"><i class="fa-solid fa-calendar-times"></i> Berakhir: ${post.expiresAt}</span>`;
-            }
-
-            // (PENTING) Jangan escape post.content karena berisi HTML dari Quill
-            // Cukup escape judulnya saja
-            item.innerHTML = `
-                <div class="ann-item-main">
-                    <h3 class="ann-item-title">${escapeHTML(post.title)}</h3>
-                    <div class="ann-item-meta">Oleh ${escapeHTML(post.author)} - ${date}</div>
-                    <div class="ann-item-tags">${tagsHtml}</div>
-                </div>
-                <div class="ann-item-actions">
-                    <button class="action-button edit-btn" data-id="${key}">
-                        <i class="fa-solid fa-pencil"></i> Edit
-                    </button>
-                    <button class="action-button delete-btn" data-id="${key}">
-                        <i class="fa-solid fa-trash"></i> Hapus
-                    </button>
-                </div>
-            `;
-
-            // Tambah event listener untuk tombol
-            item.querySelector('.edit-btn').addEventListener('click', () => handleEdit(key, post));
-            item.querySelector('.delete-btn').addEventListener('click', () => handleDelete(key));
-
-            return item;
-        }
-
-        // Helper untuk mencegah XSS (hanya untuk data non-HTML)
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str.replace(/[&<>"']/g, function(match) {
-                return {
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#39;'
-                }[match];
-            });
-        }
-
-
-        // --- (REWORK) LOGIKA EDIT & DELETE ---
+        // =======================
+        // MANAJEMEN PENGUMUMAN
+        // =======================
         
-        // Modal Edit Elements
-        const editForm = document.getElementById('edit-form');
-        const editIdInput = document.getElementById('edit-id');
-        const editTitleInput = document.getElementById('edit-title');
-        const editCategoryInput = document.getElementById('edit-category');
-        const editExpiryInput = document.getElementById('edit-expiry');
-        const editPinInput = document.getElementById('edit-pin');
-        const saveEditBtn = document.getElementById('save-edit-btn');
+        // Load
+        function loadAnnouncements() {
+            onValue(ref(db, 'announcements'), (snapshot) => {
+                const list = document.getElementById('announcement-list');
+                list.innerHTML = '';
+                const posts = [];
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => posts.push({ key: child.key, ...child.val() }));
+                }
+                posts.sort((a, b) => (b.isPinned - a.isPinned) || (b.timestamp - a.timestamp));
 
-        // --- Logika Buka Modal Edit (Update) ---
-        function handleEdit(key, post) {
-            editIdInput.value = key;
-            editTitleInput.value = post.title;
-            quillEdit.root.innerHTML = post.content || ''; // Load HTML ke Quill
-            editCategoryInput.value = post.category || 'Umum';
-            editExpiryInput.value = post.expiresAt || '';
-            editPinInput.checked = post.isPinned || false;
-            
-            editModal.style.display = 'flex';
-        }
+                if (posts.length === 0) { list.innerHTML = '<div style="text-align:center; padding:30px; color:#aaa;">Belum ada pengumuman.</div>'; return; }
 
-        // --- Logika Simpan Perubahan (Update) ---
-        editForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const id = editIdInput.value;
-            const newTitle = editTitleInput.value.trim();
-            const newContent = quillEdit.root.innerHTML; // Ambil HTML dari Quill
-            const newCategory = editCategoryInput.value;
-            const newExpiry = editExpiryInput.value;
-            const newIsPinned = editPinInput.checked;
+                posts.forEach(post => {
+                    const el = document.createElement('div');
+                    el.className = 'announcement-item';
+                    let tags = `<span class="tag">${post.category}</span>`;
+                    if(post.isPinned) tags += `<span class="tag tag-pin"><i class="fa-solid fa-thumbtack"></i> Pinned</span>`;
 
-            if (!newTitle || quillEdit.getLength() <= 1) {
-                alert("Judul dan Konten tidak boleh kosong.");
-                return;
-            }
-            
-            saveEditBtn.disabled = true;
-            saveEditBtn.textContent = "Menyimpan...";
-
-            const updates = {
-                title: newTitle,
-                content: newContent,
-                category: newCategory,
-                isPinned: newIsPinned,
-                expiresAt: newExpiry || null // Set ke null jika dikosongkan
-            };
-            
-            const postRef = ref(db, 'announcements/' + id);
-            update(postRef, updates)
-                .then(() => {
-                    editModal.style.display = 'none';
-                    showGlobalMessage("Pengumuman berhasil diperbarui!", false);
-                })
-                .catch((error) => {
-                    console.error("Gagal update:", error);
-                    alert("Gagal memperbarui pengumuman.");
-                })
-                .finally(() => {
-                    saveEditBtn.disabled = false;
-                    saveEditBtn.textContent = "Simpan Perubahan";
+                    el.innerHTML = `
+                        <div class="ann-content">
+                            <div class="ann-title">${escapeHTML(post.title)}</div>
+                            <div class="ann-meta"><span><i class="fa-solid fa-user"></i> ${escapeHTML(post.author)}</span><span>${new Date(post.timestamp).toLocaleDateString()}</span></div>
+                            <div class="tags">${tags}</div>
+                        </div>
+                        <div class="actions">
+                            <button class="btn-icon edit-btn"><i class="fa-solid fa-pencil"></i></button>
+                            <button class="btn-icon delete-btn"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    el.querySelector('.edit-btn').onclick = () => openEditAnnouncement(post);
+                    el.querySelector('.delete-btn').onclick = () => { deleteType='announcement'; deleteKey=post.key; openModal('delete-modal'); };
+                    list.appendChild(el);
                 });
-        });
-
-        // --- Logika Delete (Delete) ---
-        let deleteKey = null; 
-
-        function handleDelete(key) {
-            deleteKey = key;
-            deleteModal.style.display = 'flex';
+            });
         }
 
-        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
-            if (deleteKey) {
-                const postRef = ref(db, 'announcements/' + deleteKey);
-                remove(postRef)
-                    .then(() => {
-                        deleteModal.style.display = 'none';
-                        showGlobalMessage("Pengumuman berhasil dihapus.", false);
-                        deleteKey = null;
-                    })
-                    .catch((error) => {
-                        console.error("Gagal hapus:", error);
-                        alert("Gagal menghapus pengumuman.");
-                        deleteModal.style.display = 'none';
-                        deleteKey = null;
-                    });
+        // Create
+        document.getElementById('create-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submit-create-btn'); btn.disabled = true; btn.textContent = "Menyimpan...";
+            
+            push(ref(db, 'announcements'), {
+                title: document.getElementById('ann-title').value,
+                content: quillCreate.root.innerHTML,
+                category: document.getElementById('ann-category').value,
+                expiresAt: document.getElementById('ann-expiry').value || null,
+                isPinned: document.getElementById('ann-pin').checked,
+                author: loggedInUserName,
+                timestamp: serverTimestamp()
+            }).then(() => {
+                showMsg("Pengumuman dipublikasikan!");
+                closeModal('create-modal'); document.getElementById('create-form').reset(); quillCreate.root.innerHTML = '';
+            }).finally(() => { btn.disabled = false; btn.textContent = "Publikasikan"; });
+        });
+
+        // Edit Save
+        document.getElementById('edit-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            update(ref(db, 'announcements/' + id), {
+                title: document.getElementById('edit-title').value,
+                content: quillEdit.root.innerHTML,
+                category: document.getElementById('edit-category').value,
+                expiresAt: document.getElementById('edit-expiry').value || null,
+                isPinned: document.getElementById('edit-pin').checked
+            }).then(() => { showMsg("Perubahan disimpan!"); closeModal('edit-modal'); });
+        });
+
+        window.openCreateModal = () => openModal('create-modal');
+        function openEditAnnouncement(post) {
+            document.getElementById('edit-id').value = post.key;
+            document.getElementById('edit-title').value = post.title;
+            quillEdit.root.innerHTML = post.content;
+            document.getElementById('edit-category').value = post.category;
+            document.getElementById('edit-expiry').value = post.expiresAt || '';
+            document.getElementById('edit-pin').checked = post.isPinned;
+            openModal('edit-modal');
+        }
+
+
+        // =======================
+        // MANAJEMEN KARYAWAN (HR)
+        // =======================
+
+        // Load Employees
+        function loadEmployees() {
+            onValue(ref(db, 'users'), (snapshot) => {
+                const tbody = document.getElementById('employee-list');
+                tbody.innerHTML = '';
+                const users = [];
+                if(snapshot.exists()) {
+                    snapshot.forEach(child => users.push({ uid: child.key, ...child.val() }));
+                }
+
+                // Filter out Admin (optional) and sort by name
+                users.sort((a,b) => (a.nama || '').localeCompare(b.nama || ''));
+
+                if(users.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Tidak ada data.</td></tr>'; return; }
+
+                users.forEach(u => {
+                    const row = document.createElement('tr');
+                    
+                    // Logic Status
+                    let statusClass = 'st-pending';
+                    let statusText = 'Pending Approval';
+                    if (u.status === 'approved') { statusClass = 'st-approved'; statusText = 'Active'; }
+                    else if (u.status === 'rejected' || u.status === 'banned') { statusClass = 'st-rejected'; statusText = 'Suspended/Rejected'; }
+
+                    row.innerHTML = `
+                        <td>
+                            <div style="font-weight:600;">${escapeHTML(u.nama)}</div>
+                            <div style="font-size:0.75rem; color:var(--text-grey);">NIK: ${escapeHTML(u.nik || '-')}</div>
+                        </td>
+                        <td>${escapeHTML(u.email)}</td>
+                        <td>${escapeHTML(u.departemen || '-')}</td>
+                        <td>${escapeHTML(u.jobTitle || '-')}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td style="text-align:center;">
+                            <div class="actions" style="justify-content:center;">
+                                <button class="btn-icon edit-emp-btn" title="Edit Data"><i class="fa-solid fa-pencil"></i></button>
+                                ${u.status === 'pending' ? '<button class="btn-icon del-emp-btn" title="Hapus Permintaan"><i class="fa-solid fa-trash"></i></button>' : ''}
+                            </div>
+                        </td>
+                    `;
+                    
+                    row.querySelector('.edit-emp-btn').onclick = () => openEmpModal(u);
+                    if(row.querySelector('.del-emp-btn')) {
+                        row.querySelector('.del-emp-btn').onclick = () => { deleteType='employee'; deleteKey=u.uid; openModal('delete-modal'); };
+                    }
+                    tbody.appendChild(row);
+                });
+            });
+        }
+
+        // Open Modal Employee (Add/Edit)
+        window.openEmpModal = (user) => {
+            const form = document.getElementById('emp-form');
+            form.reset();
+            if (user) {
+                // Edit Mode
+                document.getElementById('emp-modal-title').textContent = "Edit Data Karyawan";
+                document.getElementById('emp-uid').value = user.uid;
+                document.getElementById('emp-name').value = user.nama || '';
+                document.getElementById('emp-email').value = user.email || '';
+                document.getElementById('emp-dept').value = user.departemen || '';
+                document.getElementById('emp-job').value = user.jobTitle || '';
+                document.getElementById('emp-nik').value = user.nik || '';
+                // Disable email editing for existing approved users (Admin should handle credential changes)
+                document.getElementById('emp-email').readOnly = (user.status === 'approved');
+            } else {
+                // Add Mode
+                document.getElementById('emp-modal-title').textContent = "Tambah Karyawan Baru";
+                document.getElementById('emp-uid').value = "";
+                document.getElementById('emp-email').readOnly = false;
+            }
+            openModal('emp-modal');
+        }
+
+        // Save Employee (Request)
+        document.getElementById('emp-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const uid = document.getElementById('emp-uid').value;
+            const name = document.getElementById('emp-name').value;
+            const email = document.getElementById('emp-email').value;
+            const dept = document.getElementById('emp-dept').value;
+            const job = document.getElementById('emp-job').value;
+            const nik = document.getElementById('emp-nik').value;
+
+            const btn = document.getElementById('btn-save-emp');
+            btn.disabled = true; btn.textContent = "Memproses...";
+
+            if (uid) {
+                // UPDATE EXISTING
+                update(ref(db, 'users/' + uid), {
+                    nama: name,
+                    departemen: dept,
+                    jobTitle: job,
+                    nik: nik
+                    // Note: Email tidak diupdate di sini karena terkait Auth, hanya data profile
+                }).then(() => {
+                    showMsg("Data karyawan diperbarui.");
+                    closeModal('emp-modal');
+                }).finally(() => btn.disabled = false);
+            } else {
+                // CREATE NEW REQUEST
+                // Karena HR tidak bisa create Auth User langsung tanpa Admin SDK,
+                // Kita buat data di 'users' dengan status 'pending'. 
+                // Admin IT akan melihatnya di Dashboard dan meng-approve (membuatkan akun).
+                
+                // Generate unique key (bisa pakai push ID)
+                const newRef = push(ref(db, 'users'));
+                set(newRef, {
+                    uid: newRef.key, // Temporary UID until Admin creates real auth
+                    nama: name,
+                    email: email,
+                    departemen: dept,
+                    jobTitle: job,
+                    nik: nik,
+                    status: 'pending', // KUNCI UTAMA: Status Pending trigger approval admin
+                    role: 'Employee',
+                    requestedBy: loggedInUserName,
+                    requestDate: serverTimestamp()
+                }).then(() => {
+                    showMsg("Permintaan akun dikirim ke Admin IT.");
+                    closeModal('emp-modal');
+                }).finally(() => btn.disabled = false);
             }
         });
 
-    </script>
 
+        // =======================
+        // GENERAL UTILS
+        // =======================
+
+        // Global Delete
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+            if (!deleteKey) return;
+            
+            let path = '';
+            if (deleteType === 'announcement') path = 'announcements/' + deleteKey;
+            else if (deleteType === 'employee') path = 'users/' + deleteKey;
+            
+            if (path) {
+                remove(ref(db, path)).then(() => {
+                    showMsg("Data berhasil dihapus.");
+                    closeModal('delete-modal');
+                });
+            }
+        });
+
+        // Modals
+        window.openModal = (id) => document.getElementById(id).style.display = 'flex';
+        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = 'login.html');
+        });
+
+        // Message Toast
+        function showMsg(msg) {
+            const box = document.getElementById('global-msg');
+            box.textContent = msg; box.className = 'msg-box msg-success'; box.style.display = 'block';
+            setTimeout(() => box.style.display = 'none', 3000);
+        }
+
+        function escapeHTML(str) {
+            return str ? str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m])) : '';
+        }
+    </script>
 </body>
 </html>
