@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Zeppelin — User Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+    <style>
+        :root {
+            --font-main: 'Roboto', sans-serif;
+            --bg-body: #f9fafb;
+            --bg-surface: #ffffff;
+            --border-subtle: #e5e7eb;
+            --primary: #D9232D;
+            --primary-hover: #B01B22;
+            --primary-light: #fee2e2;
+            --success: #10b981;
+            --warning: #F37321;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --text-primary: #1f2937;
+            --text-secondary: #64748b;
+            --text-tertiary: #94a3b8;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: var(--font-main); background: var(--bg-body); color: var(--text-primary); height: 100vh; overflow: hidden; }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #D9232D 0%, #F37321 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            z-index: 9999;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .loading-screen p {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .app-layout { display: grid; grid-template-columns: 260px 1fr; height: 100vh; width: 100vw; }
+        
+        .sidebar { 
+            background: var(--bg-surface); 
+            color: var(--text-primary); 
+            display: flex; 
+            flex-direction: column; 
+            padding: 24px; 
+            border-right: 1px solid var(--border-subtle); 
+        }
+        
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; cursor: pointer; text-decoration: none; color: var(--text-primary); }
+        .brand-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), var(--warning)); border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+        .brand-text { font-size: 18px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
+        .brand-text span { color: var(--text-primary); font-weight: 400; }
+        
+        .nav-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: var(--radius-md); color: var(--text-secondary); font-weight: 500; font-size: 14px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        
+        .nav-item:hover { background: #f3f4f6; color: var(--primary); }
+        
+        .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 700; border-color: transparent; }
+        .nav-item.active i { color: var(--primary); }
+        
+        .main-content { padding: 32px; overflow-y: auto; height: 100vh; }
+        .view-header { margin-bottom: 32px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; }
+        .view-title h1 { font-size: 24px; font-weight: 700; margin: 0 0 4px 0; color: #1f2937; }
+        .view-title p { color: var(--text-secondary); font-size: 14px; }
+
+        .card { background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        
+        label { display: block; font-size: 12px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select, textarea { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle); background: #f9fafb; color: var(--text-primary); margin-bottom: 16px; font-size: 14px; transition: border 0.3s; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; background: white; }
+        
+        input[readonly] {
+            background-color: #e5e7eb;
+            color: #6b7280;
+            cursor: not-allowed;
+            border-color: #d1d5db;
+        }
+
+        .btn { padding: 12px 20px; border-radius: 8px; border: none; background: var(--primary); color: white; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; font-size: 14px; box-shadow: 0 2px 5px rgba(217, 35, 45, 0.2); }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(217, 35, 45, 0.3); }
+        .btn-outline { background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary); box-shadow: none; }
+        .btn-outline:hover { border-color: var(--text-primary); background: #f9fafb; }
+        
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th { text-align: left; padding: 16px; font-size: 12px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; border-bottom: 2px solid var(--border-subtle); background: white; }
+        td { padding: 16px; border-bottom: 1px solid var(--border-subtle); font-size: 14px; color: var(--text-primary); }
+        tr:last-child td { border-bottom: none; }
+        
+        .badge { padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .status-Open { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
+        .status-Closed { background: #f0fdf4; color: #16a34a; border: 1px solid #dcfce7; }
+        
+        .hidden { display: none !important; }
+        
+        .asset-card { border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 16px; margin-bottom: 12px; background: var(--bg-surface); transition: 0.2s; }
+        .asset-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .asset-icon { width: 48px; height: 48px; background: var(--primary-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--primary); }
+
+        @media (max-width: 768px) {
+            .app-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .main-content { padding: 20px; padding-bottom: 90px; }
+            
+            .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border-subtle); padding: 12px 20px; justify-content: space-between; z-index: 1000; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+            .mobile-nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--text-secondary); text-decoration: none; gap: 4px; padding: 4px 12px; border-radius: 8px; transition: 0.2s; }
+            .mobile-nav-item i { font-size: 20px; margin-bottom: 2px; }
+            .mobile-nav-item.active { color: var(--primary); background: var(--primary-light); font-weight: 600; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading-screen" class="loading-screen">
+    <div class="spinner"></div>
+    <p>Memuat Profile...</p>
+</div>
+
+<div class="app-layout">
+    <aside class="sidebar">
+        <a href="dashboard.html" class="brand">
+            <div class="brand-icon"><i class="ri-arrow-left-line"></i></div>
+            <div class="brand-text">Zeppelin <span>Portal</span></div>
+        </a>
+        
+        <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border-subtle);">
+            <div style="width: 80px; height: 80px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: var(--text-secondary); margin: 0 auto 12px auto; border: 1px solid var(--border-subtle);" id="sb_avatar">
+                <i class="ri-user-line"></i>
+            </div>
+            <div style="font-weight: 800; font-size: 16px; color: var(--text-primary); margin-bottom: 4px;" id="sb_name">Loading...</div>
+            <div style="font-size: 12px; color: var(--text-secondary); font-weight: 500; background: #f3f4f6; display: inline-block; padding: 4px 12px; border-radius: 20px;" id="sb_role">Employee</div>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item active" onclick="switchView('settings')"><i class="ri-user-settings-line"></i> Pengaturan Akun</li>
+            <li class="nav-item" onclick="switchView('tickets')"><i class="ri-ticket-line"></i> Tiket Saya</li>
+            <li class="nav-item" onclick="switchView('assets')"><i class="ri-macbook-line"></i> Aset Saya</li>
+        </ul>
+
+        <div style="margin-top: auto;">
+            <button class="nav-item" onclick="logout()" style="width: 100%; color: var(--danger); background: transparent; border: 1px solid transparent; justify-content: center;">
+                <i class="ri-logout-box-line"></i> Keluar
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <div id="view-settings">
+            <div class="view-header">
+                <div class="view-title">
+                    <h1>Pengaturan Akun</h1>
+                    <p>Kelola informasi pribadi dan keamanan akun Anda.</p>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                <div class="card">
+                    <h3 style="margin-top:0; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                        <i class="ri-user-line"></i> Informasi Pribadi
+                    </h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5; background: #fff7ed; padding: 12px; border-radius: 8px; border: 1px solid #ffedd5;">
+                        <i class="ri-information-fill" style="color: var(--warning);"></i> <strong>Catatan:</strong> Nama dan Departemen dikelola oleh Admin/HRD. Hubungi mereka jika terdapat kesalahan data.
+                    </p>
+                    <form onsubmit="updateProfile(event)">
+                        <label>Nama Lengkap (Read Only)</label>
+                        <input id="p_name" readonly>
+                        
+                        <label>Departemen (Read Only)</label>
+                        <input id="p_dept" readonly>
+                        
+                        <label>Nomor WhatsApp / HP</label>
+                        <input id="p_phone" placeholder="Contoh: 0812..." required>
+                        
+                        <div style="text-align: right;">
+                            <button type="submit" class="btn"><i class="ri-save-line"></i> Simpan No HP</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-top:0; color: var(--primary); display: flex; align-items: center; gap: 8px;">
+                        <i class="ri-shield-key-line"></i> Keamanan
+                    </h3>
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.5;">
+                        Disarankan untuk mengganti password secara berkala demi keamanan akun Zeppelin Anda.
+                    </p>
+                    <form onsubmit="changePassword(event)">
+                        <label>Password Baru</label>
+                        <input type="password" id="p_pass" required minlength="6" placeholder="Minimal 6 karakter">
+                        
+                        <label>Konfirmasi Password</label>
+                        <input type="password" id="p_pass_conf" required minlength="6" placeholder="Ulangi password baru">
+                        
+                        <button type="submit" class="btn btn-outline" style="border-color: var(--primary); color: var(--primary); width: 100%; margin-top: 8px;">
+                            <i class="ri-lock-password-line"></i> Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-tickets" class="hidden">
+            <div class="view-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div class="view-title">
+                    <h1>Tiket Support</h1>
+                    <p>Riwayat pelaporan kendala IT Anda.</p>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--border-subtle);">
+                <div style="overflow-x: auto;">
+                    <table id="ticketTable">
+                        <thead>
+                            <tr>
+                                <th>ID Tiket</th>
+                                <th>Kendala</th>
+                                <th>Status</th>
+                                <th>Tanggal</th>
+                                <th>Teknisi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketTableBody">
+                            <tr><td colspan="5" style="text-align:center; padding: 40px; color: var(--text-secondary);">Memuat data...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-assets" class="hidden">
+             <div class="view-header">
+                <div class="view-title">
+                    <h1>Perangkat Saya</h1>
+                    <p>Hardware dan software yang diinventarisir atas nama Anda.</p>
+                </div>
+            </div>
+            <div id="assetList">
+            </div>
+        </div>
+
+    </main>
+
+    <div class="mobile-nav" style="display: none;">
+        <a href="dashboard.html" class="mobile-nav-item">
+            <i class="ri-arrow-left-circle-line"></i>
+            <span>Kembali</span>
+        </a>
+        <div class="mobile-nav-item active" onclick="switchView('settings')">
+            <i class="ri-user-settings-line"></i>
+            <span>Akun</span>
+        </div>
+        <div class="mobile-nav-item" onclick="switchView('tickets')">
+            <i class="ri-ticket-line"></i>
+            <span>Tiket</span>
+        </div>
+        <div class="mobile-nav-item" onclick="logout()">
+            <i class="ri-logout-box-line" style="color: var(--danger);"></i>
+            <span>Keluar</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 768px) {
+        .mobile-nav { display: flex !important; }
+    }
+</style>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
+        authDomain: "it-support-53eeb.firebaseapp.com",
+        databaseURL: "https://it-support-53eeb-default-rtdb.firebaseio.com",
+        projectId: "it-support-53eeb",
+        storageBucket: "it-support-53eeb.firebasestorage.app",
+        messagingSenderId: "573924501146",
+        appId: "1:573924501146:web:12f34306ed675472322123",
+        measurementId: "G-33K6DDE1VR"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const firestore = firebase.firestore();
+
+    let currentUserData = null;
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            loadUserData(user.uid);
+            loadUserTickets(user.uid);
+            loadUserAssets(user.uid);
+        } else {
+            window.location.href = 'login.html'; 
+        }
+    });
+
+    async function loadUserData(uid) {
+        try {
+            const snap = await db.ref('users/' + uid).get();
+            if (snap.exists()) {
+                currentUserData = snap.val();
+                
+                document.getElementById('sb_name').textContent = currentUserData.nama || "User";
+                document.getElementById('sb_role').textContent = currentUserData.departemen || 'Employee';
+                
+                const initial = currentUserData.nama ? currentUserData.nama.charAt(0).toUpperCase() : '';
+                const avatarEl = document.getElementById('sb_avatar');
+                if(initial) {
+                    avatarEl.textContent = initial;
+                    avatarEl.style.color = "var(--primary)";
+                    avatarEl.style.fontWeight = "800";
+                }
+                
+                document.getElementById('p_name').value = currentUserData.nama || "";
+                document.getElementById('p_phone').value = currentUserData.phone || "";
+                document.getElementById('p_dept').value = currentUserData.departemen || "Belum diatur";
+            }
+            document.getElementById('loading-screen').style.display = 'none';
+        } catch (error) {
+            console.error(error);
+            alert("Gagal memuat profil.");
+            document.getElementById('loading-screen').style.display = 'none';
+        }
+    }
+
+    function loadUserTickets(uid) {
+        db.ref('reports').orderByChild('uid').equalTo(uid).on('value', snap => {
+            const tbody = document.getElementById('ticketTableBody');
+            tbody.innerHTML = '';
+            
+            if (snap.exists()) {
+                const data = snap.val();
+                const tickets = Object.keys(data).map(key => ({...data[key], key})).reverse();
+
+                tickets.forEach(t => {
+                    const row = `
+                        <tr>
+                            <td style="font-family:'JetBrains Mono', monospace; font-weight:700; color:var(--primary); letter-spacing:-0.5px;">${t.id || t.key}</td>
+                            <td>
+                                <div style="font-weight:700; color:var(--text-primary); margin-bottom:2px;">${t.jenis}</div>
+                                <div style="font-size:11px; color:var(--text-secondary);">${t.kategori}</div>
+                            </td>
+                            <td><span class="badge status-${t.status}">${t.status}</span></td>
+                            <td style="color:var(--text-secondary); font-size:13px;">${new Date(t.created_iso).toLocaleDateString()}</td>
+                            <td style="font-weight:500;">${t.pic || '-'}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-secondary); padding:40px;">Belum ada tiket support.</td></tr>';
+            }
+        });
+    }
+
+    function loadUserAssets(uid) {
+        firestore.collection('assets').where('assigned_uid', '==', uid).onSnapshot(snap => {
+            const container = document.getElementById('assetList');
+            container.innerHTML = '';
+
+            if (snap.empty) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:40px; color:var(--text-secondary); background:white; border-radius:12px; border:1px solid var(--border-subtle);">
+                        <i class="ri-computer-line" style="font-size:32px; color:var(--text-tertiary); margin-bottom:8px; display:block;"></i>
+                        Tidak ada aset yang terdaftar atas nama Anda.
+                    </div>`;
+                return;
+            }
+
+            snap.forEach(doc => {
+                const a = doc.data();
+                const iconClass = a.type === 'Laptop' ? 'ri-macbook-line' : (a.type === 'PC' ? 'ri-computer-line' : 'ri-device-line');
+                
+                const html = `
+                    <div class="asset-card">
+                        <div class="asset-icon">
+                            <i class="${iconClass}"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700; color:var(--text-primary); font-size:15px;">${a.brand} ${a.name}</div>
+                            <div style="font-size:12px; color:var(--text-secondary); font-family:monospace; margin-top:2px;">Tag: <span style="background:#f3f4f6; padding:2px 6px; border-radius:4px;">${a.tag}</span></div>
+                        </div>
+                        <div class="badge status-Open">Aktif</div>
+                    </div>
+                `;
+                container.innerHTML += html;
+            });
+        });
+    }
+
+    window.switchView = (viewName) => {
+        ['tickets', 'assets', 'settings'].forEach(v => {
+            document.getElementById(`view-${v}`).classList.add('hidden');
+        });
+        
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+
+        document.getElementById(`view-${viewName}`).classList.remove('hidden');
+        
+        const navItems = document.querySelectorAll('.nav-item');
+        if(viewName === 'settings') navItems[0].classList.add('active');
+        if(viewName === 'tickets') navItems[1].classList.add('active');
+        if(viewName === 'assets') navItems[2].classList.add('active');
+
+        const mobItems = document.querySelectorAll('.mobile-nav-item');
+        if(viewName === 'settings') mobItems[1].classList.add('active');
+        if(viewName === 'tickets') mobItems[2].classList.add('active');
+    };
+
+    window.updateProfile = async (e) => {
+        e.preventDefault();
+        const uid = auth.currentUser.uid;
+        const btnSave = e.target.querySelector('button');
+        
+        btnSave.disabled = true;
+        btnSave.textContent = "Menyimpan...";
+
+        const updates = {
+            phone: document.getElementById('p_phone').value
+        };
+
+        try {
+            await db.ref('users/' + uid).update(updates);
+            alert("Nomor HP berhasil diperbarui!");
+        } catch (err) {
+            alert("Gagal update: " + err.message);
+        } finally {
+            btnSave.disabled = false;
+            btnSave.innerHTML = '<i class="ri-save-line"></i> Simpan No HP';
+        }
+    };
+
+    window.changePassword = async (e) => {
+        e.preventDefault();
+        const p1 = document.getElementById('p_pass').value;
+        const p2 = document.getElementById('p_pass_conf').value;
+
+        if (p1 !== p2) return alert("Password konfirmasi tidak sama!");
+
+        const btnPass = e.target.querySelector('button');
+        btnPass.disabled = true;
+        btnPass.textContent = "Memproses...";
+
+        try {
+            await auth.currentUser.updatePassword(p1);
+            alert("Password berhasil diganti! Silakan login ulang.");
+            auth.signOut().then(() => window.location.href = 'login.html');
+        } catch (err) {
+            alert("Error: " + err.message);
+            if(err.code === 'auth/requires-recent-login') {
+                alert("Untuk keamanan, silakan Logout dan Login kembali sebelum mengganti password.");
+            }
+        } finally {
+            btnPass.disabled = false;
+            btnPass.innerHTML = '<i class="ri-lock-password-line"></i> Update Password';
+        }
+    };
+
+    window.logout = () => {
+        if(confirm("Yakin ingin keluar?")) {
+            auth.signOut().then(() => window.location.href = 'login.html');
+        }
+    };
+</script>
+</body>
+</html>

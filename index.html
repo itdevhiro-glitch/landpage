@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Zeppelin Kitchen Solutions</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            /* Menggunakan Gradient yang sama persis dengan Login.html agar transisi halus */
+            background: linear-gradient(135deg, #D9232D 0%, #F37321 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff; /* Teks putih agar kontras dengan background */
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .splash-container {
+            max-width: 600px;
+            padding: 20px;
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        /* Animasi masuk */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            color: #fff;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            /* Animasi denyut halus */
+            animation: pulse 2s infinite ease-in-out; 
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .brand-name {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        /* Loading Bar Container */
+        .loader-track {
+            width: 250px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Loading Bar Progress */
+        .loader-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            /* Durasi animasi loading (3 detik) */
+            animation: loadProgress 3s linear forwards; 
+        }
+
+        @keyframes loadProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .status-text {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Background Pattern Decoration (Subtle Kitchen Icons) */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.05;
+            background-image: radial-gradient(#fff 2px, transparent 2px);
+            background-size: 30px 30px;
+        }
+        
+        .floating-icon {
+            position: absolute;
+            color: rgba(255,255,255,0.1);
+            font-size: 8rem;
+            z-index: -1;
+        }
+        .icon-1 { top: 10%; left: 10%; transform: rotate(-15deg); }
+        .icon-2 { bottom: 15%; right: 10%; transform: rotate(15deg); }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-pattern"></div>
+    <i class="fa-solid fa-utensils floating-icon icon-1"></i>
+    <i class="fa-solid fa-kitchen-set floating-icon icon-2"></i>
+
+    <div class="splash-container">
+        <div class="logo-icon">
+            <i class="fa-solid fa-fire-burner"></i>
+        </div>
+        
+        <h1 class="brand-name">ZEPPELIN</h1>
+        <p class="tagline">Professional Kitchen Equipment Solutions</p>
+
+        <div class="loader-track">
+            <div class="loader-bar"></div>
+        </div>
+        
+        <p class="status-text">Memuat Sistem...</p>
+    </div>
+
+    <script>
+        // Script sederhana untuk redirect setelah 3.2 detik
+        // (Sedikit lebih lama dari animasi CSS 3s agar bar penuh dulu)
+        setTimeout(() => {
+            window.location.href = 'login.html';
+        }, 3200); 
+    </script>
+
+</body>
+</html>
