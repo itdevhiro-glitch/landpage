@@ -7,6 +7,8 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
     
     <style>
         :root {
@@ -28,10 +30,8 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background: #f9fafb; margin: 0; padding: 0; color: var(--dark); padding-bottom: 80px; }
         
-        /* --- UTILS --- */
         .hidden { display: none !important; }
         
-        /* --- LOADING SCREEN --- */
         .loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -44,7 +44,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* --- HEADER & NAV --- */
         .navbar {
             background: var(--white); border-bottom: 1px solid var(--border);
             padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
@@ -54,15 +53,18 @@
         .nav-brand h1 { margin: 0; font-size: 18px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
         .nav-brand span { font-size: 11px; color: var(--gray); font-weight: 500; }
         
-        .btn-back {
+        .nav-actions { display: flex; gap: 8px; }
+
+        .btn-nav {
             color: var(--gray); font-size: 14px; text-decoration: none; padding: 8px 12px;
-            background: var(--light); border-radius: 8px; font-weight: 600; transition: 0.2s;
+            background: var(--light); border-radius: 8px; font-weight: 600; transition: 0.2s; border: none; cursor: pointer;
         }
-        .btn-back:hover { color: var(--dark); background: #e5e7eb; }
+        .btn-nav:hover { color: var(--dark); background: #e5e7eb; }
+        .btn-report { background: #eff6ff; color: #2563eb; }
+        .btn-report:hover { background: #dbeafe; }
 
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
-        /* --- STATS CARD --- */
         .stats-container {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 24px;
         }
@@ -81,7 +83,6 @@
         .bg-orange { background: #fff7ed; color: #ea580c; }
         .bg-red { background: #fef2f2; color: #dc2626; }
 
-        /* --- SEARCH & FILTER --- */
         .toolbar {
             display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
         }
@@ -102,7 +103,6 @@
             font-size: 13px; font-weight: 500; color: var(--dark); outline: none; cursor: pointer;
         }
 
-        /* --- INVENTORY LIST --- */
         .inventory-list {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
         }
@@ -152,7 +152,6 @@
         }
         .btn-edit-abs:hover { background: var(--light); color: var(--dark); }
 
-        /* --- HISTORY / LOG STYLES --- */
         .btn-history-abs {
             position: absolute; top: 12px; left: 12px; 
             width: 28px; height: 28px; border-radius: 50%;
@@ -176,8 +175,6 @@
         .history-note { font-size: 12px; color: var(--gray); font-style: italic; margin: 0; }
         .history-user { font-size: 10px; color: #9ca3af; margin-top: 4px; display: block; }
 
-
-        /* --- FLOATING ACTION BUTTON (FAB) --- */
         .fab {
             position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px;
             background: var(--primary); color: white; border-radius: 50%; border: none;
@@ -186,7 +183,6 @@
         }
         .fab:active { transform: scale(0.9); }
 
-        /* --- MODAL (Responsive Bottom Sheet on Mobile) --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
             opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(2px);
@@ -214,6 +210,11 @@
         .form-input:focus { border-color: var(--primary); }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
+        .input-group { display: flex; gap: 10px; align-items: center; }
+        .input-group input { flex: 2; }
+        .input-group select { flex: 1; background-color: #f9fafb; cursor: pointer; }
+        .input-group .form-input { margin-bottom: 16px; }
+
         .btn-full { width: 100%; padding: 14px; border-radius: 12px; font-weight: 600; border: none; cursor: pointer; font-size: 14px; margin-top: 8px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: var(--light); color: var(--gray); margin-top: 12px; }
@@ -227,27 +228,32 @@
         .type-opt.active-out { background: white; color: var(--secondary); box-shadow: var(--shadow-sm); }
         .type-opt.active-in { background: white; color: var(--success); box-shadow: var(--shadow-sm); }
 
-        /* --- MOBILE OPTIMIZATION --- */
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .btn-report-opt {
+            background: var(--light); border: 1px solid var(--border); padding: 15px; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-report-opt:hover { background: #eff6ff; border-color: #bfdbfe; color: #2563eb; }
+        .btn-report-opt i { font-size: 20px; }
+        .btn-report-opt span { font-size: 12px; font-weight: 600; }
+
         @media (max-width: 768px) {
             .navbar { padding: 12px 16px; }
             .container { padding: 16px; width: 100%; }
-            
-            /* Horizontal Scroll Stats */
             .stats-container {
                 display: flex; overflow-x: auto; padding-bottom: 10px;
                 scroll-snap-type: x mandatory; gap: 12px;
-                margin-right: -16px; padding-right: 16px; /* Bleed effect */
+                margin-right: -16px; padding-right: 16px;
             }
             .stats-container::-webkit-scrollbar { display: none; }
             .stat-card { min-width: 140px; scroll-snap-align: start; flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; }
             .stat-icon { width: 32px; height: 32px; font-size: 14px; }
             .stat-info h3 { font-size: 18px; }
             
-            /* Bottom Sheet Modal */
             .modal-container {
                 top: auto; bottom: 0; left: 0; right: 0; transform: translateY(100%);
                 width: 100%; max-width: 100%; border-radius: 24px 24px 0 0;
-                padding: 24px 20px 40px 20px; /* Extra bottom padding for safe area */
+                padding: 24px 20px 40px 20px;
             }
             .modal-overlay.open .modal-container { transform: translateY(0); }
             
@@ -255,7 +261,6 @@
             .card-title { font-size: 16px; }
         }
 
-        /* Toast */
         .toast {
             position: fixed; bottom: -80px; left: 50%; transform: translateX(-50%);
             background: #333; color: white; padding: 12px 24px; border-radius: 99px; font-size: 13px; font-weight: 500;
@@ -265,9 +270,7 @@
         .toast.show { bottom: 30px; }
         .toast.error { background: #ef4444; }
         
-        .empty-state {
-            text-align: center; padding: 60px 20px; color: var(--gray);
-        }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
     </style>
 </head>
 <body>
@@ -284,7 +287,10 @@
                 <h1>Z-MARK PRO</h1>
                 <span>Inventory System</span>
             </div>
-            <a href="dashboard.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> <span style="display:none;">Dashboard</span></a>
+            <div class="nav-actions">
+                <button class="btn-nav btn-report" onclick="openModal('modalReport')"><i class="fa-solid fa-file-pdf"></i></button>
+                <a href="dashboard.html" class="btn-nav"><i class="fa-solid fa-arrow-left"></i></a>
+            </div>
         </nav>
 
         <div class="container">
@@ -316,6 +322,7 @@
                 </div>
                 <select id="filterCategory" class="filter-select">
                     <option value="All">Semua Kategori</option>
+                    <option value="Kartu Nama">Kartu Nama</option>
                     <option value="Cetak">Cetak & Dokumen</option>
                     <option value="Merchandise">Merchandise & Souvenir</option>
                     <option value="Display">Display & Booth</option>
@@ -347,12 +354,13 @@
             <input type="hidden" id="manageId">
             
             <label class="form-label">Nama Barang</label>
-            <input type="text" class="form-input" id="itemName" placeholder="Contoh: Kaos Event 2025">
+            <input type="text" class="form-input" id="itemName" placeholder="Contoh: Kartu Nama Sales">
 
             <div class="form-row">
                 <div style="grid-column: span 2;">
                     <label class="form-label">Kategori</label>
                     <select class="form-input" id="itemCat">
+                        <option value="Kartu Nama">Kartu Nama</option>
                         <option value="Cetak">Cetak (Brosur/Flyer/Katalog)</option>
                         <option value="Merchandise">Merchandise (Mug/Tumblr/Payung)</option>
                         <option value="Display">Display (Banner/Backdrop/Booth)</option>
@@ -376,9 +384,18 @@
                 </div>
             </div>
 
-            <div>
-                <label class="form-label">Stok Awal</label>
-                <input type="number" class="form-input" id="itemStock" value="0">
+            <div class="form-row">
+                <div>
+                    <label class="form-label">Stok Awal</label>
+                    <input type="number" class="form-input" id="itemStock" value="0">
+                </div>
+                <div>
+                    <label class="form-label">Satuan</label>
+                    <select class="form-input" id="itemUnit">
+                        <option value="Pcs">Pcs</option>
+                        <option value="Pack">Pack</option>
+                    </select>
+                </div>
             </div>
 
             <button class="btn-full btn-primary" onclick="saveItem()">Simpan Data</button>
@@ -400,8 +417,14 @@
                 <div class="type-opt" id="optIn" onclick="setTransType('IN')">Masuk (Restock)</div>
             </div>
 
-            <label class="form-label">Jumlah Unit</label>
-            <input type="number" class="form-input" id="transQty" placeholder="0" style="font-size:18px; font-weight:700;">
+            <label class="form-label">Jumlah & Satuan</label>
+            <div class="input-group">
+                <input type="number" class="form-input" id="transQty" placeholder="0" style="font-size:18px; font-weight:700;">
+                <select class="form-input" id="transUnit" style="font-weight:600;">
+                    <option value="Pcs">Pcs</option>
+                    <option value="Pack">Pack</option>
+                </select>
+            </div>
 
             <label class="form-label">Catatan (Wajib)</label>
             <input type="text" class="form-input" id="transNote" placeholder="Contoh: Event JCC / Restock Vendor...">
@@ -426,8 +449,35 @@
                 <i class="fa-solid fa-circle-notch fa-spin" style="color:var(--gray);"></i>
             </div>
             
-            <div id="historyListContainer" class="history-list">
-                </div>
+            <div id="historyListContainer" class="history-list"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalReport">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Laporan Inventaris</h3>
+                <button class="modal-close" onclick="closeModals()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:13px; color:var(--gray); margin-bottom:20px;">Pilih periode laporan untuk diunduh sebagai PDF.</p>
+            
+            <div class="report-grid">
+                <button class="btn-report-opt" onclick="generateReport('daily')">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Harian</span>
+                </button>
+                <button class="btn-report-opt" onclick="generateReport('monthly')">
+                    <i class="fa-regular fa-calendar-days"></i>
+                    <span>Bulanan</span>
+                </button>
+                <button class="btn-report-opt" onclick="generateReport('yearly')">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span>Tahunan</span>
+                </button>
+            </div>
+            <div id="reportLoader" style="text-align:center; padding:10px; display:none;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="color:var(--primary);"></i> Memproses PDF...
+            </div>
         </div>
     </div>
 
@@ -459,7 +509,6 @@
         let selectedId = null;
         let transType = 'OUT';
 
-        // --- AUTH & SECURITY (UPDATED) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(db, 'users/' + user.uid);
@@ -468,26 +517,21 @@
                     const isAllowed = u && (u.departemen === 'Marketing' || u.departemen === 'Pemasaran' || user.email === 'root@zeppelin.center');
                     
                     if (isAllowed) {
-                        // Akses Diberikan
                         document.getElementById('loading-screen').classList.add('hidden');
                         document.getElementById('main-content').style.display = 'block';
                         initApp();
                     } else {
-                        // KICK! Direct Replace tanpa history back
                         alert("AKSES DITOLAK: Halaman ini khusus Departemen Marketing!");
                         window.location.replace('dashboard.html');
                     }
                 }).catch(() => {
-                    // Error ambil data user, tendang ke login
                     window.location.replace('login.html');
                 });
             } else {
-                // Tidak ada sesi login, tendang ke login
                 window.location.replace('login.html');
             }
         });
 
-        // --- MAIN LOGIC ---
         function initApp() {
             const dbRef = ref(db, 'marketing_inventory');
             onValue(dbRef, (snap) => {
@@ -509,6 +553,7 @@
 
         function getIcon(cat) {
             const icons = {
+                'Kartu Nama': 'fa-solid fa-id-card',
                 'Cetak': 'fa-solid fa-print',
                 'Merchandise': 'fa-solid fa-gift',
                 'Display': 'fa-solid fa-store',
@@ -521,7 +566,6 @@
             return icons[cat] || 'fa-solid fa-box';
         }
 
-        // --- RENDER ---
         function renderList() {
             const listEl = document.getElementById('inventoryList');
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -543,6 +587,7 @@
                 const isLow = item.stok < 5;
                 const badge = isLow ? `<span class="stock-badge badge-low">Menipis</span>` : `<span class="stock-badge badge-ok">Aman</span>`;
                 const icon = getIcon(item.kategori);
+                const unit = item.satuan || 'Pcs';
 
                 listEl.innerHTML += `
                     <div class="card">
@@ -563,7 +608,7 @@
                         <div class="stock-indicator">
                             <span style="font-size:12px; color:var(--gray);">Stok Tersedia</span>
                             <div style="display:flex; align-items:center; gap:8px;">
-                                <span class="stock-val">${item.stok} Unit</span>
+                                <span class="stock-val">${item.stok} ${unit}</span>
                                 ${badge}
                             </div>
                         </div>
@@ -590,7 +635,6 @@
             document.getElementById('statLow').innerText = low;
         }
 
-        // --- ACTIONS: ADD/EDIT ---
         window.openManageModal = () => window.openManage();
 
         window.openManage = (id = null) => {
@@ -606,15 +650,17 @@
                 document.getElementById('itemLoc').value = item.lokasi || '';
                 document.getElementById('itemStock').value = item.stok;
                 document.getElementById('itemStock').disabled = true;
+                document.getElementById('itemUnit').value = item.satuan || 'Pcs';
                 delBtn.style.display = 'block';
             } else {
                 document.getElementById('manageTitle').innerText = "Tambah Barang";
                 document.getElementById('itemName').value = '';
-                document.getElementById('itemCat').value = 'Merchandise';
+                document.getElementById('itemCat').value = 'Kartu Nama';
                 document.getElementById('itemSku').value = '';
                 document.getElementById('itemLoc').value = '';
                 document.getElementById('itemStock').value = 0;
                 document.getElementById('itemStock').disabled = false;
+                document.getElementById('itemUnit').value = 'Pcs';
                 delBtn.style.display = 'none';
             }
             openModal('modalManage');
@@ -623,12 +669,14 @@
         window.saveItem = () => {
             const nama = document.getElementById('itemName').value;
             const kat = document.getElementById('itemCat').value;
+            const satuan = document.getElementById('itemUnit').value;
             
             if (!nama) return showToast("Nama barang wajib diisi!", true);
 
             const data = {
                 nama: nama,
                 kategori: kat,
+                satuan: satuan,
                 sku: document.getElementById('itemSku').value.toUpperCase(),
                 lokasi: document.getElementById('itemLoc').value,
                 icon: getIcon(kat)
@@ -651,7 +699,6 @@
             }
         };
 
-        // --- ACTIONS: HISTORY ---
         window.openHistory = (id) => {
             const item = allData.find(i => i.id === id);
             if(!item) return;
@@ -689,6 +736,7 @@
                         const badgeClass = isIn ? 'h-in' : 'h-out';
                         const typeLabel = isIn ? 'Restock' : 'Keluar';
                         const icon = isIn ? 'fa-arrow-down' : 'fa-arrow-up';
+                        const u = log.unit || 'Unit';
 
                         listContainer.innerHTML += `
                             <div class="history-item">
@@ -699,7 +747,7 @@
                                 </div>
                                 <div class="history-content">
                                     <div style="display:flex; justify-content:space-between;">
-                                        <h5 class="history-title">${log.qty} Unit <span class="history-badge ${badgeClass}">${typeLabel}</span></h5>
+                                        <h5 class="history-title">${log.qty} ${u} <span class="history-badge ${badgeClass}">${typeLabel}</span></h5>
                                         <span class="history-date">${dateStr}</span>
                                     </div>
                                     <p class="history-note">"${log.note || '-'}"</p>
@@ -714,13 +762,13 @@
             });
         };
 
-        // --- ACTIONS: TRANSACTION ---
         window.openTrans = (id, type) => {
             selectedId = id;
             const item = allData.find(i => i.id === id);
-            document.getElementById('transItemInfo').innerText = `${item.nama} (Stok: ${item.stok})`;
+            document.getElementById('transItemInfo').innerText = `${item.nama} (Stok: ${item.stok} ${item.satuan || 'Pcs'})`;
             document.getElementById('transQty').value = '';
             document.getElementById('transNote').value = '';
+            document.getElementById('transUnit').value = item.satuan || 'Pcs';
             setTransType(type);
             openModal('modalTrans');
         };
@@ -742,6 +790,7 @@
         window.processTransaction = () => {
             const qty = Number(document.getElementById('transQty').value);
             const note = document.getElementById('transNote').value;
+            const tUnit = document.getElementById('transUnit').value;
             const item = allData.find(i => i.id === selectedId);
 
             if (qty <= 0) return showToast("Jumlah tidak valid", true);
@@ -759,6 +808,7 @@
                 itemName: item.nama,
                 type: transType,
                 qty: qty,
+                unit: tUnit,
                 note: note,
                 user: auth.currentUser.email,
                 date: new Date().toISOString()
@@ -770,7 +820,90 @@
             });
         };
 
-        // --- UTILS ---
+        window.generateReport = async (period) => {
+            const loader = document.getElementById('reportLoader');
+            loader.style.display = 'block';
+
+            const snap = await get(ref(db, 'marketing_transactions'));
+            loader.style.display = 'none';
+            closeModals();
+
+            if(!snap.exists()) return showToast("Tidak ada data transaksi", true);
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const now = new Date();
+            let title = "Laporan Inventaris Marketing";
+            let filterDate = new Date();
+
+            const logs = [];
+            snap.forEach(c => logs.push(c.val()));
+
+            const filteredLogs = logs.filter(log => {
+                const logDate = new Date(log.date);
+                if (period === 'daily') {
+                    return logDate.toDateString() === now.toDateString();
+                } else if (period === 'monthly') {
+                    return logDate.getMonth() === now.getMonth() && logDate.getFullYear() === now.getFullYear();
+                } else if (period === 'yearly') {
+                    return logDate.getFullYear() === now.getFullYear();
+                }
+                return true;
+            });
+
+            if (period === 'daily') title += ` (Harian - ${now.toLocaleDateString()})`;
+            if (period === 'monthly') title += ` (Bulanan - ${now.toLocaleDateString('id-ID', {month:'long', year:'numeric'})})`;
+            if (period === 'yearly') title += ` (Tahunan - ${now.getFullYear()})`;
+
+            doc.setFontSize(16);
+            doc.text(title, 14, 20);
+            doc.setFontSize(10);
+            doc.text(`Dibuat pada: ${now.toLocaleString('id-ID')}`, 14, 28);
+            
+            doc.text("1. Riwayat Transaksi (In/Out)", 14, 38);
+
+            const tableData = filteredLogs.map(l => [
+                new Date(l.date).toLocaleDateString('id-ID'),
+                l.itemName,
+                l.type === 'IN' ? 'Masuk' : 'Keluar',
+                `${l.qty} ${l.unit || ''}`,
+                l.note,
+                l.user
+            ]);
+
+            doc.autoTable({
+                startY: 42,
+                head: [['Tanggal', 'Barang', 'Tipe', 'Jml', 'Catatan', 'User']],
+                body: tableData,
+                theme: 'grid',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [217, 35, 45] }
+            });
+
+            let finalY = doc.lastAutoTable.finalY + 15;
+            
+            doc.text("2. Ringkasan Stok Tersisa (Semua Barang)", 14, finalY);
+
+            const stockData = allData.map(i => [
+                i.nama,
+                i.kategori,
+                `${i.stok} ${i.satuan || 'Pcs'}`,
+                i.lokasi || '-'
+            ]);
+
+            doc.autoTable({
+                startY: finalY + 4,
+                head: [['Nama Barang', 'Kategori', 'Sisa Stok', 'Lokasi']],
+                body: stockData,
+                theme: 'striped',
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [40, 40, 40] }
+            });
+
+            doc.save(`Laporan_Marketing_${period}_${now.getTime()}.pdf`);
+            showToast("PDF Berhasil diunduh");
+        };
+
         function openModal(id) {
             document.getElementById(id).classList.add('open');
         }
@@ -784,6 +917,8 @@
             t.className = isError ? 'toast error show' : 'toast show';
             setTimeout(() => t.classList.remove('show'), 3000);
         }
+
+        window.openModal = openModal;
     </script>
 </body>
 </html>
