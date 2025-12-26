@@ -457,7 +457,7 @@
                     // Cek Admin
                     if (user.email === 'root@zeppelin.center') {
                         signOut(auth).then(() => {
-                            window.location.href = 'login.html?reason=admin_wrong_page';
+                            window.location.href = 'index.html?reason=admin_wrong_page';
                         });
                         return;
                     }
@@ -480,29 +480,29 @@
                             // User pending atau rejected
                             const reason = userData.status || 'invalid';
                             signOut(auth).then(() => {
-                                window.location.href = `login.html?reason=${reason}`; 
+                                window.location.href = `index.html?reason=${reason}`; 
                             });
                         }
                     } else {
                         // Data user tidak ada
                         signOut(auth).then(() => {
-                            window.location.href = 'login.html?reason=no_data';
+                            window.location.href = 'index.html?reason=no_data';
                         });
                     }
                 }).catch((error) => {
                     console.error("Gagal memvalidasi user:", error);
                     signOut(auth).then(() => {
-                        window.location.href = 'login.html?reason=db_error';
+                        window.location.href = 'index.html?reason=db_error';
                     });
                 });
             } else {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         });
 
         logoutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             });
         });
 
@@ -608,3 +608,4 @@
 </body>
 
 </html>
+
