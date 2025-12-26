@@ -84,33 +84,53 @@
         .btn-icon { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: white; display: flex; justify-content: center; align-items: center; cursor: pointer; color: var(--text-grey); transition: 0.2s; }
         .btn-icon:hover { background: var(--bg-body); color: var(--primary); }
 
-        /* --- MODAL --- */
+        /* --- MODAL / POPUP (REVISI PROFESIONAL) --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
-            z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px;
+            z-index: 1000; display: none; justify-content: center; align-items: center; padding: 15px;
         }
 
         .modal-content {
-            background: white; width: 100%; max-width: 650px; border-radius: 16px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2); display: flex; flex-direction: column;
-            overflow: hidden; max-height: 90vh;
+            background: white; width: 100%; max-width: 700px; border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+            display: flex; flex-direction: column;
+            /* Kunci agar tidak terpotong di layar kecil */
+            max-height: 90vh; 
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        .modal-header { padding: 20px 30px; border-bottom: 1px solid var(--border); background: #fff; display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 30px; overflow-y: auto; }
-        .modal-footer { padding: 20px 30px; border-top: 1px solid var(--border); background: #f9fafb; display: flex; justify-content: flex-end; gap: 10px; }
+        /* Header dan Footer tetap diam, Body yang scroll */
+        .modal-header { padding: 15px 25px; border-bottom: 1px solid var(--border); background: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; border-radius: 16px 16px 0 0; }
+        
+        .modal-body { 
+            padding: 25px; 
+            overflow-y: auto; /* Scrollable area */
+            flex: 1; /* Mengisi sisa ruang */
+        }
 
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-dark); font-size: 0.9rem; }
-        .form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; transition: 0.2s; }
+        /* Scrollbar custom agar cantik */
+        .modal-body::-webkit-scrollbar { width: 8px; }
+        .modal-body::-webkit-scrollbar-track { background: #f1f1f1; }
+        .modal-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .modal-body::-webkit-scrollbar-thumb:hover { background: #bbb; }
+
+        .modal-footer { padding: 15px 25px; border-top: 1px solid var(--border); background: #f9fafb; display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; border-radius: 0 0 16px 16px; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 6px; color: var(--text-dark); font-size: 0.9rem; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Inter', sans-serif; transition: 0.2s; font-size: 0.95rem; }
         .form-control:focus { border-color: var(--primary); outline: none; }
-        .row-group { display: flex; gap: 20px; }
+        .row-group { display: flex; gap: 15px; }
         .col-half { flex: 1; }
 
-        .editor-wrapper { display: flex; flex-direction: column; height: 300px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        /* Editor agar tidak terlalu tinggi di laptop */
+        .editor-wrapper { 
+            display: flex; flex-direction: column; 
+            height: 200px; /* Ukuran pas untuk laptop */
+            border: 1px solid var(--border); border-radius: 8px; overflow: hidden; 
+        }
         
         .btn-cancel { background: white; border: 1px solid var(--border); padding: 10px 20px; border-radius: 8px; cursor: pointer; color: var(--text-grey); font-weight: 600; }
         .btn-submit { background: var(--primary); color: white; border: none; padding: 10px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; }
@@ -123,9 +143,13 @@
         .msg-box { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; text-align: center; }
         .msg-success { background: #d1fae5; color: #065f46; }
         
+        /* Media Queries untuk HP */
         @media (max-width: 900px) {
             .sidebar { display: none; }
-            .main-panel { margin-left: 0; width: 100%; }
+            .main-panel { margin-left: 0; width: 100%; padding: 15px; }
+            .row-group { flex-direction: column; gap: 0; }
+            .modal-content { max-height: 95vh; margin: 10px; }
+            .editor-wrapper { height: 180px; }
         }
     </style>
 </head>
@@ -317,13 +341,14 @@
     </div>
 
     <div id="emp-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 500px; height: auto;">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h3 class="modal-title" id="emp-modal-title">Tambah Karyawan</h3>
                 <button type="button" style="background:none; border:none; font-size:1.2rem; cursor:pointer;" onclick="closeModal('emp-modal')"><i class="fa-solid fa-times"></i></button>
             </div>
-            <form id="emp-form">
-                <input type="hidden" id="emp-uid"> <div class="modal-body">
+            <form id="emp-form" style="display: flex; flex-direction: column; flex:1; overflow:hidden;">
+                <input type="hidden" id="emp-uid"> 
+                <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Nama Lengkap</label>
                         <input type="text" id="emp-name" class="form-control" placeholder="Contoh: Budi Santoso" required>
@@ -364,12 +389,12 @@
     </div>
 
     <div id="delete-modal" class="modal-overlay">
-        <div class="modal-content" style="max-width: 400px; height: auto;">
+        <div class="modal-content" style="max-width: 400px;">
             <div class="modal-header" style="border:none; padding-bottom: 0;">
                 <h3 style="color: var(--primary);">Hapus Data?</h3>
             </div>
             <div class="modal-body" style="text-align: center; padding: 20px 30px;">
-                <p style="color: var(--text-grey);">Data ini akan dihapus permanen.</p>
+                <p style="color: var(--text-grey);">Data ini akan dihapus permanen dan tidak dapat dikembalikan.</p>
             </div>
             <div class="modal-footer" style="justify-content: flex-end; border: none; background: white;">
                 <button class="btn-cancel" onclick="closeModal('delete-modal')" style="margin-right: 10px;">Batal</button>
@@ -462,7 +487,9 @@
                 list.innerHTML = '';
                 const posts = [];
                 if (snapshot.exists()) {
-                    snapshot.forEach(child => posts.push({ key: child.key, ...child.val() }));
+                    snapshot.forEach(child => {
+                        posts.push({ key: child.key, ...child.val() });
+                    });
                 }
                 posts.sort((a, b) => (b.isPinned - a.isPinned) || (b.timestamp - a.timestamp));
 
@@ -540,14 +567,18 @@
         // MANAJEMEN KARYAWAN (HR)
         // =======================
 
-        // Load Employees
+        // Load Employees (SUDAH DIPERBAIKI LOGIKANYA)
         function loadEmployees() {
             onValue(ref(db, 'users'), (snapshot) => {
                 const tbody = document.getElementById('employee-list');
                 tbody.innerHTML = '';
                 const users = [];
+                
                 if(snapshot.exists()) {
-                    snapshot.forEach(child => users.push({ uid: child.key, ...child.val() }));
+                    // MENGGUNAKAN KURUNG KURAWAL {} AGAR LOOPING TIDAK BERHENTI
+                    snapshot.forEach(child => {
+                        users.push({ uid: child.key, ...child.val() });
+                    });
                 }
 
                 // Filter out Admin (optional) and sort by name
@@ -641,20 +672,15 @@
                 }).finally(() => btn.disabled = false);
             } else {
                 // CREATE NEW REQUEST
-                // Karena HR tidak bisa create Auth User langsung tanpa Admin SDK,
-                // Kita buat data di 'users' dengan status 'pending'. 
-                // Admin IT akan melihatnya di Dashboard dan meng-approve (membuatkan akun).
-                
-                // Generate unique key (bisa pakai push ID)
                 const newRef = push(ref(db, 'users'));
                 set(newRef, {
-                    uid: newRef.key, // Temporary UID until Admin creates real auth
+                    uid: newRef.key, 
                     nama: name,
                     email: email,
                     departemen: dept,
                     jobTitle: job,
                     nik: nik,
-                    status: 'pending', // KUNCI UTAMA: Status Pending trigger approval admin
+                    status: 'pending', 
                     role: 'Employee',
                     requestedBy: loggedInUserName,
                     requestDate: serverTimestamp()
