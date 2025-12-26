@@ -1394,7 +1394,7 @@
         const handleLogout = () => {
              signOut(auth).then(() => {
                 console.log("Logout berhasil, mengalihkan ke login...");
-                window.location.href = 'login.html'; 
+                window.location.href = 'index.html'; 
             }).catch((error) => {
                 console.error("Gagal logout:", error);
                 showToast("Gagal logout, silakan coba lagi."); 
@@ -1486,21 +1486,21 @@
                         } else if (userData.status === 'pending') {
                             console.log("Akses ditolak: Akun 'pending'.");
                             signOut(auth).then(() => {
-                            window.location.href = 'login.html?reason=pending'; 
+                            window.location.href = 'index.html?reason=pending'; 
                         });
                         return;
                         
                         } else if (userData.status === 'rejected') { 
                             console.log("Akses ditolak: Akun 'rejected'.");
                             signOut(auth).then(() => {
-                                window.location.href = 'login.html?reason=rejected';
+                                window.location.href = 'index.html?reason=rejected';
                             });
                             return;
                         
                         } else { 
                             console.log("Akses ditolak: Status akun tidak diketahui.");
                             signOut(auth).then(() => {
-                                window.location.href = 'login.html?reason=invalid';
+                                window.location.href = 'index.html?reason=invalid';
                             });
                             return;
                         }
@@ -1508,7 +1508,7 @@
                     } else {
                         console.log("Akses ditolak: Data user tidak ada di DB.");
                         signOut(auth).then(() => {
-                            window.location.href = 'login.html?reason=no_data';
+                            window.location.href = 'index.html?reason=no_data';
                         });
                         return;
                     }
@@ -1585,13 +1585,13 @@
                 }).catch((error) => {
                     console.error("Gagal memvalidasi user:", error);
                     signOut(auth).then(() => {
-                        window.location.href = 'login.html?reason=db_error';
+                        window.location.href = 'index.html?reason=db_error';
                     });
                 });
 
             } else {
                 console.log("Pengguna tidak terautentikasi, mengalihkan...");
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         });
         
@@ -1952,3 +1952,4 @@
 
 </body>
 </html>
+
