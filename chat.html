@@ -620,7 +620,7 @@
 
         logoutBtn.addEventListener('click', () => {
             signOut(auth).then(() => {
-                window.location.href = 'login.html'; 
+                window.location.href = 'index.html'; 
             }).catch((error) => {
                 showToast("Gagal logout."); 
             });
@@ -654,7 +654,7 @@
                     
                     } else {
                         signOut(auth);
-                        window.location.href = 'login.html?reason=invalid';
+                        window.location.href = 'index.html?reason=invalid';
                         return;
                     }
                     
@@ -664,11 +664,11 @@
                 }).catch(() => {
                     showToast("Gagal memuat data user.");
                     signOut(auth);
-                    window.location.href = 'login.html?reason=db_error';
+                    window.location.href = 'index.html?reason=db_error';
                 });
 
             } else {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         });
 
@@ -1044,3 +1044,4 @@
 
 </body>
 </html>
+
