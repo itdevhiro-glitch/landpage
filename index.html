@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zeppelin - Employee Workspace</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@600;800&display=swap" rel="stylesheet">
+    <title>Zeppelin - System Initialization</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
@@ -13,6 +13,7 @@
             --text-light: #ffffff;
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
+            --success-color: #4ade80; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,7 +26,6 @@
             justify-content: center;
             align-items: center;
             color: var(--text-light);
-            /* Gradient background tetap sama (brand color) */
             background: linear-gradient(-45deg, #8B0000, #D9232D, #F37321, #2c0b0e);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -54,8 +54,6 @@
         }
 
         .logo-wrapper {
-            position: relative;
-            display: inline-block;
             margin-bottom: 1rem;
         }
 
@@ -77,7 +75,6 @@
             color: #fff;
         }
         
-        /* Tambahan styling untuk teks "Internal" */
         .brand-sub-name {
             font-family: 'Montserrat', sans-serif;
             font-size: 1.2rem;
@@ -97,49 +94,76 @@
             line-height: 1.5;
         }
 
-        .action-btn {
+        /* --- DYNAMIC STATUS PILL (MORPHING ANIMATION) --- */
+        .status-pill {
             position: relative;
-            padding: 14px 40px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+            height: 50px;
+            /* Lebar awal (lebar teks) */
+            width: 260px; 
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            text-decoration: none;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            margin: 0 auto;
+            overflow: hidden;
+            /* Transisi animasi perubahan bentuk */
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .action-btn:hover {
-            background: #fff;
-            color: var(--primary-color);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-            transform: translateY(-3px);
-            border-color: #fff;
+        /* Class saat berubah jadi lingkaran */
+        .status-pill.loading-shape {
+            width: 50px; /* Lebar = Tinggi = Lingkaran */
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
         }
 
-        .action-btn i { font-size: 0.8rem; transition: transform 0.3s ease; }
-        .action-btn:hover i { transform: translateX(3px); }
+        /* Class saat sukses (melebar lagi + warna hijau) */
+        .status-pill.success-shape {
+            width: 280px;
+            background: rgba(74, 222, 128, 0.15);
+            border-color: #4ade80;
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+        }
 
+        /* Isi konten di dalam pill */
+        .content-wrapper {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Text Styles */
+        .status-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        /* Loader Ring */
         .loader-ring {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(217, 35, 45, 0.3);
-            border-top: 2px solid #D9232D;
+            width: 25px;
+            height: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-top: 2px solid #fff;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
 
-        /* Footer khusus internal */
+        /* Visibility Utilities */
+        .hidden { opacity: 0; transform: scale(0.8); pointer-events: none; }
+        .visible { opacity: 1; transform: scale(1); }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Footer */
         .footer-info {
             position: absolute;
             bottom: 25px;
@@ -147,15 +171,11 @@
             color: rgba(255, 255, 255, 0.4);
             letter-spacing: 1px;
             text-transform: uppercase;
-            z-index: 10;
         }
         
         .footer-info i { margin-right: 5px; }
-
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
         .fade-out { opacity: 0; transform: scale(0.95); transition: all 0.5s ease-in-out; }
+
     </style>
 </head>
 <body>
@@ -171,15 +191,25 @@
         <h2 class="brand-sub-name">Internal System</h2>
         
         <p class="brand-tagline">
-            Employee Services & Integrated Dashboard<br>
-            <span style="font-size: 0.8em; opacity: 0.7;">Silakan login untuk akses operasional</span>
+            Employee Services & Integrated Dashboard
         </p>
 
-        <a href="#" class="action-btn" onclick="enterPortal(event)">
-            <span id="btn-text">Akses Workspace</span>
-            <i class="fa-solid fa-arrow-right-to-bracket" id="btn-icon"></i>
-            <div class="loader-ring" id="loader"></div>
-        </a>
+        <div class="status-pill" id="morph-btn">
+            
+            <div class="content-wrapper visible" id="state-init">
+                <span class="status-text">Menginisialisasi...</span>
+            </div>
+
+            <div class="content-wrapper hidden" id="state-loading">
+                <div class="loader-ring"></div>
+            </div>
+
+            <div class="content-wrapper hidden" id="state-success">
+                <i class="fa-solid fa-circle-check" style="color: #4ade80; margin-right: 10px;"></i>
+                <span class="status-text" style="color: #fff; font-weight: 700;">Akses Diberikan</span>
+            </div>
+
+        </div>
     </div>
 
     <div class="footer-info">
@@ -187,31 +217,61 @@
     </div>
 
     <script>
-        function enterPortal(e) {
-            e.preventDefault();
-            
-            const btnText = document.getElementById('btn-text');
-            const btnIcon = document.getElementById('btn-icon');
-            const loader = document.getElementById('loader');
+        window.addEventListener('load', () => {
+            const btn = document.getElementById('morph-btn');
+            const stateInit = document.getElementById('state-init');
+            const stateLoading = document.getElementById('state-loading');
+            const stateSuccess = document.getElementById('state-success');
             const card = document.getElementById('main-card');
-            const btn = document.querySelector('.action-btn');
 
-            btnText.style.display = 'none';
-            btnIcon.style.display = 'none';
-            loader.style.display = 'block';
-            
-            btn.style.backgroundColor = '#fff';
-            btn.style.width = '55px'; 
-            btn.style.padding = '14px';
-            btn.style.pointerEvents = 'none';
-
+            // Jeda sebentar setelah load (0.8 detik) agar user liat teks awal
             setTimeout(() => {
-                card.classList.add('fade-out');
+                
+                // --- TAHAP 1: MENGECIL (TEXT -> LINGKARAN) ---
+                // Hilangkan teks awal
+                stateInit.classList.remove('visible');
+                stateInit.classList.add('hidden');
+                
+                // Ubah bentuk tombol jadi lingkaran
+                btn.classList.add('loading-shape');
+
+                // Tampilkan loader (tunggu transisi bentuk selesai sedikit)
                 setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 500); 
-            }, 800); 
-        }
+                    stateLoading.classList.remove('hidden');
+                    stateLoading.classList.add('visible');
+                }, 200);
+
+                // --- TAHAP 2: PROSES (Loading...) ---
+                // Biarkan berputar selama 2.5 detik
+                setTimeout(() => {
+
+                    // --- TAHAP 3: MELEBAR (LINGKARAN -> SUKSES) ---
+                    // Hilangkan loader
+                    stateLoading.classList.remove('visible');
+                    stateLoading.classList.add('hidden');
+
+                    // Ubah bentuk tombol melebar lagi + style sukses
+                    btn.classList.remove('loading-shape');
+                    btn.classList.add('success-shape');
+
+                    // Tampilkan teks sukses
+                    setTimeout(() => {
+                        stateSuccess.classList.remove('hidden');
+                        stateSuccess.classList.add('visible');
+                    }, 200); // Delay dikit biar smooth pas melebar
+
+                    // --- TAHAP 4: REDIRECT ---
+                    setTimeout(() => {
+                        card.classList.add('fade-out');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 500);
+                    }, 1500); // User baca tulisan "Akses Diberikan" selama 1.5 detik
+
+                }, 2500); // Durasi loading
+
+            }, 800); // Durasi tampil teks awal
+        });
     </script>
 
 </body>
