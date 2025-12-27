@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Zeppelin - System Initialization</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -20,15 +20,20 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            height: 100vh;
+            /* Gunakan dvh (dynamic viewport height) untuk mengatasi address bar mobile */
+            min-height: 100dvh; 
+            width: 100%;
             overflow: hidden;
             display: flex;
+            flex-direction: column; /* Ubah ke column agar footer aman */
             justify-content: center;
             align-items: center;
             color: var(--text-light);
             background: linear-gradient(-45deg, #8B0000, #D9232D, #F37321, #2c0b0e);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
+            padding: 1rem; /* Tambah padding agar card tidak nempel pinggir layar */
+            position: relative;
         }
 
         @keyframes gradientBG {
@@ -42,23 +47,25 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
-            padding: 3rem 4rem;
+            /* Padding responsive: Desktop tetap besar, Mobile mengecil */
+            padding: 2.5rem 2rem; 
             border-radius: 24px;
             text-align: center;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-            max-width: 500px;
-            width: 90%;
+            max-width: 450px; /* Sedikit dikecilkan agar proporsional */
+            width: 100%;
             opacity: 0;
             transform: translateY(30px);
             animation: fadeInUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            position: relative;
+            z-index: 10;
         }
 
-        .logo-wrapper {
-            margin-bottom: 1rem;
-        }
+        .logo-wrapper { margin-bottom: 1rem; }
 
         .logo-icon {
-            font-size: 3.5rem;
+            /* Font size responsive menggunakan clamp */
+            font-size: clamp(2.5rem, 5vw, 3.5rem); 
             background: linear-gradient(to bottom, #fff, #ffcccc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -67,20 +74,21 @@
 
         .brand-name {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2.2rem;
+            font-size: clamp(1.8rem, 4vw, 2.2rem); /* Ukuran font dinamis */
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 0.2rem;
             color: #fff;
+            line-height: 1.2;
         }
         
         .brand-sub-name {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 3vw, 1.2rem); /* Ukuran font dinamis */
             font-weight: 600;
             color: #ffd1d1;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             margin-bottom: 1rem;
             text-transform: uppercase;
             opacity: 0.9;
@@ -92,14 +100,16 @@
             color: rgba(255, 255, 255, 0.8);
             margin-bottom: 2.5rem;
             line-height: 1.5;
+            padding: 0 10px; /* Agar teks tidak terlalu lebar di HP */
         }
 
-        /* --- DYNAMIC STATUS PILL (MORPHING ANIMATION) --- */
+        /* --- DYNAMIC STATUS PILL --- */
         .status-pill {
             position: relative;
             height: 50px;
-            /* Lebar awal (lebar teks) */
-            width: 260px; 
+            /* Gunakan max-width agar fleksibel di layar kecil */
+            width: 100%; 
+            max-width: 260px;
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 50px;
@@ -108,27 +118,25 @@
             justify-content: center;
             margin: 0 auto;
             overflow: hidden;
-            /* Transisi animasi perubahan bentuk */
             transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        /* Class saat berubah jadi lingkaran */
         .status-pill.loading-shape {
-            width: 50px; /* Lebar = Tinggi = Lingkaran */
+            width: 50px; 
+            max-width: 50px; /* Kunci ukuran saat loading */
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.5);
         }
 
-        /* Class saat sukses (melebar lagi + warna hijau) */
         .status-pill.success-shape {
-            width: 280px;
+            width: 100%;
+            max-width: 280px; /* Sedikit lebih lebar saat sukses */
             background: rgba(74, 222, 128, 0.15);
             border-color: #4ade80;
             box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
         }
 
-        /* Isi konten di dalam pill */
         .content-wrapper {
             position: absolute;
             display: flex;
@@ -138,7 +146,6 @@
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        /* Text Styles */
         .status-text {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
@@ -146,7 +153,6 @@
             white-space: nowrap;
         }
 
-        /* Loader Ring */
         .loader-ring {
             width: 25px;
             height: 25px;
@@ -156,7 +162,6 @@
             animation: spin 0.8s linear infinite;
         }
 
-        /* Visibility Utilities */
         .hidden { opacity: 0; transform: scale(0.8); pointer-events: none; }
         .visible { opacity: 1; transform: scale(1); }
 
@@ -166,15 +171,46 @@
         /* Footer */
         .footer-info {
             position: absolute;
-            bottom: 25px;
+            bottom: 20px;
             font-size: 0.65rem;
             color: rgba(255, 255, 255, 0.4);
             letter-spacing: 1px;
             text-transform: uppercase;
+            text-align: center;
+            width: 100%;
+            padding: 0 1rem;
         }
         
         .footer-info i { margin-right: 5px; }
         .fade-out { opacity: 0; transform: scale(0.95); transition: all 0.5s ease-in-out; }
+
+        /* --- MEDIA QUERY KHUSUS MOBILE KECIL --- */
+        @media screen and (max-width: 480px) {
+            .glass-card {
+                padding: 2rem 1.5rem; /* Padding lebih kecil lagi */
+            }
+            .brand-tagline {
+                margin-bottom: 2rem;
+                font-size: 0.85rem;
+            }
+            .status-pill {
+                height: 45px; /* Sedikit lebih tipis di HP */
+            }
+            .status-text {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* --- MEDIA QUERY UNTUK LAYAR PENDEK (LANDSCAPE HP) --- */
+        @media screen and (max-height: 600px) {
+            .glass-card {
+                transform: translateY(10px); /* Kurangi efek naik */
+                margin-bottom: 40px; /* Beri jarak untuk footer */
+            }
+            .logo-icon { font-size: 2rem; }
+            .brand-tagline { margin-bottom: 1.5rem; display: none; } /* Sembunyikan tagline jika layar terlalu pendek */
+            .footer-info { bottom: 10px; font-size: 0.55rem; }
+        }
 
     </style>
 </head>
@@ -224,53 +260,46 @@
             const stateSuccess = document.getElementById('state-success');
             const card = document.getElementById('main-card');
 
-            // Jeda sebentar setelah load (0.8 detik) agar user liat teks awal
             setTimeout(() => {
                 
-                // --- TAHAP 1: MENGECIL (TEXT -> LINGKARAN) ---
-                // Hilangkan teks awal
+                // TAHAP 1
                 stateInit.classList.remove('visible');
                 stateInit.classList.add('hidden');
                 
-                // Ubah bentuk tombol jadi lingkaran
                 btn.classList.add('loading-shape');
 
-                // Tampilkan loader (tunggu transisi bentuk selesai sedikit)
                 setTimeout(() => {
                     stateLoading.classList.remove('hidden');
                     stateLoading.classList.add('visible');
                 }, 200);
 
-                // --- TAHAP 2: PROSES (Loading...) ---
-                // Biarkan berputar selama 2.5 detik
+                // TAHAP 2
                 setTimeout(() => {
 
-                    // --- TAHAP 3: MELEBAR (LINGKARAN -> SUKSES) ---
-                    // Hilangkan loader
+                    // TAHAP 3
                     stateLoading.classList.remove('visible');
                     stateLoading.classList.add('hidden');
 
-                    // Ubah bentuk tombol melebar lagi + style sukses
                     btn.classList.remove('loading-shape');
                     btn.classList.add('success-shape');
 
-                    // Tampilkan teks sukses
                     setTimeout(() => {
                         stateSuccess.classList.remove('hidden');
                         stateSuccess.classList.add('visible');
-                    }, 200); // Delay dikit biar smooth pas melebar
+                    }, 200); 
 
-                    // --- TAHAP 4: REDIRECT ---
+                    // TAHAP 4
                     setTimeout(() => {
                         card.classList.add('fade-out');
                         setTimeout(() => {
+                            // Ganti URL sesuai kebutuhan
                             window.location.href = 'login.html';
                         }, 500);
-                    }, 1500); // User baca tulisan "Akses Diberikan" selama 1.5 detik
+                    }, 1500); 
 
-                }, 2500); // Durasi loading
+                }, 2500); 
 
-            }, 800); // Durasi tampil teks awal
+            }, 800); 
         });
     </script>
 
