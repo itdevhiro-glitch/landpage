@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login Access - Zeppelin Internal</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -25,8 +25,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            height: 100vh;
-            /* Background animasi yang sama persis dengan index.html */
+            /* Gunakan min-height agar bisa scroll jika layar HP pendek / keyboard muncul */
+            min-height: 100vh;
             background: linear-gradient(-45deg, #8B0000, #D9232D, #F37321, #2c0b0e);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -35,7 +35,8 @@
             align-items: center;
             color: var(--text-light);
             padding: 16px;
-            overflow: hidden; /* Mencegah scroll saat animasi masuk */
+            /* Mencegah highlight biru saat tap di mobile */
+            -webkit-tap-highlight-color: transparent;
         }
 
         @keyframes gradientBG {
@@ -57,6 +58,7 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
+            /* Padding default desktop */
             padding: 40px 40px;
             border-radius: 24px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
@@ -71,12 +73,10 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Sembunyikan form registrasi by default */
         #register-container {
             display: none;
         }
         
-        /* Typography Header yang senada dengan Index */
         .header-section {
             margin-bottom: 30px;
         }
@@ -109,7 +109,7 @@
             color: rgba(255, 255, 255, 0.7);
         }
 
-        /* Input Styling untuk Glass Theme */
+        /* Input Styling */
         .input-group {
             position: relative;
             margin-bottom: 20px;
@@ -123,6 +123,7 @@
             color: rgba(255, 255, 255, 0.6);
             font-size: 1rem;
             transition: color 0.3s;
+            pointer-events: none; /* Agar klik tembus ke input */
         }
 
         .input-field {
@@ -158,7 +159,7 @@
             width: 100%;
             padding: 16px;
             border: none;
-            border-radius: 50px; /* Pill shape like index */
+            border-radius: 50px;
             background: linear-gradient(90deg, #D9232D, #F37321);
             color: white;
             font-family: 'Montserrat', sans-serif;
@@ -170,6 +171,13 @@
             transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             box-shadow: 0 4px 15px rgba(217, 35, 45, 0.4);
             margin-top: 10px;
+            
+            /* PERBAIKAN: Flexbox untuk menjaga teks tetap di tengah */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Jarak antara icon spinner dan teks */
+            white-space: nowrap; /* Mencegah teks turun baris */
         }
 
         .form-button:hover {
@@ -186,11 +194,11 @@
             opacity: 0.7;
         }
 
-        /* Switch Link Styling */
         .form-switch {
             margin-top: 25px;
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.6);
+            line-height: 1.5;
         }
 
         .form-switch a {
@@ -201,6 +209,7 @@
             margin-left: 5px;
             border-bottom: 1px dashed rgba(255,255,255,0.4);
             transition: all 0.3s;
+            display: inline-block; /* Agar border bottom rapi */
         }
 
         .form-switch a:hover {
@@ -208,7 +217,6 @@
             border-bottom-color: var(--accent-color);
         }
 
-        /* Message Box Styling (Glass Style) */
         .message-box {
             font-size: 0.85rem;
             margin-top: 20px;
@@ -217,18 +225,50 @@
             display: none;
             backdrop-filter: blur(5px);
             text-align: left;
+            word-wrap: break-word; /* Mencegah text panjang merusak layout */
         }
         
         .error {
-            background-color: rgba(220, 38, 38, 0.2); /* Red glass */
+            background-color: rgba(220, 38, 38, 0.2);
             color: #ffb3b3;
             border: 1px solid rgba(220, 38, 38, 0.4);
         }
         
         .success {
-            background-color: rgba(22, 163, 74, 0.2); /* Green glass */
+            background-color: rgba(22, 163, 74, 0.2);
             color: #bbf7d0;
             border: 1px solid rgba(22, 163, 74, 0.4);
+        }
+
+        /* --- MEDIA QUERY: KHUSUS MOBILE (< 480px) --- */
+        @media (max-width: 480px) {
+            .form-container {
+                /* Kurangi padding agar area input lebih lebar */
+                padding: 30px 20px; 
+                width: 100%;
+            }
+
+            .form-logo {
+                font-size: 2.5rem; /* Perkecil logo sedikit */
+            }
+
+            .brand-name {
+                font-size: 1.3rem;
+            }
+
+            .input-field {
+                padding: 14px 15px 14px 40px; /* Sedikit lebih compact */
+                font-size: 0.9rem;
+            }
+
+            .form-button {
+                padding: 14px;
+                font-size: 0.8rem; /* Perkecil font tombol agar muat */
+            }
+
+            .container-wrapper {
+                padding: 0 10px; /* Jarak aman dari pinggir layar */
+            }
         }
     </style>
 </head>
@@ -257,7 +297,7 @@
                 </div>
                 
                 <button type="submit" class="form-button" id="login-button">
-                    Masuk Workspace
+                    <span>Masuk Workspace</span>
                 </button>
                 
                 <div id="login-msg" class="message-box"></div>
@@ -298,7 +338,7 @@
                 </div>
                 
                 <button type="submit" class="form-button" id="register-button">
-                    Daftar Akun
+                    <span>Daftar Akun</span>
                 </button>
                 
                 <div id="register-msg" class="message-box"></div>
@@ -330,11 +370,10 @@
         const auth = getAuth(app);
         const db = getDatabase(app); 
 
-        // --- Fungsi Tampilkan Pesan ---
+        // Fungsi Tampilkan Pesan
         function showMessage(elementId, message, isError = true) {
             const msgBox = document.getElementById(elementId);
             msgBox.textContent = message;
-            // Class disesuaikan dengan CSS baru
             msgBox.className = isError ? 'message-box error' : 'message-box success';
             msgBox.style.display = 'block';
         }
@@ -342,36 +381,29 @@
             document.getElementById(elementId).style.display = 'none';
         }
 
-        // --- Cek Alasan Redirect dari URL ---
+        // Cek Alasan Redirect
         const urlParams = new URLSearchParams(window.location.search);
         const reason = urlParams.get('reason');
         if (reason) {
             let msg = "Silakan login kembali.";
-            if (reason === 'pending') {
-                msg = "Akun Anda masih menunggu persetujuan Admin.";
-            } else if (reason === 'rejected') {
-                msg = "Akun Anda ditolak. Silakan hubungi Admin.";
-            } else if (reason === 'no_data' || reason === 'invalid') {
-                msg = "Masalah validasi akun. Hubungi Admin.";
-            } else if (reason === 'db_error') {
-                msg = "Gagal terhubung ke database. Coba lagi.";
-            }
+            if (reason === 'pending') msg = "Akun Anda masih menunggu persetujuan Admin.";
+            else if (reason === 'rejected') msg = "Akun Anda ditolak. Silakan hubungi Admin.";
+            else if (reason === 'no_data' || reason === 'invalid') msg = "Masalah validasi akun. Hubungi Admin.";
+            else if (reason === 'db_error') msg = "Gagal terhubung ke database. Coba lagi.";
             showMessage('login-msg', msg);
         }
 
-        // --- Toggle Antar Form ---
+        // Toggle Form
         const loginContainer = document.getElementById('login-container');
         const registerContainer = document.getElementById('register-container');
         const showLoginBtn = document.getElementById('show-login');
         const showRegisterBtn = document.getElementById('show-register');
 
-        // Animasi transisi sederhana
         function switchForm(hideEl, showEl) {
             hideEl.style.display = 'none';
             showEl.style.display = 'block';
             showEl.style.opacity = '0';
             showEl.style.transform = 'translateY(20px)';
-            // Trigger reflow
             void showEl.offsetWidth; 
             showEl.style.animation = 'fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards';
         }
@@ -385,20 +417,18 @@
             hideMessage('register-msg');
         });
 
-
-        // --- Logika LOGIN ---
+        // Logika LOGIN
         const loginForm = document.getElementById('login-form');
-        const loginEmailInput = document.getElementById('login-email');
-        const loginPasswordInput = document.getElementById('login-password');
         const loginButton = document.getElementById('login-button');
 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = loginEmailInput.value;
-            const password = loginPasswordInput.value;
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
             
             loginButton.disabled = true;
-            loginButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+            // Gunakan span agar layout flex tetap rapi
+            loginButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Memproses...</span>';
             hideMessage('login-msg');
 
             signInWithEmailAndPassword(auth, email, password)
@@ -409,7 +439,6 @@
                     get(userRef).then((snapshot) => {
                         if (snapshot.exists()) {
                             const userData = snapshot.val();
-                            
                             if (userData.status === 'approved') {
                                 window.location.href = 'dashboard.html';
                             } else if (userData.status === 'pending') {
@@ -424,7 +453,7 @@
                                 loginButton.innerText = "Masuk Workspace";
                             } else {
                                 showMessage('login-msg', "Status akun tidak valid.");
-                                signOut(auth); 
+                                signOut(auth);
                                 loginButton.disabled = false;
                                 loginButton.innerText = "Masuk Workspace";
                             }
@@ -434,7 +463,7 @@
                                 return;
                             }
                             showMessage('login-msg', "Data user tidak ditemukan.");
-                            signOut(auth); 
+                            signOut(auth);
                             loginButton.disabled = false;
                             loginButton.innerText = "Masuk Workspace";
                         }
@@ -454,23 +483,18 @@
                 });
         });
 
-
-        // --- Logika REGISTRASI ---
+        // Logika REGISTRASI
         const registerForm = document.getElementById('register-form');
-        const regName = document.getElementById('reg-name');
-        const regDept = document.getElementById('reg-dept');
-        const regEmail = document.getElementById('reg-email');
-        const regPassword = document.getElementById('reg-password');
         const registerButton = document.getElementById('register-button');
 
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
             hideMessage('register-msg');
 
-            const nameVal = regName.value.trim();
-            const deptVal = regDept.value.trim();
-            const emailVal = regEmail.value.trim();
-            const passVal = regPassword.value.trim();
+            const nameVal = document.getElementById('reg-name').value.trim();
+            const deptVal = document.getElementById('reg-dept').value.trim();
+            const emailVal = document.getElementById('reg-email').value.trim();
+            const passVal = document.getElementById('reg-password').value.trim();
 
             if (!nameVal || !deptVal || !emailVal || !passVal) {
                 showMessage('register-msg', "Semua field wajib diisi.");
@@ -482,12 +506,11 @@
             }
 
             registerButton.disabled = true;
-            registerButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+            registerButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Memproses...</span>';
 
             createUserWithEmailAndPassword(auth, emailVal, passVal)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    
                     set(ref(db, 'users/' + user.uid), {
                         uid: user.uid,
                         nama: nameVal,
@@ -504,7 +527,6 @@
                         setTimeout(() => {
                             showLoginBtn.click();
                             hideMessage('register-msg');
-                            // Tampilkan pesan di login form agar user tahu
                             showMessage('login-msg', "Akun dibuat. Menunggu persetujuan Admin.", false); 
                         }, 2500);
                     })
@@ -526,8 +548,6 @@
                     registerButton.innerText = "Daftar Akun";
                 });
         });
-
     </script>
-
 </body>
 </html>
