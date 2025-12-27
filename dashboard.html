@@ -29,6 +29,8 @@
             margin: 0 auto;
             padding: 0 24px; 
         }
+
+        /* --- LOADING SCREEN UPDATE --- */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -42,7 +44,18 @@
             flex-direction: column;
             color: white;
             z-index: 9999;
+            /* Transisi Opacity agar smooth saat hilang */
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
         }
+        
+        /* Class ini ditambahkan via JS saat selesai load */
+        .loading-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
         .spinner {
             width: 50px;
             height: 50px;
@@ -59,6 +72,20 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* --- ANIMATION CLASSES (Fixed) --- */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- NAVIGATION --- */
         .navbar {
             background-color: #ffffff;
             padding: 16px 24px;
@@ -262,6 +289,8 @@
             border-top: 1px solid #f3f4f6;
             margin: 8px 0;
         }
+        
+        /* --- HERO --- */
         .hero {
             background-color: #ffffff;
             padding: 60px 0;
@@ -332,6 +361,8 @@
             font-size: 7rem;
             color: #F37321;
         }
+        
+        /* --- PORTAL --- */
         .portal-section {
             padding: 40px 0;
             background-color: #f9fafb;
@@ -402,6 +433,8 @@
         .portal-card:hover .portal-link i {
             margin-left: 10px;
         }
+        
+        /* --- MAIN CONTENT --- */
         .main-content {
             padding: 40px 0 60px 0;
         }
@@ -429,6 +462,8 @@
             flex-direction: column;
             gap: 32px; 
         }
+        
+        /* --- WIDGETS --- */
         .portal-list {
             display: flex;
             flex-direction: column;
@@ -510,6 +545,8 @@
             color: #6b7280;
             font-weight: 500;
         }
+        
+        /* Calendar */
         .calendar-header {
             display: flex;
             justify-content: space-between;
@@ -591,6 +628,8 @@
             left: 50%;
             transform: translateX(-50%);
         }
+        
+        /* Announcements */
         #announcement-list {
             list-style: none;
             max-height: 400px; 
@@ -666,6 +705,8 @@
         }
         .announcement-content a { color: #D9232D; font-weight: 500; text-decoration: underline; }
         .announcement-empty { font-size: 0.9rem; color: #6b7280; text-align: center; padding: 20px 0; }
+        
+        /* Todo */
         .todo-input-group {
             display: flex;
             gap: 10px;
@@ -739,6 +780,7 @@
             text-align: center;
             padding: 15px 0;
         }
+        
         .footer {
             text-align: center;
             padding: 30px 24px;
@@ -751,6 +793,8 @@
             color: #D9232D;
             text-decoration: none;
         }
+        
+        /* Toast & Modal */
         .toast-notification {
             position: fixed;
             bottom: -100px;
@@ -1488,8 +1532,20 @@
                         });
                     }
                     
+                    // --- TRANSISI SMOOTH LOADING ---
+                    // 1. Tampilkan main content (sekarang masih transparan karena animasi belum start)
                     mainContent.style.display = 'block';
-                    loadingScreen.style.display = 'none';
+                    
+                    // 2. Beri jeda sangat singkat agar browser merender display block, baru mulai fade in content
+                    requestAnimationFrame(() => {
+                        // 3. Tambahkan class fade-out ke loader
+                        loadingScreen.classList.add('fade-out');
+                        
+                        // 4. Setelah transisi CSS selesai (500ms), hapus dari DOM layout
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                        }, 500);
+                    });
 
                     runClock();
                     initCalendar(); 
