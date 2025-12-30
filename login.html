@@ -9,7 +9,6 @@
     
     <style>
         :root {
-            /* WARNA ASLI ZEPPELIN */
             --primary-color: #D9232D;
             --accent-color: #F37321;
             --success-color: #10B981;
@@ -32,7 +31,6 @@
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             min-height: 100dvh;
-            /* BACKGROUND GRADASI ASLI */
             background: linear-gradient(-45deg, #680404, #D9232D, #F37321, #1a0507);
             background-size: 300% 300%;
             animation: gradientBG 12s ease infinite;
@@ -46,7 +44,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Container Animasi Salju */
         .snow-container {
             position: absolute;
             top: 0;
@@ -419,7 +416,7 @@
         for (let i = 0; i < particleCount; i++) {
             const snow = document.createElement('div');
             snow.className = 'snowflake';
-            snow.innerHTML = '&#10052;'; // Karakter Salju
+            snow.innerHTML = '&#10052;'; 
             snow.style.left = Math.random() * 100 + 'vw';
             snow.style.animationDuration = Math.random() * 3 + 2 + 's'; 
             snow.style.opacity = Math.random();
@@ -430,7 +427,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        // Import 'onAuthStateChanged' ditambahkan
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
@@ -449,9 +445,6 @@
         const auth = getAuth(app);
         const db = getDatabase(app); 
 
-        // --- OBSERVER STATUS LOGIN ---
-        // Kode ini mengecek apakah ada user yang 'nyangkut' (masih login) di browser.
-        // Jika ada, langsung lempar ke halaman dashboard.
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Session ditemukan: ", user.email);
