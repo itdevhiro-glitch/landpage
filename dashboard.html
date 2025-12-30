@@ -1093,6 +1093,7 @@
         <section class="portal-section" id="portal-section">
             <div class="container">
                 <div class="portal-grid">
+                    
                     <a href="https://itdevhiro-glitch.github.io/workspace-itsupport/user.html" target="_blank" class="portal-card fade-in-up" style="transition-delay: 100ms;">
                         <div class="portal-icon icon-red">
                             <i class="fa-solid fa-headset"></i>
@@ -1102,7 +1103,7 @@
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
                     
-                    <a href="chat.html" class="portal-card fade-in-up" style="transition-delay: 200ms;">
+                    <a href="chat.html" class="portal-card fade-in-up" style="transition-delay: 150ms;">
                         <div class="portal-icon icon-green">
                             <i class="fa-solid fa-comments"></i>
                         </div>
@@ -1110,11 +1111,32 @@
                         <p>Fitur komunikasi internal: chat antar karyawan, grup departemen, dan Admin.</p>
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
-                    <a id="manage-content-card" href="#" class="portal-card fade-in-up" style="transition-delay: 300ms;"> <div class="portal-icon icon-blue"> <i class="fa-solid fa-pen-to-square"></i>
+
+                    <a id="petty-cash-card" href="pettycash.html" class="portal-card fade-in-up hidden-non-finance" style="transition-delay: 200ms;">
+                        <div class="portal-icon icon-green" style="background-color: #ecfdf5; color: #059669;">
+                            <i class="fa-solid fa-wallet"></i>
                         </div>
-                        <h3>Manajemen Pengumuman</h3> <p>Hanya untuk HRD. Update pengumuman perusahaan terbaru.</p> <span class="portal-link">Buka Halaman <i class="fa-solid fa-arrow-right"></i></span>
+                        <h3>Petty Cash</h3>
+                        <p>Buku kas operasional. Catat pemasukan dan pengeluaran harian.</p>
+                        <span class="portal-link">Buka Buku Kas <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
-                    <a href="permintaanuser.html" class="portal-card fade-in-up" style="transition-delay: 400ms;">
+
+                    <a id="finance-card" href="finance.html" class="portal-card fade-in-up hidden-non-finance" style="transition-delay: 250ms;">
+                        <div class="portal-icon icon-green">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <h3>Finance Workspace</h3>
+                        <p>Manajemen invoice, reimbursement, data pelanggan, dan pajak.</p>
+                        <span class="portal-link">Buka Workspace <i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+
+                    <a id="manage-content-card" href="#" class="portal-card fade-in-up" style="transition-delay: 300ms;"> 
+                        <div class="portal-icon icon-blue"> <i class="fa-solid fa-pen-to-square"></i></div>
+                        <h3>Manajemen Pengumuman</h3> <p>Hanya untuk HRD. Update pengumuman perusahaan terbaru.</p> 
+                        <span class="portal-link">Buka Halaman <i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
+
+                    <a href="permintaanuser.html" class="portal-card fade-in-up" style="transition-delay: 350ms;">
                         <div class="portal-icon icon-orange">
                             <i class="fa-solid fa-laptop-file"></i>
                         </div>
@@ -1123,7 +1145,7 @@
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a id="marketing-card" href="mark.html" class="portal-card fade-in-up hidden-non-marketing" style="transition-delay: 450ms;">
+                    <a id="marketing-card" href="mark.html" class="portal-card fade-in-up hidden-non-marketing" style="transition-delay: 400ms;">
                         <div class="portal-icon icon-cyan">
                             <i class="fa-solid fa-chart-line"></i>
                         </div>
@@ -1132,22 +1154,13 @@
                         <span class="portal-link">Buka Aplikasi <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
-                    <a id="it-ticket-card" href="https://itdevhiro-glitch.github.io/itteam/tiketing.html" target="_blank" class="portal-card fade-in-up hidden-non-it" style="transition-delay: 500ms;">
+                    <a id="it-ticket-card" href="https://itdevhiro-glitch.github.io/itteam/tiketing.html" target="_blank" class="portal-card fade-in-up hidden-non-it" style="transition-delay: 450ms;">
                         <div class="portal-icon icon-gray">
                             <i class="fa-solid fa-screwdriver-wrench"></i>
                         </div>
                         <h3>IT Team Panel</h3>
                         <p>Panel Penanganan Tiket (Ticketing Handle).</p>
                         <span class="portal-link">Buka Panel <i class="fa-solid fa-arrow-right"></i></span>
-                    </a>
-                    
-                    <a id="finance-card" href="finance.html" class="portal-card fade-in-up hidden-non-finance" style="transition-delay: 550ms;">
-                        <div class="portal-icon icon-green">
-                            <i class="fa-solid fa-chart-pie"></i>
-                        </div>
-                        <h3>Finance Workspace</h3>
-                        <p>Manajemen invoice, reimbursement, data pelanggan, dan pajak.</p>
-                        <span class="portal-link">Buka Workspace <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
 
                 </div>
@@ -1328,7 +1341,9 @@
         const navMarketingLink = document.getElementById('nav-marketing-link');
         const mobileMarketingLink = document.getElementById('mobile-marketing-link');
 
+        // FINANCE ELEMENTS
         const financeCard = document.getElementById('finance-card');
+        const pettyCashCard = document.getElementById('petty-cash-card'); // New element
         
         const menuToggleBtn = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -1516,16 +1531,22 @@
                         });
                     }
 
+                    // FINANCE & PETTY CASH LOGIC
+                    const financeElements = [financeCard, pettyCashCard];
                     if (isFinance) {
-                        if (financeCard) financeCard.classList.remove('hidden-non-finance');
+                        financeElements.forEach(el => {
+                            if (el) el.classList.remove('hidden-non-finance');
+                        });
                     } else {
-                        if (financeCard) {
-                            financeCard.classList.add('hidden-non-finance');
-                            financeCard.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                showToast("Akses Ditolak. Khusus Finance.");
-                            });
-                        }
+                        financeElements.forEach(el => {
+                            if (el) {
+                                el.classList.add('hidden-non-finance');
+                                el.addEventListener('click', (e) => {
+                                    e.preventDefault();
+                                    showToast("Akses Ditolak. Khusus Finance.");
+                                });
+                            }
+                        });
                     }
                     
                     mainContent.style.display = 'block';
