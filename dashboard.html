@@ -899,7 +899,7 @@
             width: 100%;
             font-size: 0.9rem;
         }
-        .hidden-non-hrd, .hidden-non-it, .hidden-non-marketing {
+        .hidden-non-hrd, .hidden-non-it, .hidden-non-marketing, .hidden-non-finance {
             display: none !important;
         }
         @media (max-width: 768px) {
@@ -1140,6 +1140,15 @@
                         <p>Panel Penanganan Tiket (Ticketing Handle).</p>
                         <span class="portal-link">Buka Panel <i class="fa-solid fa-arrow-right"></i></span>
                     </a>
+                    
+                    <a id="finance-card" href="finance.html" class="portal-card fade-in-up hidden-non-finance" style="transition-delay: 550ms;">
+                        <div class="portal-icon icon-green">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <h3>Finance Workspace</h3>
+                        <p>Manajemen invoice, reimbursement, data pelanggan, dan pajak.</p>
+                        <span class="portal-link">Buka Workspace <i class="fa-solid fa-arrow-right"></i></span>
+                    </a>
 
                 </div>
             </div>
@@ -1318,6 +1327,8 @@
         const marketingCard = document.getElementById('marketing-card');
         const navMarketingLink = document.getElementById('nav-marketing-link');
         const mobileMarketingLink = document.getElementById('mobile-marketing-link');
+
+        const financeCard = document.getElementById('finance-card');
         
         const menuToggleBtn = document.getElementById('menu-toggle');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -1392,6 +1403,7 @@
                     let isHRD = false; 
                     let isIT = false;
                     let isMarketing = false;
+                    let isFinance = false;
 
                     if (user.email === 'root@zeppelin.center') {
                         userGreeting.innerHTML = `Halo, <span>ADMIN</span>`;
@@ -1399,6 +1411,7 @@
                         isHRD = true; 
                         isIT = true;
                         isMarketing = true;
+                        isFinance = true;
 
                     } else if (snapshot.exists()) {
                         const userData = snapshot.val();
@@ -1418,6 +1431,10 @@
 
                             if (userData.departemen === 'Marketing' || userData.departemen === 'Pemasaran') {
                                 isMarketing = true;
+                            }
+
+                            if (userData.departemen === 'Finance' || userData.departemen === 'Accounting' || userData.departemen === 'Keuangan') {
+                                isFinance = true;
                             }
                             
                         } else if (userData.status === 'pending') {
@@ -1497,6 +1514,18 @@
                                 });
                             }
                         });
+                    }
+
+                    if (isFinance) {
+                        if (financeCard) financeCard.classList.remove('hidden-non-finance');
+                    } else {
+                        if (financeCard) {
+                            financeCard.classList.add('hidden-non-finance');
+                            financeCard.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                showToast("Akses Ditolak. Khusus Finance.");
+                            });
+                        }
                     }
                     
                     mainContent.style.display = 'block';
