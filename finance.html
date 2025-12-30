@@ -75,7 +75,7 @@
         .summary-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .summary-card h4 { font-size: 0.9rem; color: #6b7280; margin-bottom: 8px; font-weight: 500; }
         .summary-card .val { font-size: 1.8rem; font-weight: 800; color: #111827; position: relative; z-index: 2; }
-        .summary-card i { position: absolute; right: 20px; bottom: 20px; font-size: 3rem; opacity: 0.08; color: var(--text-dark); z-index: 1; }
+        .summary-card i.bg-icon { position: absolute; right: 20px; bottom: 20px; font-size: 3rem; opacity: 0.08; color: var(--text-dark); z-index: 1; }
         
         .border-l-red { border-left: 4px solid var(--primary-red); }
         .border-l-orange { border-left: 4px solid var(--primary-orange); }
@@ -89,7 +89,16 @@
 
         .btn-excel { background-color: var(--excel-green); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; text-decoration: none; }
         .btn-excel:hover { background-color: #0d6535; transform: translateY(-2px); }
+
+        .btn-sm-add {
+            background-color: var(--success-green); color: white; border: none; padding: 4px 10px; border-radius: 6px; 
+            font-size: 0.7rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+        }
+        .btn-sm-add:hover { background-color: #059669; }
         
+        /* Analytics Grid */
+        .analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
         /* Table Styles */
         .table-responsive { overflow-x: auto; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
@@ -134,6 +143,7 @@
             .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
             .header-actions { width: 100%; flex-direction: column; }
             .btn-primary, .btn-excel { width: 100%; justify-content: center; }
+            .analytics-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -195,28 +205,41 @@
 
                     <div class="summary-grid">
                         <div class="summary-card border-l-green">
-                            <h4>Saldo Operasional</h4>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h4 style="margin-bottom: 0;">Saldo Operasional</h4>
+                                <button onclick="openModal('topup')" class="btn-sm-add"><i class="fa-solid fa-plus"></i> Top Up</button>
+                            </div>
                             <div class="val" id="pc-balance" style="color: var(--success-green);">Rp 0</div>
-                            <i class="fa-solid fa-wallet"></i>
+                            <i class="fa-solid fa-wallet bg-icon"></i>
                         </div>
                         <div class="summary-card border-l-blue">
                             <h4>Estimasi Pemasukan (AR)</h4>
                             <div class="val" id="ov-total-ar" style="color: var(--info-blue);">Rp 0</div>
-                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <i class="fa-solid fa-file-invoice-dollar bg-icon"></i>
                         </div>
                         <div class="summary-card border-l-red">
                             <h4>Tagihan Overdue</h4>
                             <div class="val" id="ov-overdue-count" style="color: #D9232D;">0</div>
-                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <i class="fa-solid fa-triangle-exclamation bg-icon"></i>
                         </div>
                     </div>
 
-                    <div class="card">
-                        <div class="section-label">
-                            <span><i class="fa-solid fa-chart-simple"></i> Analitik Arus Kas</span>
+                    <div class="analytics-grid">
+                        <div class="card">
+                            <div class="section-label">
+                                <span><i class="fa-solid fa-chart-simple"></i> Arus Kas (Income vs Expense)</span>
+                            </div>
+                            <div style="position: relative; height: 300px; width: 100%;">
+                                <canvas id="financeChart"></canvas>
+                            </div>
                         </div>
-                        <div style="position: relative; height: 300px; width: 100%;">
-                            <canvas id="financeChart"></canvas>
+                        <div class="card">
+                            <div class="section-label">
+                                <span><i class="fa-solid fa-chart-pie"></i> Distribusi Pengeluaran</span>
+                            </div>
+                            <div style="position: relative; height: 300px; width: 100%;">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -448,6 +471,33 @@
         </div>
     </div>
 
+    <div id="modal-topup" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: var(--success-green);"><i class="fa-solid fa-plus-circle"></i> Tambah Saldo Operasional</h3>
+                <button onclick="closeModals()" style="background:none; border:none; cursor:pointer; font-size:1.2rem; color: #6b7280;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; font-size: 0.9rem; color: #6b7280;">Input penambahan saldo tunai ke kas kecil (Petty Cash).</p>
+                <div class="form-group">
+                    <label>Tanggal</label>
+                    <input type="date" id="topup-date">
+                </div>
+                <div class="form-group">
+                    <label>Nominal Masuk (Rp)</label>
+                    <input type="number" id="topup-amount" style="font-weight: bold; font-size: 1.1rem; color: var(--success-green);">
+                </div>
+                <div class="form-group">
+                    <label>Keterangan Sumber Dana</label>
+                    <input type="text" id="topup-desc" placeholder="Contoh: Pencairan Cek Bank Mandiri">
+                </div>
+                <button class="btn-primary" style="width: 100%; justify-content: center; background-color: var(--success-green);" onclick="saveTopUp()">
+                    <i class="fa-solid fa-save"></i> Simpan Saldo Masuk
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
@@ -469,8 +519,8 @@
         let reimburseData = {};
         let pettyCashData = {};
         let chartInstance = null;
+        let expenseChartInstance = null;
         
-        // VARIABLE PENTING UNTUK EDIT
         let currentEditingId = null;
 
         // --- UTILS FORMATTER ---
@@ -498,20 +548,23 @@
             }, 3000);
         }
 
-        // --- MODAL FUNCTIONS (UPDATED FOR EDITING) ---
+        // --- MODAL FUNCTIONS ---
         function openModal(type, editId = null) {
             document.getElementById('modal-'+type).style.display = 'flex';
             
-            // Logic khusus Customer (Bisa Add / Bisa Edit)
+            if (type === 'topup') {
+                document.getElementById('topup-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('topup-amount').value = '';
+                document.getElementById('topup-desc').value = '';
+            }
+
+            // Logic khusus Customer
             if(type === 'customer') {
                 if (editId) {
-                    // MODE EDIT
                     currentEditingId = editId;
                     const data = customersData[editId];
                     document.getElementById('modal-title-cust').textContent = "Edit / Detail Pelanggan";
                     document.getElementById('btn-save-cust').textContent = "Update Perubahan";
-                    
-                    // Isi form dengan data lama
                     document.getElementById('cust-name').value = data.name || '';
                     document.getElementById('cust-npwp').value = data.npwp || '';
                     document.getElementById('cust-pic').value = data.pic || '';
@@ -519,12 +572,9 @@
                     document.getElementById('cust-phone').value = data.phone || '';
                     document.getElementById('cust-addr').value = data.addr || '';
                 } else {
-                    // MODE ADD NEW
                     currentEditingId = null;
                     document.getElementById('modal-title-cust').textContent = "Tambah Pelanggan Baru";
                     document.getElementById('btn-save-cust').textContent = "Simpan Data Pelanggan";
-                    
-                    // Kosongkan form
                     ['cust-name','cust-npwp','cust-pic','cust-email','cust-phone','cust-addr'].forEach(id => document.getElementById(id).value = '');
                 }
             }
@@ -554,7 +604,7 @@
             const map = { 'overview': 0, 'customers': 1, 'invoice': 2, 'reimburse': 3, 'calculator': 4 };
             if(map[tabName] !== undefined) menus[map[tabName]].classList.add('active');
             
-            if(tabName === 'overview') renderChart();
+            if(tabName === 'overview') renderCharts();
         }
 
         // --- AUTH & LOAD DATA ---
@@ -583,15 +633,11 @@
                 new Promise(resolve => db.ref('finance_customers').on('value', snap => { customersData = snap.val() || {}; renderCustomerTable(); updateOverview(); resolve(); })),
                 new Promise(resolve => db.ref('finance_invoices').on('value', snap => { invoicesData = snap.val() || {}; renderInvoiceTable(); renderCustomerTable(); updateOverview(); resolve(); })),
                 new Promise(resolve => db.ref('finance_reimbursement').on('value', snap => { reimburseData = snap.val() || {}; renderReimburseTable(); resolve(); })),
-                new Promise(resolve => db.ref('finance_pettycash').on('value', snap => { pettyCashData = snap.val() || {}; updateOverview(); resolve(); }))
+                new Promise(resolve => db.ref('finance_pettycash').on('value', snap => { pettyCashData = snap.val() || {}; updateOverview(); renderCharts(); resolve(); }))
             ];
-            
-            Promise.all(promises).then(() => {
-                renderChart();
-            });
         }
 
-        // --- RENDER FUNCTIONS ---
+        // --- RENDER TABLES ---
         
         function renderCustomerTable() {
             const tbody = document.getElementById('customer-table');
@@ -713,7 +759,14 @@
             });
         }
 
-        function renderChart() {
+        // --- CHARTS & ANALYTICS ---
+
+        function renderCharts() {
+            renderCashFlowChart();
+            renderExpenseChart();
+        }
+
+        function renderCashFlowChart() {
             const ctx = document.getElementById('financeChart');
             if(!ctx) return;
             
@@ -738,13 +791,14 @@
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Pemasukan (Petty Cash + Invoice)', 'Pengeluaran Operasional'],
+                    labels: ['Pemasukan', 'Pengeluaran'],
                     datasets: [{
-                        label: 'Arus Kas (Rp)',
+                        label: 'Total (Rp)',
                         data: [totalIncome, pcExpense],
                         backgroundColor: ['rgba(16, 185, 129, 0.7)', 'rgba(217, 35, 45, 0.7)'],
                         borderColor: ['rgb(16, 185, 129)', 'rgb(217, 35, 45)'],
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 6
                     }]
                 },
                 options: {
@@ -752,6 +806,47 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6' } } }
+                }
+            });
+        }
+
+        function renderExpenseChart() {
+            const ctx = document.getElementById('expenseChart');
+            if(!ctx) return;
+
+            const categories = {};
+            Object.values(pettyCashData).forEach(item => {
+                if(item.type === 'expense') {
+                    const cat = item.category || 'Lainnya';
+                    categories[cat] = (categories[cat] || 0) + parseInt(item.amount || 0);
+                }
+            });
+
+            const labels = Object.keys(categories);
+            const dataVal = Object.values(categories);
+            
+            // Colors for Doughnut
+            const colors = ['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#6b7280'];
+
+            if(expenseChartInstance) expenseChartInstance.destroy();
+
+            expenseChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.length ? labels : ['Belum ada data'],
+                    datasets: [{
+                        data: dataVal.length ? dataVal : [1],
+                        backgroundColor: dataVal.length ? colors.slice(0, labels.length) : ['#f3f4f6'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12 } }
+                    },
+                    cutout: '65%'
                 }
             });
         }
@@ -783,6 +878,30 @@
         }
 
         // --- ACTIONS (SAVE / UPDATE) ---
+        
+        function saveTopUp() {
+            const date = document.getElementById('topup-date').value;
+            const amount = document.getElementById('topup-amount').value;
+            const desc = document.getElementById('topup-desc').value;
+
+            if(!date || !amount || !desc) return showNotification("Mohon lengkapi semua data top up", "error");
+
+            const dataObj = {
+                type: 'income',
+                category: 'Top Up Kas',
+                date: date,
+                amount: parseInt(amount),
+                desc: desc
+            };
+
+            db.ref('finance_pettycash').push(dataObj).then(() => {
+                showNotification("Saldo berhasil ditambahkan!");
+                closeModals();
+            }).catch(err => {
+                showNotification("Gagal menyimpan data", "error");
+            });
+        }
+
         function saveCustomer() {
             const name = document.getElementById('cust-name').value;
             if(!name) return showNotification("Nama Perusahaan wajib diisi!", "error");
