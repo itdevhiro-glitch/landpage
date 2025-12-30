@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance Workspace - Zeppelin Portal</title>
+    <title>Professional Finance - Zeppelin Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -22,6 +24,7 @@
             --excel-green: #107c41;
             --success-green: #10b981;
             --info-blue: #3b82f6;
+            --warning-yellow: #f59e0b;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -43,7 +46,7 @@
         .fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
 
         /* Layout */
-        .workspace-grid { display: grid; grid-template-columns: 260px 1fr; gap: 32px; margin-top: 30px; min-height: 80vh; }
+        .workspace-grid { display: grid; grid-template-columns: 260px 1fr; gap: 32px; margin-top: 30px; min-height: 80vh; padding-bottom: 50px; }
         
         /* Sidebar */
         .sidebar { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 24px 16px; height: fit-content; position: sticky; top: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
@@ -74,7 +77,6 @@
         .summary-card .val { font-size: 1.8rem; font-weight: 800; color: #111827; position: relative; z-index: 2; }
         .summary-card i { position: absolute; right: 20px; bottom: 20px; font-size: 3rem; opacity: 0.08; color: var(--text-dark); z-index: 1; }
         
-        /* Border Colors for Cards */
         .border-l-red { border-left: 4px solid var(--primary-red); }
         .border-l-orange { border-left: 4px solid var(--primary-orange); }
         .border-l-green { border-left: 4px solid var(--success-green); }
@@ -88,30 +90,42 @@
         .btn-excel { background-color: var(--excel-green); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; text-decoration: none; }
         .btn-excel:hover { background-color: #0d6535; transform: translateY(-2px); }
         
+        /* Table Styles */
         .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th { text-align: left; padding: 16px; background: #fff7ed; font-size: 0.85rem; color: #9a3412; font-weight: 700; border-bottom: 2px solid #ffedd5; text-transform: uppercase; }
-        td { padding: 16px; border-bottom: 1px solid #f3f4f6; color: #374151; font-size: 0.95rem; vertical-align: middle; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 800px; }
+        th { text-align: left; padding: 16px; background: #fff7ed; font-size: 0.8rem; color: #9a3412; font-weight: 800; border-bottom: 2px solid #ffedd5; text-transform: uppercase; letter-spacing: 0.5px; position: sticky; top: 0; }
+        td { padding: 16px; border-bottom: 1px solid #f3f4f6; color: #374151; font-size: 0.9rem; vertical-align: middle; }
         tr:hover { background-color: #fff1f2; }
 
-        .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Badges */
+        .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; }
         .badge-pending { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+        .badge-paid { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
         .badge-approved { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
         .badge-rejected { background: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
-        .badge-overdue { background: #fee2e2; color: #991b1b; font-weight: 800; animation: pulse 2s infinite; }
+        .badge-overdue { background: #fee2e2; color: #991b1b; font-weight: 800; }
         
         /* Modal Styles */
         .modal-backdrop { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-        .modal-content { background-color: #fefefe; margin: auto; padding: 0; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: slideDown 0.3s; }
+        .modal-content { background-color: #fefefe; margin: auto; padding: 0; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); animation: slideDown 0.3s; }
         @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header { padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: #f9fafb; border-radius: 12px 12px 0 0; }
-        .modal-header h3 { font-size: 1.1rem; color: #111827; margin: 0; }
+        .modal-header h3 { font-size: 1.1rem; color: #111827; margin: 0; font-weight: 700; }
         .modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
         
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #374151; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; outline: none; }
-        .form-group input:focus { border-color: var(--primary-red); }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: #4b5563; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus { border-color: var(--primary-red); box-shadow: 0 0 0 3px rgba(217, 35, 45, 0.1); }
+
+        /* Toast Notification */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: white; border-left: 4px solid var(--primary-red); padding: 16px 20px; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 12px; min-width: 300px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: var(--success-green); }
+        .toast.error { border-left-color: var(--primary-red); }
+        .toast-icon { font-size: 1.2rem; }
+        .toast-msg { font-size: 0.9rem; font-weight: 500; color: #374151; }
 
         @media (max-width: 768px) {
             .workspace-grid { grid-template-columns: 1fr; margin-top: 15px; gap: 20px; }
@@ -125,6 +139,8 @@
 </head>
 <body>
 
+    <div id="toast-container"></div>
+
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
         <p style="margin-top: 15px;">Sinkronisasi Data Finance...</p>
@@ -133,7 +149,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="dashboard.html" class="nav-back"><i class="fa-solid fa-arrow-left"></i> Dashboard Utama</a>
-            <a href="#" class="nav-logo"><i class="fa-solid fa-chart-pie"></i> FINANCE HUB</a>
+            <a href="#" class="nav-logo"><i class="fa-solid fa-chart-pie"></i> FINANCE HUB <span style="font-size: 0.8rem; background: #eee; padding: 2px 8px; border-radius: 4px; margin-left: 10px; color: #666; font-weight: normal;">PRO</span></a>
             <div style="font-size: 0.9rem; font-weight: 600; color: #4b5563;">
                 <i class="fa-solid fa-user-tie" style="color: var(--primary-red);"></i> &nbsp;<span id="user-display">Finance Team</span>
             </div>
@@ -177,66 +193,43 @@
                         </div>
                     </div>
 
-                    <div class="section-label">
-                        <span>Status Kas & Operasional (Petty Cash)</span>
-                        <a href="pettycash.html" style="font-size: 0.85rem; color: var(--primary-red); text-decoration: none;">Lihat Detail <i class="fa-solid fa-arrow-right"></i></a>
-                    </div>
                     <div class="summary-grid">
                         <div class="summary-card border-l-green">
-                            <h4>Sisa Saldo Kas</h4>
+                            <h4>Saldo Operasional</h4>
                             <div class="val" id="pc-balance" style="color: var(--success-green);">Rp 0</div>
-                            <i class="fa-solid fa-wallet" style="color: var(--success-green); opacity: 0.1;"></i>
+                            <i class="fa-solid fa-wallet"></i>
                         </div>
                         <div class="summary-card border-l-blue">
-                            <h4>Total Pemasukan</h4>
-                            <div class="val" id="pc-income" style="color: var(--info-blue); font-size: 1.4rem;">Rp 0</div>
-                            <i class="fa-solid fa-arrow-trend-up" style="color: var(--info-blue); opacity: 0.1;"></i>
+                            <h4>Estimasi Pemasukan (AR)</h4>
+                            <div class="val" id="ov-total-ar" style="color: var(--info-blue);">Rp 0</div>
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
                         </div>
                         <div class="summary-card border-l-red">
-                            <h4>Total Pengeluaran</h4>
-                            <div class="val" id="pc-expense" style="color: var(--primary-red); font-size: 1.4rem;">Rp 0</div>
-                            <i class="fa-solid fa-receipt" style="color: var(--primary-red); opacity: 0.1;"></i>
-                        </div>
-                    </div>
-
-                    <div class="section-label">
-                        <span>Status Penagihan (AR)</span>
-                    </div>
-                    <div class="summary-grid">
-                        <div class="summary-card border-l-red">
-                            <h4>Total Piutang (AR)</h4>
-                            <div class="val" id="ov-total-ar">Rp 0</div>
-                            <i class="fa-solid fa-money-bill-wave"></i>
-                        </div>
-                        <div class="summary-card border-l-orange">
-                            <h4>Invoice Overdue</h4>
+                            <h4>Tagihan Overdue</h4>
                             <div class="val" id="ov-overdue-count" style="color: #D9232D;">0</div>
                             <i class="fa-solid fa-triangle-exclamation"></i>
-                        </div>
-                        <div class="summary-card border-l-red">
-                            <h4>Total Pelanggan</h4>
-                            <div class="val" id="ov-total-cust">0</div>
-                            <i class="fa-solid fa-users"></i>
                         </div>
                     </div>
 
                     <div class="card">
-                        <h3 style="margin-bottom: 15px;">Aktivitas Invoice Terbaru</h3>
-                        <ul id="activity-log" style="list-style: none; padding: 0;">
-                            <li style="padding: 10px 0; color: #6b7280;">Memuat aktivitas...</li>
-                        </ul>
+                        <div class="section-label">
+                            <span><i class="fa-solid fa-chart-simple"></i> Analitik Arus Kas</span>
+                        </div>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="financeChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
                 <div id="panel-customers" class="tool-panel">
                     <div class="panel-header">
                         <div class="panel-title">
-                            <h2>Data Pelanggan</h2>
-                            <p>Database perusahaan yang membeli produk Zeppelin.</p>
+                            <h2>Database Pelanggan</h2>
+                            <p>Manajemen data mitra bisnis dan kontak person.</p>
                         </div>
                         <div class="header-actions">
-                            <button class="btn-excel" onclick="downloadExcel('customer')"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
-                            <button class="btn-primary" onclick="openModal('customer')"><i class="fa-solid fa-plus"></i> Pelanggan Baru</button>
+                            <button class="btn-excel" onclick="downloadExcel('customer')"><i class="fa-solid fa-file-excel"></i> Export</button>
+                            <button class="btn-primary" onclick="openModal('customer', null)"><i class="fa-solid fa-plus"></i> Pelanggan</button>
                         </div>
                     </div>
                     <div class="card">
@@ -246,8 +239,8 @@
                                     <tr>
                                         <th>Nama Perusahaan</th>
                                         <th>PIC / Kontak</th>
-                                        <th>Telepon</th>
-                                        <th>Total Pembelian</th>
+                                        <th>NPWP / Legalitas</th>
+                                        <th>Total Transaksi</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -263,10 +256,10 @@
                     <div class="panel-header">
                         <div class="panel-title">
                             <h2>Monitoring Invoice</h2>
-                            <p>Pantau tagihan customer yang mendekati jatuh tempo.</p>
+                            <p>Pantau status tagihan dan pembayaran (AR Management).</p>
                         </div>
                         <div class="header-actions">
-                            <button class="btn-excel" onclick="downloadExcel('invoice')"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                            <button class="btn-excel" onclick="downloadExcel('invoice')"><i class="fa-solid fa-file-excel"></i> Export</button>
                             <button class="btn-primary" onclick="openModal('invoice')"><i class="fa-solid fa-plus"></i> Buat Invoice</button>
                         </div>
                     </div>
@@ -277,9 +270,9 @@
                                     <tr>
                                         <th>No. Invoice</th>
                                         <th>Customer</th>
-                                        <th>Jatuh Tempo</th>
-                                        <th>Status</th>
+                                        <th>Due Date</th>
                                         <th>Nominal</th>
+                                        <th>Status Pembayaran</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -298,7 +291,7 @@
                             <p>Persetujuan klaim biaya operasional karyawan.</p>
                         </div>
                         <div class="header-actions">
-                            <button class="btn-excel" onclick="downloadExcel('reimburse')"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                            <button class="btn-excel" onclick="downloadExcel('reimburse')"><i class="fa-solid fa-file-excel"></i> Export</button>
                             <button class="btn-primary" onclick="openModal('reimburse')"><i class="fa-solid fa-plus"></i> Klaim Baru</button>
                         </div>
                     </div>
@@ -311,7 +304,7 @@
                                         <th>Karyawan</th>
                                         <th>Keperluan</th>
                                         <th>Nominal</th>
-                                        <th>Status</th>
+                                        <th>Status Approval</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -327,7 +320,7 @@
                     <div class="panel-header">
                         <div class="panel-title">
                             <h2>Kalkulator Pajak (PPN 11%)</h2>
-                            <p>Hitung DPP dan PPN secara instan.</p>
+                            <p>Hitung DPP dan PPN secara presisi untuk faktur pajak.</p>
                         </div>
                     </div>
                     <div class="card" style="max-width: 600px; margin: 0 auto;">
@@ -352,7 +345,7 @@
                             </div>
                             <hr style="border: 0; border-top: 2px solid #fdba74; margin: 10px 0;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="color: #9a3412; font-weight: bold;">TOTAL BAYAR</span>
+                                <span style="color: #9a3412; font-weight: bold;">TOTAL TAGIHAN</span>
                                 <span id="res-total" style="font-size: 1.5rem; font-weight: 900; color: #1f2937;">Rp 0</span>
                             </div>
                         </div>
@@ -366,17 +359,27 @@
     <div id="modal-customer" class="modal-backdrop">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Tambah Pelanggan Baru</h3>
+                <h3 id="modal-title-cust">Tambah Pelanggan Baru</h3>
                 <button onclick="closeModals()" style="background:none; border:none; cursor:pointer; font-size:1.2rem; color: #6b7280;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label>Nama Perusahaan (PT/CV/Toko)</label>
-                    <input type="text" id="cust-name" placeholder="Contoh: PT. Maju Mundur">
+                    <label>Nama Perusahaan (Sesuai NPWP)</label>
+                    <input type="text" id="cust-name" placeholder="Contoh: PT. Maju Mundur Sejahtera">
                 </div>
                 <div class="form-group">
-                    <label>Nama PIC (Kontak)</label>
-                    <input type="text" id="cust-pic" placeholder="Nama orang yang bisa dihubungi">
+                    <label>NPWP (Opsional)</label>
+                    <input type="text" id="cust-npwp" placeholder="00.000.000.0-000.000">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Nama PIC</label>
+                        <input type="text" id="cust-pic">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Kontak</label>
+                        <input type="email" id="cust-email">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Nomor Telepon/WA</label>
@@ -384,9 +387,9 @@
                 </div>
                 <div class="form-group">
                     <label>Alamat Lengkap</label>
-                    <textarea id="cust-addr" rows="2" style="width:100%; border:1px solid #d1d5db; padding:12px; border-radius:8px;"></textarea>
+                    <textarea id="cust-addr" rows="2"></textarea>
                 </div>
-                <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="saveCustomer()">Simpan Data</button>
+                <button id="btn-save-cust" class="btn-primary" style="width: 100%; justify-content: center;" onclick="saveCustomer()">Simpan Data Pelanggan</button>
             </div>
         </div>
     </div>
@@ -416,7 +419,7 @@
                     <label>Total Tagihan (Rp)</label>
                     <input type="number" id="inv-amount">
                 </div>
-                <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="saveInvoice()">Simpan Invoice</button>
+                <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="saveInvoice()">Terbitkan Invoice</button>
             </div>
         </div>
     </div>
@@ -424,7 +427,7 @@
     <div id="modal-reimburse" class="modal-backdrop">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Buat Klaim Reimbursement</h3>
+                <h3>Form Klaim Reimbursement</h3>
                 <button onclick="closeModals()" style="background:none; border:none; cursor:pointer; font-size:1.2rem; color: #6b7280;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
@@ -433,7 +436,7 @@
                     <input type="text" id="reim-name" placeholder="Nama pengaju...">
                 </div>
                 <div class="form-group">
-                    <label>Keperluan</label>
+                    <label>Deskripsi Keperluan</label>
                     <input type="text" id="reim-desc" placeholder="Contoh: Bensin Sales Visit">
                 </div>
                 <div class="form-group">
@@ -464,10 +467,68 @@
         let customersData = {};
         let invoicesData = {};
         let reimburseData = {};
+        let pettyCashData = {};
+        let chartInstance = null;
+        
+        // VARIABLE PENTING UNTUK EDIT
+        let currentEditingId = null;
 
-        // --- MODAL FUNCTIONS ---
-        function openModal(type) {
+        // --- UTILS FORMATTER ---
+        function formatRupiah(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+        }
+
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-triangle-exclamation';
+            const color = type === 'success' ? 'var(--success-green)' : 'var(--primary-red)';
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} toast-icon" style="color:${color}"></i>
+                <span class="toast-msg">${message}</span>
+            `;
+            container.appendChild(toast);
+            void toast.offsetWidth;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- MODAL FUNCTIONS (UPDATED FOR EDITING) ---
+        function openModal(type, editId = null) {
             document.getElementById('modal-'+type).style.display = 'flex';
+            
+            // Logic khusus Customer (Bisa Add / Bisa Edit)
+            if(type === 'customer') {
+                if (editId) {
+                    // MODE EDIT
+                    currentEditingId = editId;
+                    const data = customersData[editId];
+                    document.getElementById('modal-title-cust').textContent = "Edit / Detail Pelanggan";
+                    document.getElementById('btn-save-cust').textContent = "Update Perubahan";
+                    
+                    // Isi form dengan data lama
+                    document.getElementById('cust-name').value = data.name || '';
+                    document.getElementById('cust-npwp').value = data.npwp || '';
+                    document.getElementById('cust-pic').value = data.pic || '';
+                    document.getElementById('cust-email').value = data.email || '';
+                    document.getElementById('cust-phone').value = data.phone || '';
+                    document.getElementById('cust-addr').value = data.addr || '';
+                } else {
+                    // MODE ADD NEW
+                    currentEditingId = null;
+                    document.getElementById('modal-title-cust').textContent = "Tambah Pelanggan Baru";
+                    document.getElementById('btn-save-cust').textContent = "Simpan Data Pelanggan";
+                    
+                    // Kosongkan form
+                    ['cust-name','cust-npwp','cust-pic','cust-email','cust-phone','cust-addr'].forEach(id => document.getElementById(id).value = '');
+                }
+            }
+
             if(type === 'invoice') updateCustomerDropdown();
         }
 
@@ -490,11 +551,10 @@
             document.getElementById('panel-' + tabName).classList.add('active');
             
             const menus = document.querySelectorAll('.sidebar .menu-item');
-            if(tabName === 'overview') menus[0].classList.add('active');
-            if(tabName === 'customers') menus[1].classList.add('active');
-            if(tabName === 'invoice') menus[2].classList.add('active');
-            if(tabName === 'reimburse') menus[3].classList.add('active');
-            if(tabName === 'calculator') menus[4].classList.add('active');
+            const map = { 'overview': 0, 'customers': 1, 'invoice': 2, 'reimburse': 3, 'calculator': 4 };
+            if(map[tabName] !== undefined) menus[map[tabName]].classList.add('active');
+            
+            if(tabName === 'overview') renderChart();
         }
 
         // --- AUTH & LOAD DATA ---
@@ -505,11 +565,11 @@
                     const isFinance = (data.departemen && (data.departemen.includes('Finance') || data.departemen.includes('Accounting') || user.email === 'root@zeppelin.center'));
                     
                     if(isFinance) {
-                        document.getElementById('user-display').textContent = data.nama || user.email;
+                        document.getElementById('user-display').textContent = data.nama || "Finance Officer";
                         document.getElementById('loading-screen').classList.add('fade-out');
                         initData();
                     } else {
-                        alert("Akses Ditolak. Khusus tim Finance.");
+                        alert("Akses Terbatas.");
                         window.location.href = 'dashboard.html';
                     }
                 });
@@ -519,65 +579,26 @@
         });
 
         function initData() {
-            // 1. Load Customers
-            db.ref('finance_customers').on('value', (snap) => {
-                customersData = snap.val() || {};
-                renderCustomerTable();
-                updateCustomerDropdown();
-                updateOverview();
-            });
-
-            // 2. Load Invoices
-            db.ref('finance_invoices').on('value', (snap) => {
-                invoicesData = snap.val() || {};
-                renderInvoiceTable();
-                renderCustomerTable(); // Update totals in customer table
-                updateOverview();
-            });
-
-            // 3. Load Reimbursement
-            db.ref('finance_reimbursement').on('value', (snap) => {
-                reimburseData = snap.val() || {};
-                renderReimburseTable();
-            });
-
-            // 4. INTEGRASI: Load Petty Cash Data
-            db.ref('finance_pettycash').on('value', (snap) => {
-                const pcData = snap.val() || {};
-                calculatePettyCash(pcData);
+            const promises = [
+                new Promise(resolve => db.ref('finance_customers').on('value', snap => { customersData = snap.val() || {}; renderCustomerTable(); updateOverview(); resolve(); })),
+                new Promise(resolve => db.ref('finance_invoices').on('value', snap => { invoicesData = snap.val() || {}; renderInvoiceTable(); renderCustomerTable(); updateOverview(); resolve(); })),
+                new Promise(resolve => db.ref('finance_reimbursement').on('value', snap => { reimburseData = snap.val() || {}; renderReimburseTable(); resolve(); })),
+                new Promise(resolve => db.ref('finance_pettycash').on('value', snap => { pettyCashData = snap.val() || {}; updateOverview(); resolve(); }))
+            ];
+            
+            Promise.all(promises).then(() => {
+                renderChart();
             });
         }
 
-        // --- INTEGRASI LOGIC: PETTY CASH CALCULATION ---
-        function calculatePettyCash(data) {
-            let totalInc = 0;
-            let totalExp = 0;
-
-            Object.values(data).forEach(item => {
-                const amt = parseInt(item.amount || 0);
-                if (item.type === 'income') {
-                    totalInc += amt;
-                } else {
-                    // Assume 'expense' or undefined is expense
-                    totalExp += amt;
-                }
-            });
-
-            const balance = totalInc - totalExp;
-
-            // Update DOM di Finance Dashboard
-            document.getElementById('pc-balance').textContent = "Rp " + balance.toLocaleString('id-ID');
-            document.getElementById('pc-income').textContent = "Rp " + totalInc.toLocaleString('id-ID');
-            document.getElementById('pc-expense').textContent = "Rp " + totalExp.toLocaleString('id-ID');
-        }
-
-        // --- RENDER TABLES ---
+        // --- RENDER FUNCTIONS ---
+        
         function renderCustomerTable() {
             const tbody = document.getElementById('customer-table');
             tbody.innerHTML = '';
             
             if(Object.keys(customersData).length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" align="center">Belum ada pelanggan.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" align="center" style="padding: 20px;">Belum ada data pelanggan.</td></tr>';
                 return;
             }
 
@@ -591,10 +612,16 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="font-weight:600;">${c.name}</td>
-                    <td>${c.pic || '-'}</td>
-                    <td>${c.phone || '-'}</td>
-                    <td>Rp ${totalPurchase.toLocaleString('id-ID')}</td>
-                    <td><button onclick="deleteCustomer('${key}')" style="color:#ef4444; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
+                    <td>
+                        <div style="font-weight:bold;">${c.pic || '-'}</div>
+                        <div style="font-size:0.8rem; color:#6b7280;">${c.email || '-'}</div>
+                    </td>
+                    <td>${c.npwp || '-'}</td>
+                    <td style="color:var(--text-dark); font-weight:bold;">${formatRupiah(totalPurchase)}</td>
+                    <td>
+                        <button onclick="openModal('customer', '${key}')" title="Edit / Detail" style="color:var(--info-blue); border:none; background:none; cursor:pointer; padding:5px; margin-right:5px;"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="deleteCustomer('${key}')" title="Hapus" style="color:#ef4444; border:none; background:none; cursor:pointer; padding:5px;"><i class="fa-solid fa-trash"></i></button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -605,29 +632,48 @@
             tbody.innerHTML = '';
             
             if(Object.keys(invoicesData).length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" align="center">Tidak ada invoice.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" align="center" style="padding: 20px;">Tidak ada invoice aktif.</td></tr>';
                 return;
             }
 
-            Object.keys(invoicesData).forEach(key => {
+            const sortedKeys = Object.keys(invoicesData).sort((a,b) => new Date(invoicesData[b].timestamp) - new Date(invoicesData[a].timestamp));
+
+            sortedKeys.forEach(key => {
                 const item = invoicesData[key];
                 const custName = customersData[item.customerId] ? customersData[item.customerId].name : 'Unknown';
-                
-                const today = new Date();
+                const isPaid = item.status === 'Paid';
                 const due = new Date(item.dueDate);
-                const diffTime = due - today;
+                const diffTime = due - new Date();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                let statusHtml = `<span style="color:#16a34a; font-weight:500;">${diffDays} Hari Lagi</span>`;
-                if(diffDays < 0) statusHtml = `<span class="status-badge badge-overdue">Telat ${Math.abs(diffDays)} Hari</span>`;
+                
+                let statusHtml = '';
+                let actionHtml = '';
+
+                if(isPaid) {
+                    statusHtml = `<span class="status-badge badge-paid"><i class="fa-solid fa-check"></i> LUNAS</span>`;
+                    actionHtml = `<span style="font-size:0.8rem; color:#10b981;">Lunas: ${new Date(item.paidDate).toLocaleDateString()}</span>`;
+                } else {
+                    if(diffDays < 0) {
+                        statusHtml = `<span class="status-badge badge-overdue">Telat ${Math.abs(diffDays)} Hari</span>`;
+                    } else {
+                        statusHtml = `<span style="color:#d97706; font-weight:600; font-size:0.85rem;">Jatuh Tempo: ${diffDays} Hari</span>`;
+                    }
+                    actionHtml = `
+                        <button title="Tandai Lunas" onclick="markInvoicePaid('${key}')" style="color:#10b981; border:none; background:#ecfdf5; padding:6px 10px; border-radius:4px; cursor:pointer; font-weight:bold; margin-right:5px; font-size:0.8rem;">
+                            <i class="fa-solid fa-money-bill-wave"></i> Bayar
+                        </button>
+                        <button title="Hapus Invoice" onclick="deleteInvoice('${key}')" style="color:#ef4444; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                    `;
+                }
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-family:monospace; font-weight:600;">${item.no}</td>
+                    <td style="font-family:monospace; font-weight:700; color:var(--primary-red);">${item.no}</td>
                     <td>${custName}</td>
                     <td>${due.toLocaleDateString('id-ID')}</td>
+                    <td style="font-weight:bold;">${formatRupiah(parseInt(item.amount))}</td>
                     <td>${statusHtml}</td>
-                    <td style="font-weight:bold;">Rp ${parseInt(item.amount).toLocaleString('id-ID')}</td>
-                    <td><button onclick="deleteInvoice('${key}')" style="color:#9ca3af; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
+                    <td>${actionHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -638,11 +684,12 @@
             tbody.innerHTML = '';
             
             if(Object.keys(reimburseData).length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" align="center">Tidak ada data.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" align="center">Tidak ada pengajuan.</td></tr>';
                 return;
             }
 
-            Object.keys(reimburseData).forEach(key => {
+            const sortedKeys = Object.keys(reimburseData).sort((a,b) => new Date(reimburseData[b].date) - new Date(reimburseData[a].date));
+            sortedKeys.forEach(key => {
                 const item = reimburseData[key];
                 let badgeClass = 'badge-pending';
                 if(item.status === 'Approved') badgeClass = 'badge-approved';
@@ -651,19 +698,124 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${new Date(item.date).toLocaleDateString('id-ID')}</td>
-                    <td>${item.employee}</td>
+                    <td style="font-weight:600;">${item.employee}</td>
                     <td>${item.desc}</td>
-                    <td style="font-weight:bold;">Rp ${parseInt(item.amount).toLocaleString('id-ID')}</td>
+                    <td style="font-weight:bold;">${formatRupiah(parseInt(item.amount))}</td>
                     <td><span class="status-badge ${badgeClass}">${item.status}</span></td>
                     <td>
                         ${item.status === 'Pending' ? `
-                        <button onclick="approveReim('${key}')" style="color:#16a34a; margin-right:10px; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-check"></i></button>
-                        <button onclick="rejectReim('${key}')" style="color:#dc2626; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+                        <button onclick="approveReim('${key}')" title="Approve" style="color:#16a34a; margin-right:10px; border:none; background:none; cursor:pointer; font-size:1.1rem;"><i class="fa-solid fa-check-circle"></i></button>
+                        <button onclick="rejectReim('${key}')" title="Reject" style="color:#dc2626; border:none; background:none; cursor:pointer; font-size:1.1rem;"><i class="fa-solid fa-circle-xmark"></i></button>
                         ` : '-'}
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('financeChart');
+            if(!ctx) return;
+            
+            let pcIncome = 0;
+            let pcExpense = 0;
+            let paidInvoiceTotal = 0;
+
+            Object.values(pettyCashData).forEach(item => {
+                const amt = parseInt(item.amount || 0);
+                if (item.type === 'income') pcIncome += amt;
+                else pcExpense += amt;
+            });
+
+            Object.values(invoicesData).forEach(inv => {
+                if(inv.status === 'Paid') paidInvoiceTotal += parseInt(inv.amount || 0);
+            });
+
+            const totalIncome = pcIncome + paidInvoiceTotal;
+
+            if(chartInstance) chartInstance.destroy();
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pemasukan (Petty Cash + Invoice)', 'Pengeluaran Operasional'],
+                    datasets: [{
+                        label: 'Arus Kas (Rp)',
+                        data: [totalIncome, pcExpense],
+                        backgroundColor: ['rgba(16, 185, 129, 0.7)', 'rgba(217, 35, 45, 0.7)'],
+                        borderColor: ['rgb(16, 185, 129)', 'rgb(217, 35, 45)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { color: '#f3f4f6' } } }
+                }
+            });
+        }
+
+        function updateOverview() {
+            let pcIncome = 0;
+            let pcExpense = 0;
+            Object.values(pettyCashData).forEach(item => {
+                const amt = parseInt(item.amount || 0);
+                if (item.type === 'income') pcIncome += amt;
+                else pcExpense += amt;
+            });
+            const pcBalance = pcIncome - pcExpense;
+
+            let totalAR = 0;
+            let overdueCount = 0;
+            const today = new Date();
+
+            Object.values(invoicesData).forEach(inv => {
+                if(inv.status !== 'Paid') {
+                    totalAR += parseInt(inv.amount || 0);
+                    if(new Date(inv.dueDate) < today) overdueCount++;
+                }
+            });
+
+            document.getElementById('pc-balance').textContent = formatRupiah(pcBalance);
+            document.getElementById('ov-total-ar').textContent = formatRupiah(totalAR);
+            document.getElementById('ov-overdue-count').textContent = overdueCount;
+        }
+
+        // --- ACTIONS (SAVE / UPDATE) ---
+        function saveCustomer() {
+            const name = document.getElementById('cust-name').value;
+            if(!name) return showNotification("Nama Perusahaan wajib diisi!", "error");
+            
+            const payload = {
+                name: name,
+                npwp: document.getElementById('cust-npwp').value || '-',
+                pic: document.getElementById('cust-pic').value,
+                email: document.getElementById('cust-email').value,
+                phone: document.getElementById('cust-phone').value,
+                addr: document.getElementById('cust-addr').value
+            };
+
+            if (currentEditingId) {
+                // UPDATE EXISTING
+                db.ref('finance_customers/' + currentEditingId).update(payload).then(() => {
+                    showNotification("Data pelanggan berhasil diperbarui");
+                    closeModals();
+                });
+            } else {
+                // CREATE NEW
+                payload.createdAt = new Date().toISOString();
+                db.ref('finance_customers').push(payload).then(() => {
+                    showNotification("Pelanggan baru berhasil ditambahkan");
+                    closeModals();
+                });
+            }
+        }
+
+        function deleteCustomer(id) {
+            if(confirm("Hapus data pelanggan ini? Data invoice terkait akan kehilangan referensi nama.")) {
+                db.ref('finance_customers/'+id).remove().then(() => showNotification("Pelanggan dihapus"));
+            }
         }
 
         function updateCustomerDropdown() {
@@ -677,86 +829,49 @@
             });
         }
 
-        function updateOverview() {
-            let totalAR = 0;
-            let overdueCount = 0;
-            const today = new Date();
-
-            Object.values(invoicesData).forEach(inv => {
-                totalAR += parseInt(inv.amount || 0);
-                if(new Date(inv.dueDate) < today) overdueCount++;
-            });
-
-            document.getElementById('ov-total-ar').textContent = "Rp " + totalAR.toLocaleString('id-ID');
-            document.getElementById('ov-overdue-count').textContent = overdueCount;
-            document.getElementById('ov-total-cust').textContent = Object.keys(customersData).length;
-            
-            const logEl = document.getElementById('activity-log');
-            logEl.innerHTML = '';
-            const recent = Object.values(invoicesData).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,3);
-            if(recent.length > 0) {
-                recent.forEach(inv => {
-                    const cName = customersData[inv.customerId] ? customersData[inv.customerId].name : 'Customer';
-                    const li = document.createElement('li');
-                    li.innerHTML = `<i class="fa-solid fa-circle-plus" style="color:var(--primary-red);"></i> Inv <b>${inv.no}</b> - ${cName}`;
-                    li.style.borderBottom = '1px solid #eee'; li.style.padding = '8px 0';
-                    logEl.appendChild(li);
-                });
-            } else {
-                logEl.innerHTML = '<li>Belum ada aktivitas.</li>';
-            }
-        }
-
-        // --- ACTIONS ---
-        function saveCustomer() {
-            const name = document.getElementById('cust-name').value;
-            if(!name) return alert("Nama wajib diisi");
-            
-            db.ref('finance_customers').push({
-                name: name,
-                pic: document.getElementById('cust-pic').value,
-                phone: document.getElementById('cust-phone').value,
-                addr: document.getElementById('cust-addr').value,
-                createdAt: new Date().toISOString()
-            }).then(() => {
-                closeModals();
-                document.getElementById('cust-name').value = '';
-                document.getElementById('cust-pic').value = '';
-                document.getElementById('cust-phone').value = '';
-                document.getElementById('cust-addr').value = '';
-            });
-        }
-
-        function deleteCustomer(id) {
-            if(confirm("Hapus customer ini?")) db.ref('finance_customers/'+id).remove();
-        }
-
         function saveInvoice() {
             const no = document.getElementById('inv-no').value;
             const custId = document.getElementById('inv-cust-select').value;
-            if(!no || !custId) return alert("Lengkapi data invoice");
+            const amt = document.getElementById('inv-amount').value;
+            
+            if(!no || !custId || !amt) return showNotification("Mohon lengkapi seluruh data invoice", "error");
 
-            db.ref('finance_invoices').push({
+            const newInv = {
                 no: no,
                 customerId: custId,
                 dueDate: document.getElementById('inv-date').value,
-                amount: document.getElementById('inv-amount').value,
+                amount: amt,
+                status: 'Unpaid',
                 timestamp: new Date().toISOString()
-            }).then(() => {
+            };
+
+            db.ref('finance_invoices').push(newInv).then(() => {
+                showNotification("Invoice berhasil diterbitkan");
                 closeModals();
                 document.getElementById('inv-no').value = '';
                 document.getElementById('inv-amount').value = '';
             });
         }
 
+        function markInvoicePaid(id) {
+            if(confirm("Konfirmasi pembayaran invoice ini diterima?")) {
+                db.ref('finance_invoices/'+id).update({
+                    status: 'Paid',
+                    paidDate: new Date().toISOString()
+                }).then(() => showNotification("Pembayaran invoice dicatat", "success"));
+            }
+        }
+
         function deleteInvoice(id) {
-            if(confirm("Hapus invoice ini?")) db.ref('finance_invoices/'+id).remove();
+            if(confirm("Batalkan/Hapus invoice ini?")) {
+                db.ref('finance_invoices/'+id).remove().then(() => showNotification("Invoice dihapus"));
+            }
         }
 
         function saveReimburse() {
             const name = document.getElementById('reim-name').value;
             const amt = document.getElementById('reim-amount').value;
-            if(!name || !amt) return alert("Lengkapi data reimbursement");
+            if(!name || !amt) return showNotification("Data klaim tidak lengkap", "error");
 
             db.ref('finance_reimbursement').push({
                 employee: name,
@@ -765,6 +880,7 @@
                 date: new Date().toISOString(),
                 status: 'Pending'
             }).then(() => {
+                showNotification("Klaim berhasil diajukan");
                 closeModals();
                 document.getElementById('reim-name').value = '';
                 document.getElementById('reim-desc').value = '';
@@ -772,10 +888,15 @@
             });
         }
 
-        function approveReim(id) { db.ref('finance_reimbursement/'+id).update({status: 'Approved'}); }
-        function rejectReim(id) { db.ref('finance_reimbursement/'+id).update({status: 'Rejected'}); }
+        function approveReim(id) { 
+            db.ref('finance_reimbursement/'+id).update({status: 'Approved'})
+            .then(() => showNotification("Klaim disetujui")); 
+        }
+        function rejectReim(id) { 
+            db.ref('finance_reimbursement/'+id).update({status: 'Rejected'})
+            .then(() => showNotification("Klaim ditolak", "error")); 
+        }
 
-        // --- UTILS ---
         function calculateTax() {
             const base = parseFloat(document.getElementById('calc-base').value) || 0;
             const isInc = document.getElementById('calc-include-ppn').checked;
@@ -786,32 +907,37 @@
             } else {
                 dpp = base; ppn = base * 0.11; total = base + ppn;
             }
-            document.getElementById('res-dpp').textContent = "Rp " + dpp.toLocaleString('id-ID', {maximumFractionDigits:0});
-            document.getElementById('res-ppn').textContent = "Rp " + ppn.toLocaleString('id-ID', {maximumFractionDigits:0});
-            document.getElementById('res-total').textContent = "Rp " + total.toLocaleString('id-ID', {maximumFractionDigits:0});
+            document.getElementById('res-dpp').textContent = formatRupiah(dpp);
+            document.getElementById('res-ppn').textContent = formatRupiah(ppn);
+            document.getElementById('res-total').textContent = formatRupiah(total);
         }
 
         function downloadExcel(type) {
             let data = [];
             let name = "";
+            const todayStr = new Date().toISOString().split('T')[0];
+
             if(type === 'customer') {
-                name = "Data_Pelanggan";
-                Object.values(customersData).forEach(c => data.push({"Nama":c.name, "PIC":c.pic, "Telp":c.phone, "Alamat":c.addr}));
+                name = "Database_Pelanggan_" + todayStr;
+                Object.values(customersData).forEach(c => data.push({ "Nama Perusahaan": c.name, "NPWP": c.npwp, "PIC": c.pic, "Email": c.email, "Telepon": c.phone, "Alamat": c.addr }));
             } else if(type === 'invoice') {
-                name = "Data_Invoice";
+                name = "Laporan_Invoice_" + todayStr;
                 Object.values(invoicesData).forEach(i => {
                     const cName = customersData[i.customerId] ? customersData[i.customerId].name : '-';
-                    data.push({"No Inv":i.no, "Customer":cName, "Jatuh Tempo":i.dueDate, "Nominal":i.amount});
+                    data.push({ "No Invoice": i.no, "Customer": cName, "Tgl Jatuh Tempo": i.dueDate, "Nominal": parseInt(i.amount), "Status": i.status === 'Paid' ? 'Lunas' : 'Belum Lunas' });
                 });
             } else if(type === 'reimburse') {
-                name = "Data_Reimburse";
-                Object.values(reimburseData).forEach(r => data.push({"Tanggal":r.date.split('T')[0], "Karyawan":r.employee, "Keperluan":r.desc, "Nominal":r.amount, "Status":r.status}));
+                name = "Laporan_Reimburse_" + todayStr;
+                Object.values(reimburseData).forEach(r => data.push({ "Tanggal": r.date.split('T')[0], "Karyawan": r.employee, "Keperluan": r.desc, "Nominal": parseInt(r.amount), "Status": r.status }));
             }
-            if(data.length === 0) return alert("Tidak ada data");
+
+            if(data.length === 0) return showNotification("Tidak ada data untuk diekspor", "error");
+            
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+            XLSX.utils.book_append_sheet(wb, ws, "Data");
             XLSX.writeFile(wb, name+".xlsx");
+            showNotification("Download Excel dimulai...");
         }
     </script>
 </body>
