@@ -9,7 +9,7 @@
     
     <style>
         :root {
-            /* KEMBALI KE WARNA ASLI */
+            /* WARNA ASLI ZEPPELIN */
             --primary-color: #D9232D;
             --accent-color: #F37321;
             --success-color: #10B981;
@@ -32,7 +32,7 @@
             font-family: 'Inter', sans-serif;
             min-height: 100vh;
             min-height: 100dvh;
-            /* BACKGROUND ASLI */
+            /* BACKGROUND GRADASI ASLI */
             background: linear-gradient(-45deg, #680404, #D9232D, #F37321, #1a0507);
             background-size: 300% 300%;
             animation: gradientBG 12s ease infinite;
@@ -46,7 +46,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Animasi Salju Background (Tetap Dipertahankan) */
+        /* Container Animasi Salju */
         .snow-container {
             position: absolute;
             top: 0;
@@ -430,7 +430,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        // Import 'onAuthStateChanged' ditambahkan
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
@@ -447,6 +448,22 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app); 
+
+        // --- OBSERVER STATUS LOGIN ---
+        // Kode ini mengecek apakah ada user yang 'nyangkut' (masih login) di browser.
+        // Jika ada, langsung lempar ke halaman dashboard.
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Session ditemukan: ", user.email);
+                if (user.email === 'root@zeppelin.center') {
+                    window.location.href = 'index.html';
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            } else {
+                console.log("Tidak ada session aktif. Menampilkan form login.");
+            }
+        });
 
         function showMessage(elementId, message, isError = true) {
             const msgBox = document.getElementById(elementId);
