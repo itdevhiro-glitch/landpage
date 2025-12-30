@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Workspace - Zeppelin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-red: #D9232D;
+            --primary-orange: #F37321;
+            --bg-light: #f3f4f6;
+            --text-dark: #1f2937;
+            --text-grey: #6b7280;
+            --excel-green: #107c41;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; }
+        .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 0 24px; }
+        
+        .navbar { background-color: #ffffff; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; }
+        .nav-logo { font-size: 1.4rem; font-weight: 900; color: var(--primary-red); text-decoration: none; display: flex; align-items: center; }
+        .nav-logo i { color: var(--primary-orange); margin-right: 10px; }
+        .nav-back { color: var(--text-grey); text-decoration: none; font-weight: 500; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+        .nav-back:hover { color: var(--primary-red); }
+
+        .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(135deg, #D9232D 0%, #F37321 100%); display: flex; justify-content: center; align-items: center; flex-direction: column; color: white; z-index: 9999; transition: opacity 0.5s; }
+        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255, 255, 255, 0.3); border-top-color: #ffffff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+
+        .workspace-grid { display: grid; grid-template-columns: 260px 1fr; gap: 32px; margin-top: 30px; min-height: 80vh; }
+        
+        .sidebar { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 24px 16px; height: fit-content; position: sticky; top: 100px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .sidebar-title { font-size: 0.75rem; text-transform: uppercase; color: #9ca3af; font-weight: 800; margin-bottom: 12px; margin-left: 10px; letter-spacing: 0.5px; }
+        
+        .menu-item { display: flex; align-items: center; padding: 12px 16px; color: #4b5563; text-decoration: none; border-radius: 10px; margin-bottom: 6px; transition: all 0.2s; cursor: pointer; font-weight: 500; font-size: 0.95rem; }
+        .menu-item:hover { background-color: #fff1f2; color: var(--primary-red); }
+        .menu-item.active { background: linear-gradient(90deg, #D9232D 0%, #b91c1c 100%); color: white; box-shadow: 0 4px 10px rgba(217, 35, 45, 0.3); font-weight: 600; }
+        .menu-item i { width: 24px; margin-right: 12px; text-align: center; font-size: 1.1rem; }
+
+        .tool-panel { display: none; animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .tool-panel.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 15px; }
+        .panel-title h2 { font-size: 1.8rem; color: #111827; font-weight: 900; letter-spacing: -0.5px; }
+        .panel-title p { color: #6b7280; font-size: 1rem; margin-top: 4px; }
+        
+        .header-actions { display: flex; gap: 10px; }
+
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .summary-card { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; position: relative; overflow: hidden; }
+        .summary-card h4 { font-size: 0.9rem; color: #6b7280; margin-bottom: 8px; font-weight: 500; }
+        .summary-card .val { font-size: 1.8rem; font-weight: 800; color: #111827; }
+        .summary-card i { position: absolute; right: 20px; bottom: 20px; font-size: 3rem; opacity: 0.05; color: var(--primary-red); }
+        .border-l-red { border-left: 4px solid var(--primary-red); }
+        .border-l-orange { border-left: 4px solid var(--primary-orange); }
+
+        .card { background: white; border-radius: 16px; border: 1px solid #e5e7eb; padding: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 24px; }
+        
+        .btn-primary { background-color: var(--primary-red); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 6px rgba(217, 35, 45, 0.2); text-decoration: none; }
+        .btn-primary:hover { background-color: #b91c1c; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(217, 35, 45, 0.3); }
+
+        .btn-excel { background-color: var(--excel-green); color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; text-decoration: none; }
+        .btn-excel:hover { background-color: #0d6535; transform: translateY(-2px); }
+        
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { text-align: left; padding: 16px; background: #fff7ed; font-size: 0.85rem; color: #9a3412; font-weight: 700; border-bottom: 2px solid #ffedd5; text-transform: uppercase; }
+        td { padding: 16px; border-bottom: 1px solid #f3f4f6; color: #374151; font-size: 0.95rem; vertical-align: middle; }
+        tr:hover { background-color: #fff1f2; }
+
+        .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .badge-pending { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+        .badge-approved { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
+        .badge-rejected { background: #fef2f2; color: #991b1b; border: 1px solid #fee2e2; }
+        .badge-overdue { background: #fee2e2; color: #991b1b; font-weight: 800; animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+        .modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: rgba(0,0,0,0.6); z-index: 2000; display: none; backdrop-filter: blur(3px); opacity: 0; transition: opacity 0.3s; }
+        .modal-content { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); background: white; padding: 0; border-radius: 16px; width: 90%; max-width: 500px; z-index: 2001; display: none; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); transition: all 0.3s; }
+        .visible { display: block; opacity: 1; }
+        .modal-content.visible { transform: translate(-50%, -50%) scale(1); }
+
+        .modal-header { padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; background: #f9fafb; border-radius: 16px 16px 0 0; }
+        .modal-header h3 { font-size: 1.1rem; color: #111827; }
+        .modal-body { padding: 24px; max-height: 70vh; overflow-y: auto; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #374151; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; transition: border 0.2s; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary-red); ring: 2px solid #fecaca; }
+
+        @media (max-width: 768px) {
+            .workspace-grid { grid-template-columns: 1fr; margin-top: 15px; gap: 20px; }
+            .sidebar { position: static; display: flex; gap: 10px; overflow-x: auto; padding: 15px; margin-bottom: 0; scroll-snap-type: x mandatory; }
+            .menu-item { white-space: nowrap; margin-bottom: 0; scroll-snap-align: start; flex-shrink: 0; }
+            .panel-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-actions { width: 100%; flex-direction: column; }
+            .btn-primary, .btn-excel { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px;">Memuat Data Finance...</p>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="dashboard.html" class="nav-back">
+                <i class="fa-solid fa-arrow-left"></i> Dashboard
+            </a>
+            <a href="#" class="nav-logo">
+                <i class="fa-solid fa-chart-pie"></i> FINANCE HUB
+            </a>
+            <div style="font-size: 0.9rem; font-weight: 600; color: #4b5563;">
+                <i class="fa-solid fa-user-tie" style="color: var(--primary-red);"></i> &nbsp;<span id="user-display">Finance Team</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="workspace-grid">
+            
+            <aside class="sidebar">
+                <div class="sidebar-title">Menu Utama</div>
+                <div class="menu-item active" onclick="switchTab('overview')">
+                    <i class="fa-solid fa-gauge-high"></i> Ringkasan
+                </div>
+                <div class="menu-item" onclick="switchTab('customers')">
+                    <i class="fa-solid fa-building-user"></i> Data Pelanggan
+                </div>
+                <div class="menu-item" onclick="switchTab('invoice')">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Invoice Monitor
+                </div>
+                <div class="menu-item" onclick="switchTab('reimburse')">
+                    <i class="fa-solid fa-receipt"></i> Reimbursement
+                </div>
+                <div class="menu-item" onclick="switchTab('calculator')">
+                    <i class="fa-solid fa-calculator"></i> Kalkulator Pajak
+                </div>
+                
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #e5e7eb;">
+                <div class="sidebar-title">Shortcut</div>
+                <a href="pettycash.html" class="menu-item">
+                    <i class="fa-solid fa-wallet"></i> Buka Petty Cash
+                </a>
+            </aside>
+
+            <main class="content">
+                
+                <div id="panel-overview" class="tool-panel active">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <h2>Ringkasan Keuangan</h2>
+                            <p>Overview aktivitas finance dan status penagihan.</p>
+                        </div>
+                    </div>
+
+                    <div class="summary-grid">
+                        <div class="summary-card border-l-red">
+                            <h4>Total Piutang (AR)</h4>
+                            <div class="val" id="ov-total-ar">Rp 0</div>
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                        <div class="summary-card border-l-orange">
+                            <h4>Invoice Overdue</h4>
+                            <div class="val" id="ov-overdue-count" style="color: #D9232D;">0</div>
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div class="summary-card border-l-red">
+                            <h4>Total Pelanggan</h4>
+                            <div class="val" id="ov-total-cust">0</div>
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 15px; font-size: 1.1rem;">Aktivitas Terbaru</h3>
+                        <ul id="activity-log" style="list-style: none;">
+                            <li style="padding: 10px 0; color: #6b7280; font-style: italic;">Memuat aktivitas...</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="panel-customers" class="tool-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <h2>Data Pelanggan</h2>
+                            <p>Database perusahaan yang membeli produk Zeppelin.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn-excel" onclick="downloadExcel('customer')">
+                                <i class="fa-solid fa-file-excel"></i> Export Excel
+                            </button>
+                            <button class="btn-primary" onclick="openModal('customer')">
+                                <i class="fa-solid fa-plus"></i> Pelanggan Baru
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nama Perusahaan</th>
+                                        <th>PIC / Kontak</th>
+                                        <th>Telepon</th>
+                                        <th>Total Pembelian</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="customer-table">
+                                    <tr><td colspan="5" align="center">Memuat data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-invoice" class="tool-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <h2>Monitoring Invoice</h2>
+                            <p>Pantau tagihan customer yang mendekati jatuh tempo.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn-excel" onclick="downloadExcel('invoice')">
+                                <i class="fa-solid fa-file-excel"></i> Export Excel
+                            </button>
+                            <button class="btn-primary" onclick="openModal('invoice')">
+                                <i class="fa-solid fa-plus"></i> Buat Invoice
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>No. Invoice</th>
+                                        <th>Customer</th>
+                                        <th>Jatuh Tempo</th>
+                                        <th>Status</th>
+                                        <th>Nominal</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoice-table">
+                                    <tr><td colspan="6" align="center">Memuat data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-reimburse" class="tool-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <h2>E-Reimbursement</h2>
+                            <p>Persetujuan klaim biaya operasional karyawan.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn-excel" onclick="downloadExcel('reimburse')">
+                                <i class="fa-solid fa-file-excel"></i> Export Excel
+                            </button>
+                            <button class="btn-primary" onclick="openModal('reimburse')">
+                                <i class="fa-solid fa-plus"></i> Klaim Baru
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <th>Karyawan</th>
+                                        <th>Keperluan</th>
+                                        <th>Nominal</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reimburse-table">
+                                    <tr><td colspan="6" align="center">Memuat data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-calculator" class="tool-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <h2>Kalkulator Pajak (PPN 11%)</h2>
+                            <p>Hitung DPP dan PPN secara instan.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card" style="max-width: 600px; margin: 0 auto;">
+                        <div class="form-group">
+                            <label>Harga Nominal (Rp)</label>
+                            <input type="number" id="calc-base" style="font-size: 1.5rem; font-weight: bold; color: var(--primary-red);" placeholder="0" oninput="calculateTax()">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" id="calc-include-ppn" style="width: 20px; height: 20px;" onchange="calculateTax()"> 
+                                <span>Harga di atas sudah termasuk PPN (Include)</span>
+                            </label>
+                        </div>
+                        
+                        <div style="background: #fff7ed; border: 1px dashed #fdba74; padding: 20px; border-radius: 12px; margin-top: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="color: #9a3412;">Dasar Pengenaan Pajak (DPP)</span>
+                                <span id="res-dpp" style="font-weight: bold; color: #1f2937;">Rp 0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                <span style="color: #9a3412;">PPN (11%)</span>
+                                <span id="res-ppn" style="font-weight: bold; color: #D9232D;">Rp 0</span>
+                            </div>
+                            <hr style="border: 0; border-top: 2px solid #fdba74; margin: 10px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #9a3412; font-weight: bold;">TOTAL BAYAR</span>
+                                <span id="res-total" style="font-size: 1.5rem; font-weight: 900; color: #1f2937;">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <div id="modal-customer" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tambah Pelanggan Baru</h3>
+                <button onclick="closeModals()" style="background:none; border:none; cursor:pointer; font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nama Perusahaan (PT/CV/Toko)</label>
+                    <input type="text" id="cust-name" placeholder="Contoh: PT. Maju Mundur">
+                </div>
+                <div class="form-group">
+                    <label>Nama PIC (Kontak)</label>
+                    <input type="text" id="cust-pic" placeholder="Nama orang yang bisa dihubungi">
+                </div>
+                <div class="form-group">
+                    <label>Nomor Telepon/WA</label>
+                    <input type="text" id="cust-phone">
+                </div>
+                <div class="form-group">
+                    <label>Alamat Lengkap</label>
+                    <textarea id="cust-addr" rows="2"></textarea>
+                </div>
+                <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="saveCustomer()">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-invoice" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buat Invoice Baru</h3>
+                <button onclick="closeModals()" style="background:none; border:none; cursor:pointer; font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nomor Invoice</label>
+                    <input type="text" id="inv-no" placeholder="INV/2025/...">
+                </div>
+                <div class="form-group">
+                    <label>Pilih Pelanggan</label>
+                    <select id="inv-cust-select">
+                        <option value="">-- Pilih Customer --</option>
+                        </select>
+                </div>
+                <div class="form-group">
+                    <label>Tanggal Jatuh Tempo</label>
+                    <input type="date" id="inv-date">
+                </div>
+                <div class="form-group">
+                    <label>Total Tagihan (Rp)</label>
+                    <input type="number" id="inv-amount">
+                </div>
+                <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="saveInvoice()">Simpan Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-reimburse" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Buat Klaim Reimbursement</h3>
+                <button onclick="closeModals()" style="background:none; border:none; cursor:pointer; font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Nama Karyawan</label>
+                    <input type="text" id="reim-name" placeholder="Nama pengaju...">
+                </div>
+                <div class="form-group">
+                    <label>Keperluan</label>
+                    <input type="text" id="reim-desc" placeholder="Contoh: Bensin Sales Visit">
+                </div>
+                <div class="form-group">
+                    <label>Nominal (Rp)</label>
+                    <input type="number" id="reim-amount">
+                </div>
+                <button class="btn-primary" style="width: 100%; justify-content: center;" onclick="saveReimburse()">Ajukan Klaim</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, onValue, push, set, update, remove, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
+            authDomain: "it-support-53eeb.firebaseapp.com",
+            databaseURL: "https://it-support-53eeb-default-rtdb.firebaseio.com",
+            projectId: "it-support-53eeb",
+            storageBucket: "it-support-53eeb.firebasestorage.app",
+            messagingSenderId: "573924501146",
+            appId: "1:573924501146:web:12f34306ed675472322123",
+            measurementId: "G-33K6DDE1VR"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let customersData = {};
+        let invoicesData = {};
+        let reimburseData = {};
+
+        const closeModals = () => {
+            document.querySelectorAll('.modal-backdrop').forEach(m => {
+                m.classList.remove('visible');
+                setTimeout(() => m.style.display = 'none', 300);
+            });
+        };
+
+        const updateOverview = () => {
+            let totalAR = 0;
+            let overdueCount = 0;
+            let totalCust = Object.keys(customersData).length;
+
+            const today = new Date();
+
+            Object.values(invoicesData).forEach(inv => {
+                totalAR += parseInt(inv.amount);
+                const due = new Date(inv.dueDate);
+                if(due < today) overdueCount++;
+            });
+
+            document.getElementById('ov-total-ar').textContent = "Rp " + totalAR.toLocaleString('id-ID');
+            document.getElementById('ov-overdue-count').textContent = overdueCount;
+            document.getElementById('ov-total-cust').textContent = totalCust;
+
+            const logEl = document.getElementById('activity-log');
+            logEl.innerHTML = '';
+            
+            const recentInv = Object.values(invoicesData).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0,3);
+            if(recentInv.length > 0) {
+                recentInv.forEach(inv => {
+                    const cName = customersData[inv.customerId] ? customersData[inv.customerId].name : 'Customer';
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fa-solid fa-circle-plus" style="color:var(--primary-red); margin-right:8px;"></i> Invoice baru <b>${inv.no}</b> untuk ${cName}`;
+                    li.style.padding = "8px 0";
+                    li.style.borderBottom = "1px solid #f3f4f6";
+                    logEl.appendChild(li);
+                });
+            } else {
+                logEl.innerHTML = '<li style="color:#9ca3af;">Belum ada aktivitas baru.</li>';
+            }
+        };
+
+        const renderCustomerTable = () => {
+            const tbody = document.getElementById('customer-table');
+            tbody.innerHTML = '';
+            
+            if(Object.keys(customersData).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" align="center">Belum ada pelanggan.</td></tr>';
+                return;
+            }
+
+            Object.keys(customersData).forEach(key => {
+                const c = customersData[key];
+                let totalPurchase = 0;
+                if(invoicesData) {
+                    Object.values(invoicesData).forEach(inv => {
+                        if(inv.customerId === key) totalPurchase += parseInt(inv.amount);
+                    });
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:600;">${c.name}</td>
+                    <td>${c.pic || '-'}</td>
+                    <td>${c.phone || '-'}</td>
+                    <td>Rp ${totalPurchase.toLocaleString('id-ID')}</td>
+                    <td>
+                        <button onclick="window.deleteCustomer('${key}')" style="color:#ef4444; border:none; background:none; cursor:pointer;" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        const updateCustomerDropdown = () => {
+            const select = document.getElementById('inv-cust-select');
+            select.innerHTML = '<option value="">-- Pilih Customer --</option>';
+            Object.keys(customersData).forEach(key => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = customersData[key].name;
+                select.appendChild(option);
+            });
+        };
+
+        const renderInvoiceTable = () => {
+            const tbody = document.getElementById('invoice-table');
+            tbody.innerHTML = '';
+            
+            if(Object.keys(invoicesData).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" align="center">Tidak ada invoice aktif.</td></tr>';
+                return;
+            }
+
+            Object.keys(invoicesData).forEach(key => {
+                const item = invoicesData[key];
+                const custName = customersData[item.customerId] ? customersData[item.customerId].name : (item.customer || 'Unknown'); 
+                
+                const today = new Date();
+                const due = new Date(item.dueDate);
+                const diffTime = due - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                
+                let statusHtml = `<span style="color:#16a34a; font-weight:500;">${diffDays} Hari Lagi</span>`;
+                if(diffDays < 0) {
+                    statusHtml = `<span class="status-badge badge-overdue">Telat ${Math.abs(diffDays)} Hari</span>`;
+                } else if (diffDays <= 3) {
+                     statusHtml = `<span style="color:#ea580c; font-weight:bold;">${diffDays} Hari Lagi</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-family:monospace; font-weight:600;">${item.no}</td>
+                    <td>${custName}</td>
+                    <td>${due.toLocaleDateString('id-ID')}</td>
+                    <td>${statusHtml}</td>
+                    <td style="font-weight:bold;">Rp ${parseInt(item.amount).toLocaleString('id-ID')}</td>
+                    <td>
+                        <button onclick="window.deleteInvoice('${key}')" style="color:#9ca3af; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        };
+
+        const initCustomers = () => {
+            const custRef = ref(db, 'finance_customers');
+            onValue(custRef, (snapshot) => {
+                customersData = snapshot.val() || {};
+                renderCustomerTable();
+                updateCustomerDropdown();
+                updateOverview();
+            });
+        };
+
+        const initInvoices = () => {
+            const invRef = ref(db, 'finance_invoices');
+            onValue(invRef, (snapshot) => {
+                invoicesData = snapshot.val() || {};
+                renderInvoiceTable();
+                renderCustomerTable(); 
+                updateOverview();
+            });
+        };
+
+        const initReimbursement = () => {
+            const reimRef = ref(db, 'finance_reimbursement');
+            onValue(reimRef, (snapshot) => {
+                const tbody = document.getElementById('reimburse-table');
+                tbody.innerHTML = '';
+                reimburseData = snapshot.val() || {}; 
+                
+                if(Object.keys(reimburseData).length === 0) { tbody.innerHTML = '<tr><td colspan="6" align="center">Tidak ada data klaim.</td></tr>'; return; }
+
+                Object.keys(reimburseData).forEach(key => {
+                    const item = reimburseData[key];
+                    const tr = document.createElement('tr');
+                    
+                    let badgeClass = 'badge-pending';
+                    if(item.status === 'Approved') badgeClass = 'badge-approved';
+                    if(item.status === 'Rejected') badgeClass = 'badge-rejected';
+
+                    tr.innerHTML = `
+                        <td>${new Date(item.date).toLocaleDateString('id-ID')}</td>
+                        <td>${item.employee}</td>
+                        <td>${item.desc}</td>
+                        <td style="font-weight:bold;">Rp ${parseInt(item.amount).toLocaleString('id-ID')}</td>
+                        <td><span class="status-badge ${badgeClass}">${item.status}</span></td>
+                        <td>
+                            ${item.status === 'Pending' ? `
+                            <button onclick="window.approveReim('${key}')" style="color:#16a34a; margin-right:10px; border:none; background:none; cursor:pointer;" title="Setujui"><i class="fa-solid fa-check"></i></button>
+                            <button onclick="window.rejectReim('${key}')" style="color:#dc2626; border:none; background:none; cursor:pointer;" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
+                            ` : `<i class="fa-solid fa-lock" style="color:#d1d5db;"></i>`}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userRef = ref(db, 'users/' + user.uid);
+                get(userRef).then((snapshot) => {
+                    const data = snapshot.val();
+                    const isFinance = (data.departemen && (data.departemen.includes('Finance') || data.departemen.includes('Accounting') || user.email === 'root@zeppelin.center'));
+                    
+                    if(isFinance) {
+                        document.getElementById('user-display').textContent = data.nama || user.email;
+                        document.getElementById('loading-screen').classList.add('fade-out');
+                        
+                        initCustomers();
+                        initInvoices();
+                        initReimbursement();
+                    } else {
+                        alert("Akses Ditolak. Khusus tim Finance.");
+                        window.location.href = 'dashboard.html';
+                    }
+                });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        window.downloadExcel = (type) => {
+            let dataToExport = [];
+            let fileName = "";
+            let sheetName = "";
+
+            if(type === 'customer') {
+                if(Object.keys(customersData).length === 0) return alert("Belum ada data pelanggan untuk di-download.");
+                fileName = "Laporan_Pelanggan";
+                sheetName = "Data Pelanggan";
+                
+                Object.values(customersData).forEach(c => {
+                    dataToExport.push({
+                        "Nama Perusahaan": c.name,
+                        "PIC/Kontak": c.pic || '-',
+                        "Telepon": c.phone || '-',
+                        "Alamat": c.addr || '-',
+                        "Tanggal Dibuat": c.createdAt ? new Date(c.createdAt).toLocaleDateString('id-ID') : '-'
+                    });
+                });
+            } 
+            else if(type === 'invoice') {
+                if(Object.keys(invoicesData).length === 0) return alert("Belum ada data invoice untuk di-download.");
+                fileName = "Laporan_Invoice";
+                sheetName = "Data Invoice";
+
+                Object.values(invoicesData).forEach(inv => {
+                    const custName = customersData[inv.customerId] ? customersData[inv.customerId].name : (inv.customer || 'Unknown');
+                    dataToExport.push({
+                        "No Invoice": inv.no,
+                        "Customer": custName,
+                        "Jatuh Tempo": inv.dueDate,
+                        "Nominal (Rp)": parseInt(inv.amount),
+                        "Dibuat Pada": new Date(inv.timestamp).toLocaleString('id-ID')
+                    });
+                });
+            }
+            else if(type === 'reimburse') {
+                if(Object.keys(reimburseData).length === 0) return alert("Belum ada data reimbursement untuk di-download.");
+                fileName = "Laporan_Reimbursement";
+                sheetName = "Data Klaim";
+
+                Object.values(reimburseData).forEach(rem => {
+                    dataToExport.push({
+                        "Tanggal Pengajuan": new Date(rem.date).toLocaleDateString('id-ID'),
+                        "Karyawan": rem.employee,
+                        "Keperluan": rem.desc,
+                        "Nominal (Rp)": parseInt(rem.amount),
+                        "Status": rem.status
+                    });
+                });
+            }
+
+            const ws = XLSX.utils.json_to_sheet(dataToExport);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+            const dateStr = new Date().toISOString().split('T')[0];
+            XLSX.writeFile(wb, `${fileName}_${dateStr}.xlsx`);
+        };
+
+        window.switchTab = (tabName) => {
+            document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.getElementById('panel-' + tabName).classList.add('active');
+            
+            const menuItems = document.querySelectorAll('.sidebar .menu-item');
+            if(tabName === 'overview') menuItems[0].classList.add('active');
+            if(tabName === 'customers') menuItems[1].classList.add('active');
+            if(tabName === 'invoice') menuItems[2].classList.add('active');
+            if(tabName === 'reimburse') menuItems[3].classList.add('active');
+            if(tabName === 'calculator') menuItems[4].classList.add('active');
+        };
+
+        const saveCustomer = () => {
+            const name = document.getElementById('cust-name').value;
+            const pic = document.getElementById('cust-pic').value;
+            const phone = document.getElementById('cust-phone').value;
+            const addr = document.getElementById('cust-addr').value;
+
+            if(!name) return alert("Nama Perusahaan wajib diisi!");
+
+            push(ref(db, 'finance_customers'), {
+                name, pic, phone, addr,
+                createdAt: new Date().toISOString()
+            }).then(() => { closeModals(); document.getElementById('cust-name').value = ''; });
+        };
+
+        const deleteCustomer = (id) => {
+            if(confirm("Hapus data pelanggan ini? Invoice terkait tidak akan terhapus.")) {
+                remove(ref(db, 'finance_customers/'+id));
+            }
+        };
+
+        const saveInvoice = () => {
+            const no = document.getElementById('inv-no').value;
+            const custId = document.getElementById('inv-cust-select').value;
+            const date = document.getElementById('inv-date').value;
+            const amount = document.getElementById('inv-amount').value;
+
+            if(!no || !custId || !date || !amount) return alert("Lengkapi data invoice!");
+
+            push(ref(db, 'finance_invoices'), {
+                no: no,
+                customerId: custId,
+                dueDate: date,
+                amount: amount,
+                timestamp: new Date().toISOString()
+            }).then(() => { closeModals(); });
+        };
+
+        const deleteInvoice = (id) => {
+            if(confirm("Hapus invoice ini (sudah lunas)?")) remove(ref(db, 'finance_invoices/'+id));
+        };
+
+        const saveReimburse = () => {
+            const name = document.getElementById('reim-name').value;
+            const desc = document.getElementById('reim-desc').value;
+            const amount = document.getElementById('reim-amount').value;
+            if(!name || !amount) return alert("Isi data lengkap!");
+
+            push(ref(db, 'finance_reimbursement'), {
+                employee: name, desc, amount,
+                date: new Date().toISOString(), status: 'Pending'
+            }).then(() => { closeModals(); document.getElementById('reim-name').value = ''; });
+        };
+        
+        const approveReim = (id) => update(ref(db, 'finance_reimbursement/'+id), { status: 'Approved' });
+        const rejectReim = (id) => update(ref(db, 'finance_reimbursement/'+id), { status: 'Rejected' });
+
+        window.calculateTax = () => {
+            const base = parseFloat(document.getElementById('calc-base').value) || 0;
+            const isInc = document.getElementById('calc-include-ppn').checked;
+            
+            let dpp = 0;
+            let ppn = 0;
+            let total = 0;
+
+            if (isInc) {
+                dpp = base / 1.11;
+                ppn = base - dpp;
+                total = base;
+            } else {
+                dpp = base;
+                ppn = base * 0.11;
+                total = base + ppn;
+            }
+
+            document.getElementById('res-dpp').textContent = "Rp " + dpp.toLocaleString('id-ID', {maximumFractionDigits: 0});
+            document.getElementById('res-ppn').textContent = "Rp " + ppn.toLocaleString('id-ID', {maximumFractionDigits: 0});
+            document.getElementById('res-total').textContent = "Rp " + total.toLocaleString('id-ID', {maximumFractionDigits: 0});
+        };
+
+        window.openModal = (type) => {
+            const m = document.getElementById('modal-'+type);
+            m.style.display = 'block';
+            requestAnimationFrame(() => m.classList.add('visible'));
+            
+            if(type === 'invoice') updateCustomerDropdown();
+        };
+
+        window.closeModals = closeModals;
+        window.saveCustomer = saveCustomer;
+        window.deleteCustomer = deleteCustomer;
+        window.saveInvoice = saveInvoice;
+        window.deleteInvoice = deleteInvoice;
+        window.saveReimburse = saveReimburse;
+        window.approveReim = approveReim;
+        window.rejectReim = rejectReim;
+
+    </script>
+</body>
+</html>
