@@ -4,69 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login Access - Zeppelin Holiday</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         :root {
-            --primary-color: #D9232D;
-            --accent-color: #F37321;
-            --success-color: #10B981;
-            --text-light: #ffffff;
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --input-bg: rgba(0, 0, 0, 0.25);
-            --smooth-ease: cubic-bezier(0.4, 0.0, 0.2, 1);
-            --bounce-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --primary: #D9232D;
+            --accent: #F37321;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-font-smoothing: antialiased;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            min-height: 100dvh;
-            background: linear-gradient(-45deg, #680404, #D9232D, #F37321, #1a0507);
-            background-size: 300% 300%;
-            animation: gradientBG 12s ease infinite;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--text-light);
+            background: linear-gradient(-45deg, #680404, #D9232D, #F37321, #1a0507);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
             padding: 20px;
-            overflow: hidden;
-            position: relative;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .snow-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .snowflake {
-            position: absolute;
-            top: -10px;
-            color: white;
-            opacity: 0.8;
-            font-size: 10px;
-            animation: fall linear infinite;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0.8; }
-            100% { transform: translateY(110vh) translateX(20px) rotate(360deg); opacity: 0; }
         }
 
         @keyframes gradientBG {
@@ -75,361 +36,241 @@
             100% { background-position: 0% 50%; }
         }
 
-        .container-wrapper {
-            width: 100%;
-            max-width: 400px;
+        /* --- Sliding Container Logic --- */
+        .main-container {
             position: relative;
+            width: 100%;
+            max-width: 850px;
+            min-height: 550px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
             z-index: 10;
         }
 
-        .form-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            padding: 45px 35px;
-            border-radius: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(20px) scale(0.96);
-            animation: contentEntrance 0.7s var(--smooth-ease) forwards;
-        }
-
-        @keyframes contentEntrance {
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .form-container.success-state .header-section,
-        .form-container.success-state .input-group-wrapper,
-        .form-container.success-state .form-switch,
-        .form-container.success-state .message-box {
-            opacity: 0;
-            transform: translateY(-10px) scale(0.98);
-            pointer-events: none;
-            transition: all 0.5s var(--smooth-ease);
-        }
-
-        .form-container.success-state .form-button.is-success {
-            transform: scale(1.02);
-            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.35);
-        }
-
-        .container-exit-dissolve {
-            animation: smoothDissolveExit 0.9s var(--smooth-ease) forwards !important;
-        }
-
-        @keyframes smoothDissolveExit {
-            0% { opacity: 1; transform: scale(1); filter: blur(0px); }
-            100% { opacity: 0; transform: scale(1.1); filter: blur(20px); }
-        }
-
-        .check-icon-anim {
-            animation: checkPop 0.6s var(--bounce-ease) forwards;
-        }
-        @keyframes checkPop {
-            0% { transform: scale(0) rotate(-30deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        #register-container { display: none; }
-        
-        .header-section { margin-bottom: 35px; transition: inherit; }
-        
-        .form-logo {
-            font-size: 3rem;
-            margin-bottom: 12px;
-            background: linear-gradient(180deg, #fff 20%, #ffcfcf 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 20px rgba(243, 115, 33, 0.4));
-        }
-
-        .brand-name {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-        }
-
-        .form-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.65);
-            letter-spacing: 0.5px;
-        }
-
-        .input-group-wrapper { transition: inherit; }
-
-        .input-group { position: relative; margin-bottom: 20px; }
-
-        .input-group i {
+        .form-box {
             position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 1rem;
-            transition: color 0.3s;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 16px 16px 16px 48px;
-            background: var(--input-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            font-size: 16px; 
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s var(--smooth-ease);
-        }
-
-        .input-field::placeholder { color: rgba(255, 255, 255, 0.3); }
-
-        .input-field:focus {
-            outline: none;
-            background: rgba(0, 0, 0, 0.4);
-            border-color: rgba(255, 255, 255, 0.5);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .input-field:focus + i { color: var(--accent-color); }
-
-        .form-button {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.6s var(--smooth-ease);
-            box-shadow: 0 10px 25px -5px rgba(217, 35, 45, 0.4);
-            margin-top: 10px;
+            top: 0;
+            height: 100%;
+            transition: var(--transition);
+            padding: 40px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
-            -webkit-transform: translateZ(0);
+            width: 50%;
         }
 
-        .form-button::after {
-            content: '';
+        .login-box { left: 0; z-index: 2; }
+        .register-box { left: 0; opacity: 0; z-index: 1; }
+
+        /* Slide Animation Classes */
+        .main-container.right-panel-active .login-box {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .main-container.right-panel-active .register-box {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+        }
+
+        /* Overlay Styling */
+        .overlay-container {
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-            transition: 0.5s;
-        }
-        .form-button:hover::after { left: 100%; }
-
-        .form-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px -5px rgba(243, 115, 33, 0.5);
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: var(--transition);
+            z-index: 100;
         }
 
-        .form-button:active { transform: scale(0.98); }
+        .main-container.right-panel-active .overlay-container { transform: translateX(-100%); }
 
-        .form-button:disabled {
-            background: #444;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-            filter: grayscale(100%);
-            opacity: 0.7;
-        }
-        
-        .button-text-wrapper { display: flex; align-items: center; gap: 10px; }
-
-        .form-button.is-success {
-            background: var(--success-color) !important;
-            box-shadow: 0 0 0 rgba(0,0,0,0);
-            pointer-events: none;
-        }
-
-        .form-switch {
-            margin-top: 25px;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.6);
-            transition: inherit;
-        }
-
-        .form-switch a {
+        .overlay {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             color: #fff;
-            font-weight: 700;
-            text-decoration: none;
-            cursor: pointer;
-            margin-left: 5px;
-            border-bottom: 1px dotted rgba(255,255,255,0.5);
-            transition: all 0.3s;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: var(--transition);
         }
 
-        .form-switch a:hover {
-            color: var(--accent-color);
-            border-bottom-color: var(--accent-color);
+        .main-container.right-panel-active .overlay { transform: translateX(50%); }
+
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transition: var(--transition);
         }
 
-        .message-box {
-            font-size: 0.85rem;
-            margin-top: 18px;
-            padding: 12px 16px;
+        .overlay-right { right: 0; }
+        .overlay-left { transform: translateX(-20%); }
+        .main-container.right-panel-active .overlay-left { transform: translateX(0); }
+
+        /* Form Elements */
+        .header-section i { font-size: 2.5rem; color: white; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
+        h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 2px; font-size: 1.5rem; margin-bottom: 5px; color: #fff; }
+        p.subtitle { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 25px; }
+
+        .input-group { position: relative; width: 100%; margin: 8px 0; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); font-size: 0.9rem; }
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px;
-            display: none;
-            backdrop-filter: blur(10px);
-            text-align: left;
-            line-height: 1.4;
-            animation: slideInUp 0.4s var(--smooth-ease);
-            transition: inherit;
+            color: #fff;
+            outline: none;
+            transition: 0.3s;
         }
-        @keyframes slideInUp { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
-        
-        .error {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.25);
-        }
-        .success {
-            background: rgba(16, 185, 129, 0.15);
-            color: #86efac;
-            border: 1px solid rgba(16, 185, 129, 0.25);
-        }
+        .input-group input:focus { border-color: var(--accent); background: rgba(0,0,0,0.3); }
 
-        @media (max-width: 480px) {
-            body { padding: 15px; }
-            .form-container { padding: 35px 24px; border-radius: 24px; }
-            .form-logo { font-size: 2.5rem; }
-            .brand-name { font-size: 1.3rem; }
-            .form-title { font-size: 0.8rem; }
-            .input-field { padding: 15px 15px 15px 44px; }
-            .form-button { padding: 15px; font-size: 0.85rem; }
-            .message-box { font-size: 0.8rem; }
+        .btn-main {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 50px;
+            background: #fff;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
         }
+        .btn-main:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 10px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-outline:hover { background: #fff; color: var(--primary); }
+
+        .msg-box {
+            font-size: 0.75rem;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+            width: 100%;
+        }
+        .msg-error { background: rgba(255,0,0,0.2); color: #ffb3b3; border: 1px solid rgba(255,0,0,0.3); }
+        .msg-success { background: rgba(0,255,0,0.1); color: #b3ffb3; border: 1px solid rgba(0,255,0,0.3); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container { max-width: 400px; min-height: 600px; }
+            .overlay-container { display: none; }
+            .form-box { width: 100%; }
+            .main-container.right-panel-active .login-box { display: none; }
+            .main-container.right-panel-active .register-box { transform: none; width: 100%; opacity: 1; }
+            .mobile-switch { display: block !important; margin-top: 20px; font-size: 0.8rem; color: #fff; cursor: pointer; }
+        }
+        .mobile-switch { display: none; }
     </style>
 </head>
 <body>
 
-    <div class="snow-container" id="snow-container"></div>
-
-    <div class="container-wrapper">
-        
-        <div class="form-container" id="login-container">
+    <div class="main-container" id="main-container">
+        <div class="form-box register-box">
             <div class="header-section">
-                <div class="form-logo">
-                    <i class="fa-solid fa-tree"></i>
-                </div>
-                <h1 class="brand-name">ZEPPELIN</h1>
-                <p class="form-title">Internal Access - Holiday Edition</p>
+                <i class="fa-solid fa-gifts"></i>
+                <h1>REGISTER</h1>
+                <p class="subtitle">Daftarkan akun karyawan baru Anda.</p>
             </div>
-            
-            <form id="login-form">
-                <div class="input-group-wrapper">
-                    <div class="input-group">
-                        <input type="email" id="login-email" class="input-field" placeholder="Email Pengguna" required>
-                        <i class="fa-solid fa-envelope"></i>
-                    </div>
-                    
-                    <div class="input-group">
-                        <input type="password" id="login-password" class="input-field" placeholder="Kata Sandi" required>
-                        <i class="fa-solid fa-lock"></i>
-                    </div>
+            <form id="reg-form" style="width: 100%;">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="reg-name" placeholder="Nama Lengkap" required>
                 </div>
-                
-                <button type="submit" class="form-button" id="login-button">
-                    <div class="button-text-wrapper">
-                        <span>Masuk Workspace</span>
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                    </div>
-                </button>
-                
-                <div id="login-msg" class="message-box"></div>
+                <div class="input-group">
+                    <i class="fa-solid fa-building"></i>
+                    <input type="text" id="reg-dept" placeholder="Departemen" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="reg-email" placeholder="Email Perusahaan" required>
+                </div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="reg-pass" placeholder="Password (Min. 6 Karakter)" required>
+                </div>
+                <button type="submit" class="btn-main" id="reg-btn">Ajukan Akses</button>
+                <div id="reg-msg" class="msg-box"></div>
             </form>
-            <div class="form-switch">
-                Belum memiliki akses? <a id="show-register">Registrasi Karyawan</a>
-            </div>
+            <p class="mobile-switch" onclick="togglePanel()">Sudah punya akun? Login</p>
         </div>
 
-        <div class="form-container" id="register-container">
+        <div class="form-box login-box">
             <div class="header-section">
-                <div class="form-logo">
-                    <i class="fa-solid fa-gifts"></i>
-                </div>
-                <h1 class="brand-name">ZEPPELIN</h1>
-                <p class="form-title">Registrasi Akun Baru</p>
+                <i class="fa-solid fa-tree"></i>
+                <h1>ZEPPELIN</h1>
+                <p class="subtitle">Internal Access - Holiday Edition</p>
             </div>
-            
-            <form id="register-form">
-                <div class="input-group-wrapper">
-                    <div class="input-group">
-                        <input type="text" id="reg-name" class="input-field" placeholder="Nama Lengkap" required>
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-
-                    <div class="input-group">
-                        <input type="text" id="reg-dept" class="input-field" placeholder="Departemen" required>
-                        <i class="fa-solid fa-building"></i>
-                    </div>
-                    
-                    <div class="input-group">
-                        <input type="email" id="reg-email" class="input-field" placeholder="Email Perusahaan" required>
-                        <i class="fa-solid fa-envelope"></i>
-                    </div>
-                    
-                    <div class="input-group">
-                        <input type="password" id="reg-password" class="input-field" placeholder="Password (Min. 6 Karakter)" required>
-                        <i class="fa-solid fa-lock"></i>
-                    </div>
+            <form id="login-form" style="width: 100%;">
+                <div class="input-group">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="login-email" placeholder="Email Pengguna" required>
                 </div>
-                
-                <button type="submit" class="form-button" id="register-button">
-                    <div class="button-text-wrapper">
-                        <span>Ajukan Pendaftaran</span>
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </div>
-                </button>
-                
-                <div id="register-msg" class="message-box"></div>
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="login-pass" placeholder="Kata Sandi" required>
+                </div>
+                <button type="submit" class="btn-main" id="login-btn">Masuk Workspace</button>
+                <div id="login-msg" class="msg-box"></div>
             </form>
-            <div class="form-switch">
-                Sudah punya akun? <a id="show-login">Kembali ke Login</a>
-            </div>
+            <p class="mobile-switch" onclick="togglePanel()">Belum punya akses? Daftar</p>
         </div>
 
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Selamat Datang!</h1>
+                    <p>Kembali masuk untuk melanjutkan pekerjaan Anda di Zeppelin Holiday.</p>
+                    <button class="btn-outline" onclick="togglePanel()">SIGN IN</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Halo, Rekan!</h1>
+                    <p>Belum memiliki akses internal? Silakan ajukan pendaftaran akun baru.</p>
+                    <button class="btn-outline" onclick="togglePanel()">SIGN UP</button>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <script>
-        const snowContainer = document.getElementById('snow-container');
-        const particleCount = 50; 
-
-        for (let i = 0; i < particleCount; i++) {
-            const snow = document.createElement('div');
-            snow.className = 'snowflake';
-            snow.innerHTML = '&#10052;'; 
-            snow.style.left = Math.random() * 100 + 'vw';
-            snow.style.animationDuration = Math.random() * 3 + 2 + 's'; 
-            snow.style.opacity = Math.random();
-            snow.style.fontSize = Math.random() * 10 + 10 + 'px';
-            snowContainer.appendChild(snow);
-        }
-    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+        // Konfigurasi Firebase (Tetap gunakan milik Anda)
         const firebaseConfig = {
             apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
             authDomain: "it-support-53eeb.firebaseapp.com",
@@ -437,183 +278,114 @@
             projectId: "it-support-53eeb",
             storageBucket: "it-support-53eeb.firebasestorage.app",
             messagingSenderId: "573924501146",
-            appId: "1:573924501146:web:12f34306ed675472322123",
-            measurementId: "G-33K6DDE1VR"
+            appId: "1:573924501146:web:12f34306ed675472322123"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getDatabase(app); 
+        const db = getDatabase(app);
 
+        // --- Panel Toggle ---
+        window.togglePanel = () => {
+            document.getElementById('main-container').classList.toggle('right-panel-active');
+        };
+
+        // --- Auth State ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                console.log("Session ditemukan: ", user.email);
-                if (user.email === 'root@zeppelin.center') {
-                    window.location.href = 'index.html';
-                } else {
-                    window.location.href = 'dashboard.html';
+                if (user.email === 'root@zeppelin.center') window.location.href = 'index.html';
+                else {
+                    get(ref(db, 'users/' + user.uid)).then((snap) => {
+                        if (snap.exists() && snap.val().status === 'approved') window.location.href = 'dashboard.html';
+                    });
                 }
-            } else {
-                console.log("Tidak ada session aktif. Menampilkan form login.");
             }
         });
 
-        function showMessage(elementId, message, isError = true) {
-            const msgBox = document.getElementById(elementId);
-            msgBox.innerHTML = isError ? `<i class="fa-solid fa-circle-exclamation"></i> ${message}` : `<i class="fa-solid fa-circle-check"></i> ${message}`;
-            msgBox.className = isError ? 'message-box error' : 'message-box success';
-            msgBox.style.display = 'block';
-        }
-        function hideMessage(elementId) {
-            document.getElementById(elementId).style.display = 'none';
+        // --- Message Helper ---
+        function showMsg(id, text, isError = true) {
+            const el = document.getElementById(id);
+            el.innerHTML = text;
+            el.className = isError ? 'msg-box msg-error' : 'msg-box msg-success';
+            el.style.display = 'block';
         }
 
-        function setButtonLoading(btnId, isLoading, defaultText, defaultIcon) {
-            const btn = document.getElementById(btnId);
-            const wrapper = btn.querySelector('.button-text-wrapper');
-            if (isLoading) {
-                btn.disabled = true;
-                wrapper.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i><span>Memproses...</span>';
-            } else {
-                btn.disabled = false;
-                wrapper.innerHTML = `<span>${defaultText}</span><i class="${defaultIcon}"></i>`;
-            }
-        }
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const reason = urlParams.get('reason');
-        if (reason) {
-            const reasons = {
-                'pending': "Akun menunggu persetujuan Administrator.",
-                'rejected': "Akses ditolak. Hubungi IT Support.",
-                'default': "Sesi berakhir. Silakan login kembali."
-            };
-            showMessage('login-msg', reasons[reason] || reasons['default']);
-        }
-
-        const loginContainer = document.getElementById('login-container');
-        const registerContainer = document.getElementById('register-container');
-
-        function switchForm(toRegister) {
-            const hiding = toRegister ? loginContainer : registerContainer;
-            const showing = toRegister ? registerContainer : loginContainer;
-            
-            hiding.style.opacity = '0';
-            hiding.style.transform = 'translateY(-20px) scale(0.95)';
-            
-            setTimeout(() => {
-                hiding.style.display = 'none';
-                showing.style.display = 'block';
-                void showing.offsetWidth;
-                showing.style.opacity = '1';
-                showing.style.transform = 'translateY(0) scale(1)';
-            }, 350);
-            
-            hideMessage(toRegister ? 'login-msg' : 'register-msg');
-        }
-
-        document.getElementById('show-register').addEventListener('click', () => switchForm(true));
-        document.getElementById('show-login').addEventListener('click', () => switchForm(false));
-
-        const loginForm = document.getElementById('login-form');
-        const loginButton = document.getElementById('login-button');
-
-        loginForm.addEventListener('submit', (e) => {
+        // --- Login Logic ---
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            setButtonLoading('login-button', true);
-            hideMessage('login-msg');
+            const pass = document.getElementById('login-pass').value;
+            const btn = document.getElementById('login-btn');
 
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    if (user.email === 'root@zeppelin.center') {
-                        handleSuccessLogin(true); return;
-                    }
-                    
-                    get(ref(db, 'users/' + user.uid)).then((snapshot) => {
-                        if (snapshot.exists() && snapshot.val().status === 'approved') {
-                            handleSuccessLogin();
-                        } else {
-                           let msg = "Status akun tidak valid.";
-                           if (snapshot.exists()) {
-                                const status = snapshot.val().status;
-                                if (status === 'pending') msg = "Menunggu persetujuan Admin.";
-                                if (status === 'rejected') msg = "Akun ditolak. Hubungi Admin.";
-                           } else {
-                               msg = "Data pengguna tidak ditemukan.";
-                           }
-                           showMessage('login-msg', msg);
-                           signOut(auth);
-                           setButtonLoading('login-button', false, 'Masuk Workspace', 'fa-solid fa-arrow-right-to-bracket');
-                        }
-                    }).catch((error) => handleLoginError(error));
-                })
-                .catch((error) => handleLoginError(error));
+            btn.disabled = true;
+            btn.innerText = "Memproses...";
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+
+                if (user.email === 'root@zeppelin.center') {
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                const snapshot = await get(ref(db, 'users/' + user.uid));
+                if (snapshot.exists() && snapshot.val().status === 'approved') {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    const status = snapshot.exists() ? snapshot.val().status : 'unknown';
+                    showMsg('login-msg', status === 'pending' ? "Akun menunggu persetujuan Admin." : "Akses ditolak.");
+                    signOut(auth);
+                }
+            } catch (error) {
+                showMsg('login-msg', "Email atau Password salah.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Masuk Workspace";
+            }
         });
 
-        function handleLoginError(error) {
-            console.error(error);
-            let msg = "Terjadi kesalahan sistem.";
-            if (error.code === 'auth/invalid-credential') msg = "Email atau kata sandi salah.";
-            showMessage('login-msg', msg);
-            setButtonLoading('login-button', false, 'Masuk Workspace', 'fa-solid fa-arrow-right-to-bracket');
-        }
-
-        function handleSuccessLogin(isRoot = false) {
-            const btnWrapper = loginButton.querySelector('.button-text-wrapper');
-            loginButton.className = "form-button is-success";
-            
-            setTimeout(() => {
-                 btnWrapper.innerHTML = `<span>${isRoot ? 'Welcome Root' : 'Login Sukses'}</span><i class="fa-solid fa-check check-icon-anim"></i>`;
-            }, 150);
-
-            loginContainer.classList.add('success-state');
-
-            setTimeout(() => {
-                loginContainer.classList.add('container-exit-dissolve');
-            }, 800);
-
-            setTimeout(() => {
-                window.location.href = isRoot ? 'index.html' : 'dashboard.html';
-            }, 1700);
-        }
-
-        const registerForm = document.getElementById('register-form');
-        registerForm.addEventListener('submit', (e) => {
+        // --- Register Logic (FIXED) ---
+        document.getElementById('reg-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            hideMessage('register-msg');
+            const name = document.getElementById('reg-name').value;
+            const dept = document.getElementById('reg-dept').value;
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const btn = document.getElementById('reg-btn');
 
-            const name = document.getElementById('reg-name').value.trim();
-            const dept = document.getElementById('reg-dept').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const pass = document.getElementById('reg-password').value.trim();
+            if(pass.length < 6) { showMsg('reg-msg', "Password minimal 6 karakter."); return; }
 
-            if (pass.length < 6) {
-                showMessage('register-msg', "Password minimal 6 karakter."); return;
-            }
+            btn.disabled = true;
+            btn.innerText = "Mendaftarkan...";
 
-            setButtonLoading('register-button', true);
+            try {
+                // 1. Create Auth User
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const uid = userCredential.user.uid;
 
-            createUserWithEmailAndPassword(auth, email, pass)
-                .then((userCredential) => {
-                    set(ref(db, 'users/' + userCredential.user.uid), {
-                        uid: userCredential.user.uid, nama: name, departemen: dept, email: email, status: 'pending', createdAt: Date.now()
-                    }).then(() => {
-                        showMessage('register-msg', "Registrasi berhasil. Menunggu verifikasi.", false);
-                        registerForm.reset();
-                        setButtonLoading('register-button', false, 'Ajukan Pendaftaran', 'fa-solid fa-paper-plane');
-                        setTimeout(() => { switchForm(false); showMessage('login-msg', "Akun dibuat. Menunggu verifikasi.", false); }, 2500);
-                    });
-                })
-                .catch((error) => {
-                    let msg = "Registrasi gagal.";
-                    if (error.code === 'auth/email-already-in-use') msg = "Email sudah terdaftar.";
-                    showMessage('register-msg', msg);
-                    setButtonLoading('register-button', false, 'Ajukan Pendaftaran', 'fa-solid fa-paper-plane');
+                // 2. Save to Realtime Database
+                await set(ref(db, 'users/' + uid), {
+                    uid: uid,
+                    nama: name,
+                    departemen: dept,
+                    email: email,
+                    status: 'pending',
+                    createdAt: Date.now()
                 });
+
+                showMsg('reg-msg', "Berhasil! Silakan hubungi admin untuk aktivasi.", false);
+                document.getElementById('reg-form').reset();
+                setTimeout(() => { togglePanel(); }, 3000);
+
+            } catch (error) {
+                let msg = "Gagal mendaftar.";
+                if (error.code === 'auth/email-already-in-use') msg = "Email sudah digunakan.";
+                showMsg('reg-msg', msg);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Ajukan Akses";
+            }
         });
     </script>
 </body>
