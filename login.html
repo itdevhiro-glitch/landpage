@@ -6,7 +6,6 @@
     <title>Login Access - Zeppelin Holiday</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <style>
         :root {
             --primary: #D9232D;
@@ -15,9 +14,7 @@
             --glass-border: rgba(255, 255, 255, 0.2);
             --transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
         body {
             height: 100vh;
             display: flex;
@@ -29,13 +26,22 @@
             overflow: hidden;
             padding: 20px;
         }
-
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
+        .entrance-animation {
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            animation: clearFadeIn 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        @keyframes clearFadeIn {
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
         .main-container {
             position: relative;
             width: 100%;
@@ -48,19 +54,7 @@
             border-radius: 30px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
             overflow: hidden;
-            z-index: 10;
-            opacity: 0;
-            transform: scale(0.95);
-            animation: containerAppear 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
-
-        @keyframes containerAppear {
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
         .form-box {
             position: absolute;
             top: 0;
@@ -72,29 +66,18 @@
             justify-content: center;
             align-items: center;
             width: 50%;
-            opacity: 0;
-            animation: contentFade 0.8s ease forwards 0.4s;
         }
-
-        @keyframes contentFade {
-            to { opacity: 1; }
-        }
-
-        .login-box { left: 0; z-index: 2; }
+        .login-box { left: 0; z-index: 2; opacity: 1; }
         .register-box { left: 0; opacity: 0; z-index: 1; }
-
         .main-container.right-panel-active .login-box {
             transform: translateX(100%);
             opacity: 0;
         }
-
         .main-container.right-panel-active .register-box {
             transform: translateX(100%);
             opacity: 1;
             z-index: 5;
-            animation: contentFade 0.4s ease forwards;
         }
-
         .overlay-container {
             position: absolute;
             top: 0;
@@ -104,12 +87,8 @@
             overflow: hidden;
             transition: var(--transition);
             z-index: 100;
-            opacity: 0;
-            animation: contentFade 0.8s ease forwards 0.4s;
         }
-
         .main-container.right-panel-active .overlay-container { transform: translateX(-100%); }
-
         .overlay {
             background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
             color: #fff;
@@ -120,9 +99,7 @@
             transform: translateX(0);
             transition: var(--transition);
         }
-
         .main-container.right-panel-active .overlay { transform: translateX(50%); }
-
         .overlay-panel {
             position: absolute;
             display: flex;
@@ -136,15 +113,12 @@
             width: 50%;
             transition: var(--transition);
         }
-
         .overlay-right { right: 0; }
         .overlay-left { transform: translateX(-20%); }
         .main-container.right-panel-active .overlay-left { transform: translateX(0); }
-
         .header-section i { font-size: 2.5rem; color: white; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
         h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 2px; font-size: 1.5rem; margin-bottom: 5px; color: #fff; }
         p.subtitle { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 25px; }
-
         .input-group { position: relative; width: 100%; margin: 8px 0; }
         .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); font-size: 0.9rem; }
         .input-group input {
@@ -158,7 +132,6 @@
             transition: 0.3s;
         }
         .input-group input:focus { border-color: var(--accent); background: rgba(0,0,0,0.3); }
-
         .btn-main {
             width: 100%;
             padding: 14px;
@@ -174,7 +147,6 @@
             transition: 0.3s;
         }
         .btn-main:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
-        
         .btn-outline {
             background: transparent;
             border: 2px solid #fff;
@@ -187,7 +159,6 @@
             transition: 0.3s;
         }
         .btn-outline:hover { background: #fff; color: var(--primary); }
-
         .msg-box {
             font-size: 0.75rem;
             margin-top: 15px;
@@ -198,11 +169,10 @@
         }
         .msg-error { background: rgba(255,0,0,0.2); color: #ffb3b3; border: 1px solid rgba(255,0,0,0.3); }
         .msg-success { background: rgba(0,255,0,0.1); color: #b3ffb3; border: 1px solid rgba(0,255,0,0.3); }
-
         @media (max-width: 768px) {
             .main-container { max-width: 400px; min-height: 600px; }
             .overlay-container { display: none; }
-            .form-box { width: 100%; opacity: 1; animation: none; }
+            .form-box { width: 100%; }
             .main-container.right-panel-active .login-box { display: none; }
             .main-container.right-panel-active .register-box { transform: none; width: 100%; opacity: 1; }
             .mobile-switch { display: block !important; margin-top: 20px; font-size: 0.8rem; color: #fff; cursor: pointer; }
@@ -211,79 +181,76 @@
     </style>
 </head>
 <body>
-
-    <div class="main-container" id="main-container">
-        <div class="form-box register-box">
-            <div class="header-section">
-                <i class="fa-solid fa-gifts"></i>
-                <h1>REGISTER</h1>
-                <p class="subtitle">Daftarkan akun karyawan baru Anda.</p>
+    <div class="entrance-animation">
+        <div class="main-container" id="main-container">
+            <div class="form-box register-box">
+                <div class="header-section">
+                    <i class="fa-solid fa-gifts"></i>
+                    <h1>REGISTER</h1>
+                    <p class="subtitle">Daftarkan akun karyawan baru Anda.</p>
+                </div>
+                <form id="reg-form" style="width: 100%;">
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="reg-name" placeholder="Nama Lengkap" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-building"></i>
+                        <input type="text" id="reg-dept" placeholder="Departemen" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="reg-email" placeholder="Email Perusahaan" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="reg-pass" placeholder="Password (Min. 6 Karakter)" required>
+                    </div>
+                    <button type="submit" class="btn-main" id="reg-btn">Ajukan Akses</button>
+                    <div id="reg-msg" class="msg-box"></div>
+                </form>
+                <p class="mobile-switch" onclick="togglePanel()">Sudah punya akun? Login</p>
             </div>
-            <form id="reg-form" style="width: 100%;">
-                <div class="input-group">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" id="reg-name" placeholder="Nama Lengkap" required>
+            <div class="form-box login-box">
+                <div class="header-section">
+                    <i class="fa-solid fa-tree"></i>
+                    <h1>ZEPPELIN</h1>
+                    <p class="subtitle">Internal Access - Holiday Edition</p>
                 </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-building"></i>
-                    <input type="text" id="reg-dept" placeholder="Departemen" required>
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="reg-email" placeholder="Email Perusahaan" required>
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="reg-pass" placeholder="Password (Min. 6 Karakter)" required>
-                </div>
-                <button type="submit" class="btn-main" id="reg-btn">Ajukan Akses</button>
-                <div id="reg-msg" class="msg-box"></div>
-            </form>
-            <p class="mobile-switch" onclick="togglePanel()">Sudah punya akun? Login</p>
-        </div>
-
-        <div class="form-box login-box">
-            <div class="header-section">
-                <i class="fa-solid fa-tree"></i>
-                <h1>ZEPPELIN</h1>
-                <p class="subtitle">Internal Access - Holiday Edition</p>
+                <form id="login-form" style="width: 100%;">
+                    <div class="input-group">
+                        <i class="fa-solid fa-envelope"></i>
+                        <input type="email" id="login-email" placeholder="Email Pengguna" required>
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="login-pass" placeholder="Kata Sandi" required>
+                    </div>
+                    <button type="submit" class="btn-main" id="login-btn">Masuk Workspace</button>
+                    <div id="login-msg" class="msg-box"></div>
+                </form>
+                <p class="mobile-switch" onclick="togglePanel()">Belum punya akses? Daftar</p>
             </div>
-            <form id="login-form" style="width: 100%;">
-                <div class="input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="login-email" placeholder="Email Pengguna" required>
-                </div>
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="login-pass" placeholder="Kata Sandi" required>
-                </div>
-                <button type="submit" class="btn-main" id="login-btn">Masuk Workspace</button>
-                <div id="login-msg" class="msg-box"></div>
-            </form>
-            <p class="mobile-switch" onclick="togglePanel()">Belum punya akses? Daftar</p>
-        </div>
-
-        <div class="overlay-container">
-            <div class="overlay">
-                <div class="overlay-panel overlay-left">
-                    <h1>Selamat Datang!</h1>
-                    <p>Kembali masuk untuk melanjutkan pekerjaan Anda di Zeppelin Holiday.</p>
-                    <button class="btn-outline" onclick="togglePanel()">SIGN IN</button>
-                </div>
-                <div class="overlay-panel overlay-right">
-                    <h1>Halo, Rekan!</h1>
-                    <p>Belum memiliki akses internal? Silakan ajukan pendaftaran akun baru.</p>
-                    <button class="btn-outline" onclick="togglePanel()">SIGN UP</button>
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>Selamat Datang!</h1>
+                        <p>Kembali masuk untuk melanjutkan pekerjaan Anda di Zeppelin Holiday.</p>
+                        <button class="btn-outline" onclick="togglePanel()">SIGN IN</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>Halo, Rekan!</h1>
+                        <p>Belum memiliki akses internal? Silakan ajukan pendaftaran akun baru.</p>
+                        <button class="btn-outline" onclick="togglePanel()">SIGN UP</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
         const firebaseConfig = {
             apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
             authDomain: "it-support-53eeb.firebaseapp.com",
@@ -293,15 +260,12 @@
             messagingSenderId: "573924501146",
             appId: "1:573924501146:web:12f34306ed675472322123"
         };
-
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-
         window.togglePanel = () => {
             document.getElementById('main-container').classList.toggle('right-panel-active');
         };
-
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 if (user.email === 'root@zeppelin.center') window.location.href = 'index.html';
@@ -312,14 +276,12 @@
                 }
             }
         });
-
         function showMsg(id, text, isError = true) {
             const el = document.getElementById(id);
             el.innerHTML = text;
             el.className = isError ? 'msg-box msg-error' : 'msg-box msg-success';
             el.style.display = 'block';
         }
-
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
@@ -349,7 +311,6 @@
                 btn.innerText = "Masuk Workspace";
             }
         });
-
         document.getElementById('reg-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('reg-name').value;
@@ -364,12 +325,7 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const uid = userCredential.user.uid;
                 await set(ref(db, 'users/' + uid), {
-                    uid: uid,
-                    nama: name,
-                    departemen: dept,
-                    email: email,
-                    status: 'pending',
-                    createdAt: Date.now()
+                    uid: uid, nama: name, departemen: dept, email: email, status: 'pending', createdAt: Date.now()
                 });
                 showMsg('reg-msg', "Berhasil! Silakan hubungi admin untuk aktivasi.", false);
                 document.getElementById('reg-form').reset();
