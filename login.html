@@ -23,7 +23,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: linear-gradient(-45deg, #680404, #D9232D, #F37321, #1a0507);
+            background: linear-gradient(-45deg, #8B0000, #D9232D, #F37321, #2c0b0e);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
             overflow: hidden;
@@ -36,7 +36,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* --- Sliding Container Logic --- */
         .main-container {
             position: relative;
             width: 100%;
@@ -50,6 +49,16 @@
             box-shadow: 0 25px 50px rgba(0,0,0,0.3);
             overflow: hidden;
             z-index: 10;
+            opacity: 0;
+            transform: scale(0.95);
+            animation: containerAppear 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        @keyframes containerAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .form-box {
@@ -63,12 +72,17 @@
             justify-content: center;
             align-items: center;
             width: 50%;
+            opacity: 0;
+            animation: contentFade 0.8s ease forwards 0.4s;
+        }
+
+        @keyframes contentFade {
+            to { opacity: 1; }
         }
 
         .login-box { left: 0; z-index: 2; }
         .register-box { left: 0; opacity: 0; z-index: 1; }
 
-        /* Slide Animation Classes */
         .main-container.right-panel-active .login-box {
             transform: translateX(100%);
             opacity: 0;
@@ -78,9 +92,9 @@
             transform: translateX(100%);
             opacity: 1;
             z-index: 5;
+            animation: contentFade 0.4s ease forwards;
         }
 
-        /* Overlay Styling */
         .overlay-container {
             position: absolute;
             top: 0;
@@ -90,6 +104,8 @@
             overflow: hidden;
             transition: var(--transition);
             z-index: 100;
+            opacity: 0;
+            animation: contentFade 0.8s ease forwards 0.4s;
         }
 
         .main-container.right-panel-active .overlay-container { transform: translateX(-100%); }
@@ -125,7 +141,6 @@
         .overlay-left { transform: translateX(-20%); }
         .main-container.right-panel-active .overlay-left { transform: translateX(0); }
 
-        /* Form Elements */
         .header-section i { font-size: 2.5rem; color: white; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); }
         h1 { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 2px; font-size: 1.5rem; margin-bottom: 5px; color: #fff; }
         p.subtitle { font-size: 0.8rem; color: rgba(255,255,255,0.6); margin-bottom: 25px; }
@@ -184,11 +199,10 @@
         .msg-error { background: rgba(255,0,0,0.2); color: #ffb3b3; border: 1px solid rgba(255,0,0,0.3); }
         .msg-success { background: rgba(0,255,0,0.1); color: #b3ffb3; border: 1px solid rgba(0,255,0,0.3); }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .main-container { max-width: 400px; min-height: 600px; }
             .overlay-container { display: none; }
-            .form-box { width: 100%; }
+            .form-box { width: 100%; opacity: 1; animation: none; }
             .main-container.right-panel-active .login-box { display: none; }
             .main-container.right-panel-active .register-box { transform: none; width: 100%; opacity: 1; }
             .mobile-switch { display: block !important; margin-top: 20px; font-size: 0.8rem; color: #fff; cursor: pointer; }
@@ -270,7 +284,6 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-        // Konfigurasi Firebase (Tetap gunakan milik Anda)
         const firebaseConfig = {
             apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
             authDomain: "it-support-53eeb.firebaseapp.com",
@@ -285,12 +298,10 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // --- Panel Toggle ---
         window.togglePanel = () => {
             document.getElementById('main-container').classList.toggle('right-panel-active');
         };
 
-        // --- Auth State ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 if (user.email === 'root@zeppelin.center') window.location.href = 'index.html';
@@ -302,7 +313,6 @@
             }
         });
 
-        // --- Message Helper ---
         function showMsg(id, text, isError = true) {
             const el = document.getElementById(id);
             el.innerHTML = text;
@@ -310,25 +320,20 @@
             el.style.display = 'block';
         }
 
-        // --- Login Logic ---
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const pass = document.getElementById('login-pass').value;
             const btn = document.getElementById('login-btn');
-
             btn.disabled = true;
             btn.innerText = "Memproses...";
-
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, pass);
                 const user = userCredential.user;
-
                 if (user.email === 'root@zeppelin.center') {
                     window.location.href = 'index.html';
                     return;
                 }
-
                 const snapshot = await get(ref(db, 'users/' + user.uid));
                 if (snapshot.exists() && snapshot.val().status === 'approved') {
                     window.location.href = 'dashboard.html';
@@ -345,7 +350,6 @@
             }
         });
 
-        // --- Register Logic (FIXED) ---
         document.getElementById('reg-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('reg-name').value;
@@ -353,18 +357,12 @@
             const email = document.getElementById('reg-email').value;
             const pass = document.getElementById('reg-pass').value;
             const btn = document.getElementById('reg-btn');
-
             if(pass.length < 6) { showMsg('reg-msg', "Password minimal 6 karakter."); return; }
-
             btn.disabled = true;
             btn.innerText = "Mendaftarkan...";
-
             try {
-                // 1. Create Auth User
                 const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
                 const uid = userCredential.user.uid;
-
-                // 2. Save to Realtime Database
                 await set(ref(db, 'users/' + uid), {
                     uid: uid,
                     nama: name,
@@ -373,11 +371,9 @@
                     status: 'pending',
                     createdAt: Date.now()
                 });
-
                 showMsg('reg-msg', "Berhasil! Silakan hubungi admin untuk aktivasi.", false);
                 document.getElementById('reg-form').reset();
                 setTimeout(() => { togglePanel(); }, 3000);
-
             } catch (error) {
                 let msg = "Gagal mendaftar.";
                 if (error.code === 'auth/email-already-in-use') msg = "Email sudah digunakan.";
