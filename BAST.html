@@ -9,6 +9,7 @@
 <title>BAST Perangkat IT</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
 
@@ -94,6 +95,163 @@ transition:all 0.3s ease;
 
 .card:hover{
 box-shadow:0 12px 24px rgba(0,0,0,0.08);
+}
+
+.page-actions{
+margin-bottom:20px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.back-button{
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:10px 16px;
+background:#ffffff;
+border:1px solid #e5e7eb;
+border-radius:10px;
+color:#1f2937;
+text-decoration:none;
+font-weight:600;
+box-shadow:0 2px 4px rgba(0,0,0,0.05);
+transition:all 0.2s ease;
+}
+
+.back-button:hover{
+background:#f9fafb;
+border-color:#D9232D;
+color:#D9232D;
+}
+
+.bast-history{
+background:#f9fafb;
+border:1px solid #e5e7eb;
+border-radius:12px;
+padding:18px;
+}
+
+.history-item{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:12px;
+padding:14px 0;
+border-bottom:1px solid #e5e7eb;
+}
+
+.history-item:last-child{
+border-bottom:none;
+}
+
+.history-item h4{
+font-size:0.95rem;
+margin-bottom:4px;
+color:#111827;
+}
+
+.history-item span{
+display:block;
+font-size:0.85rem;
+color:#4b5563;
+}
+
+.history-empty{
+font-size:0.9rem;
+color:#6b7280;
+}
+
+.modal-backdrop {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100vh;
+background: rgba(15, 23, 42, 0.5);
+backdrop-filter: blur(2px);
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.25s ease;
+z-index: 9998;
+}
+
+.modal-backdrop.visible {
+opacity: 1;
+visibility: visible;
+}
+
+.modal-content {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%) scale(0.95);
+width: min(95%, 700px);
+background: #ffffff;
+border-radius: 18px;
+box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
+opacity: 0;
+visibility: hidden;
+transition: opacity 0.25s ease, transform 0.25s ease;
+z-index: 9999;
+}
+
+.modal-content.visible {
+opacity: 1;
+visibility: visible;
+transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 18px 20px;
+border-bottom: 1px solid #f3f4f6;
+}
+
+.modal-header h3 {
+font-size: 1rem;
+font-weight: 700;
+color: #111827;
+}
+
+.close-button {
+background: none;
+border: none;
+font-size: 1.1rem;
+color: #6b7280;
+cursor: pointer;
+}
+
+.modal-body {
+padding: 16px 20px 24px;
+max-height: 70vh;
+overflow-y: auto;
+}
+
+.modal-body .bast-history {
+background: transparent;
+border: none;
+padding: 0;
+}
+
+.modal-body .history-item {
+padding: 16px 0;
+}
+
+.modal-body .history-item:last-child {
+border-bottom: none;
+}
+
+.modal-body .history-item h4 {
+font-size: 1rem;
+}
+
+.modal-body .history-item span {
+font-size: 0.85rem;
 }
 
 /* HEADER */
@@ -326,6 +484,10 @@ justify-content:space-between;
 
 @media print{
 
+.page-actions{
+display:none;
+}
+
 .controls{
 display:none;
 }
@@ -358,6 +520,11 @@ display:none;
 </div>
 
 <div class="container fade-in-up" id="mainContent">
+
+<div class="page-actions">
+    <a href="dashboard.html" class="back-button"><i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard</a>
+    <button class="btn-primary" type="button" id="historyButton">Lihat Riwayat BAST</button>
+</div>
 
 <div class="card" id="printArea">
 
@@ -423,7 +590,7 @@ display:none;
 
 <div class="field">
 <label>No Ticket</label>
-<input type="text" id="ticketPenerima">
+<input type="text" id="ticketPenerima" readonly>
 </div>
 
 <div class="field" style="grid-column:1/4">
@@ -433,6 +600,19 @@ display:none;
 
 </div>
 
+</div>
+
+<div class="modal-backdrop" id="history-modal-backdrop"></div>
+<div class="modal-content" id="history-modal-content">
+    <div class="modal-header">
+        <h3>Riwayat BAST Saya</h3>
+        <button id="history-modal-close" class="close-button"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+        <div class="bast-history" id="bast-history-list">
+            <div class="history-empty">Memuat riwayat BAST...</div>
+        </div>
+    </div>
 </div>
 
 <!-- TABEL PERANGKAT -->
@@ -580,6 +760,12 @@ const tglInput = document.getElementById('tgl');
 const ticketInput = document.getElementById('ticketPenerima');
 const keperluanInput = document.getElementById('keperluanPenerima');
 const bastMsg = document.getElementById('bast-msg');
+const bastHistoryList = document.getElementById('bast-history-list');
+const historyButton = document.getElementById('historyButton');
+const historyModalBackdrop = document.getElementById('history-modal-backdrop');
+const historyModalContent = document.getElementById('history-modal-content');
+const historyModalClose = document.getElementById('history-modal-close');
+let currentUserUid = null;
 
 window.addEventListener('load', function() {
     setTimeout(function() {
@@ -603,6 +789,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     const userData = snapshot.val();
+    currentUserUid = user.uid;
     const nama = userData.nama || user.email || '';
     const departemen = userData.departemen || '';
 
@@ -610,10 +797,30 @@ onAuthStateChanged(auth, async (user) => {
     namaInput.readOnly = true;
     deptInput.value = departemen;
     deptInput.readOnly = true;
+    ticketInput.value = await generateTicketNumber();
+    ticketInput.readOnly = true;
 
     document.getElementById("tanggal").innerText =
         "Tanggal : " + new Date().toLocaleDateString("id-ID");
+
+    renderBASTHistory(currentUserUid);
 });
+
+function openHistoryModal() {
+    if (!currentUserUid) return;
+    renderBASTHistory(currentUserUid);
+    historyModalBackdrop.classList.add('visible');
+    historyModalContent.classList.add('visible');
+}
+
+function closeHistoryModal() {
+    historyModalBackdrop.classList.remove('visible');
+    historyModalContent.classList.remove('visible');
+}
+
+historyButton.addEventListener('click', openHistoryModal);
+historyModalClose.addEventListener('click', closeHistoryModal);
+historyModalBackdrop.addEventListener('click', closeHistoryModal);
 
 function showMessage(message, isError = false) {
     bastMsg.style.display = 'block';
@@ -634,6 +841,59 @@ function clearValidation() {
     });
     const tableInputs = document.querySelectorAll('#deviceBody input');
     tableInputs.forEach((el) => el.classList.remove('input-error'));
+}
+
+async function generateTicketNumber() {
+    try {
+        const snapshot = await get(ref(db, BAST_DB));
+        const count = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+        return `BAST-${String(count + 1).padStart(4, '0')}`;
+    } catch (error) {
+        console.error('Gagal generate ticket:', error);
+        return `BAST-${Date.now()}`;
+    }
+}
+
+function renderBASTHistory(userUid) {
+    bastHistoryList.innerHTML = '<div class="history-empty">Memuat riwayat BAST...</div>';
+    get(ref(db, BAST_DB)).then((snapshot) => {
+        const history = [];
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            for (const key in data) {
+                if (data[key].createdByUid === userUid) {
+                    history.push({ id: key, ...data[key] });
+                }
+            }
+        }
+        if (history.length === 0) {
+            bastHistoryList.innerHTML = '<div class="history-empty">Belum ada riwayat BAST.</div>';
+            return;
+        }
+
+        history.sort((a, b) => b.createdAt - a.createdAt);
+        bastHistoryList.innerHTML = '';
+        history.forEach((item) => {
+            const date = new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            const card = document.createElement('div');
+            card.className = 'history-item';
+            card.innerHTML = `
+                <div>
+                    <h4>${item.noTicket || item.tanggal}</h4>
+                    <span>${date}</span>
+                    <span>${item.lokasi || 'Lokasi belum diisi'}</span>
+                </div>
+                <div style="text-align:right; min-width:140px;">
+                    <span>${item.status || 'submitted'}</span>
+                    <span>${item.perangkat ? item.perangkat.length + ' perangkat' : '0 perangkat'}</span>
+                </div>
+            `;
+            bastHistoryList.appendChild(card);
+        });
+    }).catch((error) => {
+        console.error(error);
+        bastHistoryList.innerHTML = '<div class="history-empty">Gagal memuat riwayat.</div>';
+    });
 }
 
 function getDeviceRows() {
@@ -734,6 +994,7 @@ async function saveBAST() {
         perangkat: devices,
         createdAt: Date.now(),
         createdBy: namaInput.value.trim(),
+        createdByUid: currentUserUid,
         status: 'submitted'
     };
 
@@ -741,6 +1002,8 @@ async function saveBAST() {
         const newBASTRef = push(ref(db, BAST_DB));
         await set(newBASTRef, payload);
         showMessage('Data BAST berhasil disimpan ke database.');
+        ticketInput.value = await generateTicketNumber();
+        if (currentUserUid) renderBASTHistory(currentUserUid);
     } catch (error) {
         console.error(error);
         showMessage('Terjadi kesalahan saat menyimpan data. Coba lagi.', true);
