@@ -164,6 +164,15 @@ font-size:0.9rem;
 color:#6b7280;
 }
 
+.history-item {
+cursor: pointer;
+transition: background 0.2s ease;
+}
+
+.history-item:hover {
+background: #f3f4f6;
+}
+
 .modal-backdrop {
 position: fixed;
 top: 0;
@@ -888,12 +897,51 @@ function renderBASTHistory(userUid) {
                     <span>${item.perangkat ? item.perangkat.length + ' perangkat' : '0 perangkat'}</span>
                 </div>
             `;
+            card.addEventListener('click', () => openBASTRecord(item));
             bastHistoryList.appendChild(card);
         });
     }).catch((error) => {
         console.error(error);
         bastHistoryList.innerHTML = '<div class="history-empty">Gagal memuat riwayat.</div>';
     });
+}
+
+function openBASTRecord(item) {
+    closeHistoryModal();
+
+    namaInput.value = item.nama || '';
+    nikInput.value = item.nik || '';
+    deptInput.value = item.departemen || '';
+    lokasiInput.value = item.lokasi || '';
+    tglInput.value = item.tanggal || '';
+    ticketInput.value = item.noTicket || '';
+    keperluanInput.value = item.keperluan || '';
+    document.getElementById('docNo').innerText = 'No : ' + (item.noTicket || '');
+    document.getElementById('tanggal').innerText = 'Tanggal : ' + (item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID') : new Date(item.createdAt).toLocaleDateString('id-ID'));
+
+    const tbody = document.getElementById('deviceBody');
+    tbody.innerHTML = '';
+    if (item.perangkat && item.perangkat.length) {
+        item.perangkat.forEach((device, index) => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td><input value="${device.jenis || ''}"></td>
+                <td><input value="${device.serial || ''}"></td>
+                <td><input type="number" value="${device.qty || 1}"></td>
+                <td><input value="${device.keterangan || ''}"></td>
+            `;
+        });
+    } else {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>1</td>
+            <td><input></td>
+            <td><input></td>
+            <td><input type="number" value="1"></td>
+            <td><input></td>
+        `;
+    }
 }
 
 function getDeviceRows() {
