@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BAST Perangkat IT</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+box-sizing:border-box;
+font-family:'Roboto', sans-serif;
+}
+
+body{
+margin:0;
+background:#f3f4f6;
+padding:30px;
+color:#1f2937;
+line-height:1.6;
+}
+
+.loading-screen {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100vh;
+background: linear-gradient(135deg, #D9232D 0%, #F37321 100%);
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+color: white;
+z-index: 9999;
+opacity: 1;
+transition: opacity 0.5s ease-in-out, visibility 0.5s;
+}
+
+.loading-screen.fade-out {
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+}
+
+.spinner {
+width: 50px;
+height: 50px;
+border: 4px solid rgba(255, 255, 255, 0.3);
+border-top-color: #ffffff;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+}
+
+.loading-screen p {
+margin-top: 20px;
+font-size: 1.1rem;
+font-weight: 300;
+}
+
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+
+.fade-in-up {
+opacity: 0;
+transform: translateY(30px);
+transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.fade-in-up.visible {
+opacity: 1;
+transform: translateY(0);
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:16px;
+box-shadow:0 2px 4px rgba(0,0,0,0.02);
+border:1px solid #e5e7eb;
+transition:all 0.3s ease;
+}
+
+.card:hover{
+box-shadow:0 12px 24px rgba(0,0,0,0.08);
+}
+
+/* HEADER */
+
+.doc-header{
+border-bottom:2px solid #D9232D;
+padding-bottom:12px;
+margin-bottom:20px;
+}
+
+.company{
+display:flex;
+align-items:center;
+gap:12px;
+}
+
+.logo{
+width:60px;
+height:60px;
+background:#D9232D;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+border-radius:6px;
+}
+
+.company-name{
+font-size:18px;
+font-weight:700;
+color:#1f2937;
+}
+
+.company-dept{
+font-size:13px;
+color:#6b7280;
+}
+
+.doc-title{
+text-align:center;
+margin-top:10px;
+}
+
+.doc-title h1{
+font-size:22px;
+margin:5px 0;
+letter-spacing:1px;
+color:#111827;
+}
+
+.meta{
+display:flex;
+justify-content:center;
+gap:40px;
+font-size:13px;
+color:#4b5563;
+}
+
+/* SECTION */
+
+.section{
+margin-top:20px;
+}
+
+.section h2{
+font-size:16px;
+border-bottom:1px solid #e5e7eb;
+padding-bottom:5px;
+margin-bottom:12px;
+color:#111827;
+font-weight:700;
+}
+
+/* FORM (DIPERKECIL & LEBIH EFISIEN) */
+
+.form-grid{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:8px;
+}
+
+.field{
+display:flex;
+flex-direction:column;
+}
+
+label{
+font-size:12px;
+font-weight:600;
+margin-bottom:2px;
+color:#374151;
+}
+
+input, textarea{
+border:1px solid #d1d5db;
+padding:4px 6px;
+border-radius:6px;
+font-size:12px;
+height:28px;
+transition:border-color 0.2s ease;
+}
+
+input:focus, textarea:focus{
+outline:none;
+border-color:#D9232D;
+box-shadow:0 0 0 3px rgba(217, 35, 45, 0.1);
+}
+
+.input-error {
+border-color:#dc2626 !important;
+}
+
+textarea{
+min-height:35px;
+height:auto;
+resize:vertical;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+border-radius:8px;
+overflow:hidden;
+box-shadow:0 1px 3px rgba(0,0,0,0.1);
+}
+
+th, td{
+border:1px solid #e5e7eb;
+padding:8px;
+}
+
+th{
+background:#f9fafb;
+text-align:center;
+font-weight:600;
+color:#374151;
+}
+
+td input{
+width:100%;
+border:none;
+outline:none;
+height:28px;
+font-size:12px;
+padding:4px;
+}
+
+td input:focus{
+background:#fefefe;
+}
+
+/* BUTTON */
+
+.controls{
+margin-top:15px;
+display:flex;
+gap:10px;
+}
+
+button{
+padding:9px 14px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+transition:all 0.2s ease;
+}
+
+.btn-primary{
+background:#D9232D;
+color:white;
+box-shadow:0 2px 4px rgba(217, 35, 45, 0.2);
+}
+
+.btn-primary:hover{
+background:#b91c1c;
+transform:translateY(-1px);
+box-shadow:0 4px 8px rgba(217, 35, 45, 0.3);
+}
+
+.btn-add{
+background:#f3f4f6;
+color:#4b5563;
+border:1px solid #d1d5db;
+}
+
+.btn-add:hover{
+background:#e5e7eb;
+}
+
+/* SIGNATURE */
+
+.signature-row{
+display:flex;
+justify-content:space-between;
+margin-top:30px;
+}
+
+.signature{
+text-align:center;
+width:30%;
+}
+
+.signature canvas{
+border:1px dashed #aaa;
+width:100%;
+height:80px;
+}
+
+.signature input{
+margin-top:8px;
+height:30px;
+}
+
+/* FOOTER */
+
+.footer{
+margin-top:20px;
+font-size:12px;
+color:#6b7280;
+display:flex;
+justify-content:space-between;
+}
+
+/* PRINT */
+
+@media print{
+
+.controls{
+display:none;
+}
+
+body{
+background:white;
+padding:0;
+}
+
+.card{
+box-shadow:none;
+border-radius:0;
+border:none;
+}
+
+.loading-screen{
+display:none;
+}
+
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+<div class="spinner"></div>
+<p>Loading BAST Form...</p>
+</div>
+
+<div class="container fade-in-up" id="mainContent">
+
+<div class="card" id="printArea">
+
+<!-- HEADER -->
+
+<div class="doc-header">
+
+<div class="company">
+
+<div class="logo">IT</div>
+
+<div>
+<div class="company-name">Zeppelin</div>
+<div class="company-dept">IT Department</div>
+</div>
+
+</div>
+
+<div class="doc-title">
+<h1>BERITA ACARA SERAH TERIMA PERANGKAT IT</h1>
+
+<div class="meta">
+<span id="docNo">No : ZEP-001</span>
+<span id="tanggal">Tanggal : -</span>
+</div>
+
+</div>
+
+</div>
+
+<!-- DATA PENERIMA -->
+
+<div class="section">
+
+<h2>Data Penerima</h2>
+
+<div class="form-grid">
+
+<div class="field">
+<label>Nama</label>
+<input type="text" id="namaPenerima" readonly>
+</div>
+
+<div class="field">
+<label>NIK</label>
+<input type="text" id="nikPenerima">
+</div>
+
+<div class="field">
+<label>Departemen</label>
+<input type="text" id="deptPenerima" readonly>
+</div>
+
+<div class="field">
+<label>Lokasi</label>
+<input type="text" id="lokasiPenerima">
+</div>
+
+<div class="field">
+<label>Tanggal</label>
+<input type="date" id="tgl">
+</div>
+
+<div class="field">
+<label>No Ticket</label>
+<input type="text" id="ticketPenerima">
+</div>
+
+<div class="field" style="grid-column:1/4">
+<label>Keperluan</label>
+<textarea id="keperluanPenerima"></textarea>
+</div>
+
+</div>
+
+</div>
+
+<!-- TABEL PERANGKAT -->
+
+<div class="section">
+
+<h2>Daftar Perangkat</h2>
+
+<table id="deviceTable">
+
+<thead>
+
+<tr>
+<th>No</th>
+<th>Jenis Perangkat</th>
+<th>Serial Number</th>
+<th>Qty</th>
+<th>Keterangan</th>
+</tr>
+
+</thead>
+
+<tbody id="deviceBody">
+
+<tr>
+<td>1</td>
+<td><input></td>
+<td><input></td>
+<td><input type="number" value="1"></td>
+<td><input></td>
+</tr>
+
+</tbody>
+
+</table>
+
+<div class="controls">
+
+<button class="btn-add" type="button" onclick="addRow()">Tambah Baris</button>
+
+<button class="btn-primary" type="button" onclick="saveBAST()">Simpan</button>
+
+<button class="btn-primary" type="button" onclick="window.print()">Print</button>
+
+</div>
+
+<div id="bast-msg" style="margin-top:14px; display:none; padding:12px; border-radius:10px; font-size:13px;"></div>
+
+</div>
+
+<!-- PERNYATAAN -->
+
+<div class="section">
+
+<h2>Pernyataan</h2>
+
+<p style="font-size:13px;line-height:1.6">
+
+Dengan ditandatanganinya dokumen ini, pihak penerima menyatakan telah menerima perangkat IT sesuai daftar di atas dalam kondisi baik dan layak digunakan. Penerima bertanggung jawab atas penggunaan serta keamanan perangkat selama masa pemakaian sesuai kebijakan perusahaan.
+
+</p>
+
+</div>
+
+<!-- SIGNATURE -->
+
+<div class="signature-row">
+
+<div class="signature">
+
+<div>Menyerahkan</div>
+
+<canvas></canvas>
+
+<input placeholder="Nama & Jabatan">
+
+</div>
+
+<div class="signature">
+
+<div>Mengetahui</div>
+
+<canvas></canvas>
+
+<input placeholder="Nama & Jabatan">
+
+</div>
+
+<div class="signature">
+
+<div>Penerima</div>
+
+<canvas></canvas>
+
+<input placeholder="Nama">
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<div class="footer">
+
+<div>
+Dokumen ini merupakan bukti sah serah terima perangkat IT.
+</div>
+
+<div>
+Zeppelin – IT Department
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyA9wgSalrlTcveIZi2i-WND86z1i9JYHKw",
+    authDomain: "it-support-53eeb.firebaseapp.com",
+    databaseURL: "https://it-support-53eeb-default-rtdb.firebaseio.com",
+    projectId: "it-support-53eeb",
+    storageBucket: "it-support-53eeb.firebasestorage.app",
+    messagingSenderId: "573924501146",
+    appId: "1:573924501146:web:12f34306ed675472322123"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const BAST_DB = 'bastdb';
+
+const loadingScreen = document.getElementById('loadingScreen');
+const mainContent = document.getElementById('mainContent');
+const namaInput = document.getElementById('namaPenerima');
+const nikInput = document.getElementById('nikPenerima');
+const deptInput = document.getElementById('deptPenerima');
+const lokasiInput = document.getElementById('lokasiPenerima');
+const tglInput = document.getElementById('tgl');
+const ticketInput = document.getElementById('ticketPenerima');
+const keperluanInput = document.getElementById('keperluanPenerima');
+const bastMsg = document.getElementById('bast-msg');
+
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        loadingScreen.classList.add('fade-out');
+        mainContent.classList.add('visible');
+    }, 1000);
+});
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const userRef = ref(db, 'users/' + user.uid);
+    const snapshot = await get(userRef);
+
+    if (!snapshot.exists()) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    const userData = snapshot.val();
+    const nama = userData.nama || user.email || '';
+    const departemen = userData.departemen || '';
+
+    namaInput.value = nama;
+    namaInput.readOnly = true;
+    deptInput.value = departemen;
+    deptInput.readOnly = true;
+
+    document.getElementById("tanggal").innerText =
+        "Tanggal : " + new Date().toLocaleDateString("id-ID");
+});
+
+function showMessage(message, isError = false) {
+    bastMsg.style.display = 'block';
+    bastMsg.textContent = message;
+    bastMsg.style.color = isError ? '#b91c1c' : '#065f46';
+    bastMsg.style.backgroundColor = isError ? '#fef2f2' : '#dcfce7';
+    bastMsg.style.border = isError ? '1px solid #fecaca' : '1px solid #a7f3d0';
+}
+
+function clearMessage() {
+    bastMsg.style.display = 'none';
+    bastMsg.textContent = '';
+}
+
+function clearValidation() {
+    [namaInput, nikInput, deptInput, lokasiInput, tglInput, ticketInput, keperluanInput].forEach((el) => {
+        el.classList.remove('input-error');
+    });
+    const tableInputs = document.querySelectorAll('#deviceBody input');
+    tableInputs.forEach((el) => el.classList.remove('input-error'));
+}
+
+function getDeviceRows() {
+    const rows = [];
+    document.querySelectorAll('#deviceBody tr').forEach((row) => {
+        const inputs = row.querySelectorAll('input');
+        if (inputs.length >= 4) {
+            rows.push({
+                jenis: inputs[0].value.trim(),
+                serial: inputs[1].value.trim(),
+                qty: Number(inputs[2].value) || 0,
+                keterangan: inputs[3].value.trim(),
+                rowInputs: inputs
+            });
+        }
+    });
+    return rows;
+}
+
+function validateForm() {
+    clearValidation();
+    clearMessage();
+
+    let valid = true;
+
+    if (!namaInput.value.trim()) {
+        namaInput.classList.add('input-error');
+        valid = false;
+    }
+    if (!deptInput.value.trim()) {
+        deptInput.classList.add('input-error');
+        valid = false;
+    }
+    if (!lokasiInput.value.trim()) {
+        lokasiInput.classList.add('input-error');
+        valid = false;
+    }
+    if (!tglInput.value) {
+        tglInput.classList.add('input-error');
+        valid = false;
+    }
+    if (!ticketInput.value.trim()) {
+        ticketInput.classList.add('input-error');
+        valid = false;
+    }
+    if (!keperluanInput.value.trim()) {
+        keperluanInput.classList.add('input-error');
+        valid = false;
+    }
+
+    const devices = getDeviceRows();
+    if (devices.length === 0) {
+        showMessage('Silakan tambahkan minimal 1 perangkat.', true);
+        return false;
+    }
+
+    devices.forEach((device, index) => {
+        if (!device.jenis) {
+            device.rowInputs[0].classList.add('input-error');
+            valid = false;
+        }
+        if (!device.serial) {
+            device.rowInputs[1].classList.add('input-error');
+            valid = false;
+        }
+        if (device.qty <= 0) {
+            device.rowInputs[2].classList.add('input-error');
+            valid = false;
+        }
+    });
+
+    if (!valid) {
+        showMessage('Periksa kembali data form. Semua field wajib diisi dengan benar.', true);
+    }
+
+    return valid;
+}
+
+async function saveBAST() {
+    if (!validateForm()) return;
+
+    clearMessage();
+    const devices = getDeviceRows().map((device) => ({
+        jenis: device.jenis,
+        serial: device.serial,
+        qty: device.qty,
+        keterangan: device.keterangan
+    }));
+
+    const payload = {
+        nama: namaInput.value.trim(),
+        nik: nikInput.value.trim(),
+        departemen: deptInput.value.trim(),
+        lokasi: lokasiInput.value.trim(),
+        tanggal: tglInput.value,
+        noTicket: ticketInput.value.trim(),
+        keperluan: keperluanInput.value.trim(),
+        perangkat: devices,
+        createdAt: Date.now(),
+        createdBy: namaInput.value.trim(),
+        status: 'submitted'
+    };
+
+    try {
+        const newBASTRef = push(ref(db, BAST_DB));
+        await set(newBASTRef, payload);
+        showMessage('Data BAST berhasil disimpan ke database.');
+    } catch (error) {
+        console.error(error);
+        showMessage('Terjadi kesalahan saat menyimpan data. Coba lagi.', true);
+    }
+}
+
+function addRow() {
+    const table = document.getElementById('deviceBody');
+    const row = table.insertRow();
+    const no = table.rows.length;
+    row.innerHTML = `
+        <td>${no}</td>
+        <td><input></td>
+        <td><input></td>
+        <td><input type="number" value="1"></td>
+        <td><input></td>
+    `;
+}
+
+window.addRow = addRow;
+window.saveBAST = saveBAST;
+</script>
+
+</body>
+</html>
